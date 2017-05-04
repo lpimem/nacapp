@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <ndn-cxx/common.hpp>
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/util/signal.hpp>
@@ -27,6 +29,11 @@ using std::static_pointer_cast;
 using std::dynamic_pointer_cast;
 using std::const_pointer_cast;
 
+using boost::gregorian::date;
+using boost::gregorian::years;
+using boost::posix_time::ptime;
+using boost::posix_time::second_clock;
+
 using std::function;
 using std::bind;
 using std::ref;
@@ -46,6 +53,7 @@ using ndn::security::SafeBag;
 
 using ndn::gep::GroupManager;
 using ndn::gep::Schedule;
+using ndn::gep::RepetitiveInterval;
 
 namespace name = ndn::name;
 namespace time = ndn::time;
@@ -59,6 +67,9 @@ const ndn::name::Component NAME_COMPONENT_E_KEY("E-KEY");
 const ndn::name::Component NAME_COMPONENT_D_KEY("D-KEY");
 const ndn::name::Component NAME_COMPONENT_C_KEY("C-KEY");
 const ndn::name::Component NAME_COMPONENT_IDENTITY("IDENTITY");
+
+const string DB_PATH{"./manager-db"};
+const string SCHEDULE_NAME_EVERY_DAY{"everyday"};
 
 } // nacapp
 

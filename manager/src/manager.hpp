@@ -55,23 +55,26 @@ public:
   void revokeAccess(const Name &entity, const Name &dataType);
 
 private:
-  void createGroup(const Name &group, const Name &dataType);
+  shared_ptr<GroupManager> createGroup(const Name &group, const Name &dataType);
 
   void deleteGroup(const Name &group, const Name &dataType);
 
-  void addGroupMember(const Name &group, const Name &entity);
+  void addGroupMember(const Name &group, const Name &dataType,
+                      const Name &entity);
 
-  void removeGroupMember(const Name &group, const Name &entity);
+  void removeGroupMember(const Name &group, const Name &dataType,
+                         const Name &entity);
 
-  /**
-   * @return schedule name
-   */
-  string createSchedule(const GroupManager &group, const Name &dataType);
+  void createSchedule(shared_ptr<GroupManager> group);
+
+  Certificate getEntityCert(const Name &entity);
+
+  static string getGroupFullName(const Name &group, const Name &dataType);
 
 private:
   Name m_prefix;
-  std::map<string, Data *> m_certs;
-  std::map<string, GroupManager *> m_groups;
+  std::map<string, shared_ptr<Data>> m_dkey_cache;
+  std::map<string, shared_ptr<GroupManager>> m_groups;
 };
 
 } // nacapp

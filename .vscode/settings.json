@@ -49,6 +49,7 @@
     "*.ipp": "cpp",
     "__locale": "cpp",
     "locale": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "future": "cpp"
   }
 }

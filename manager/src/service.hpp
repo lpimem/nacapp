@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "manager.hpp"
+#include "validator/data_type_filter.hpp"
 
 namespace nacapp {
 
