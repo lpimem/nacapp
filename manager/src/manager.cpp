@@ -1,4 +1,3 @@
-
 #include "manager.hpp"
 
 namespace nacapp {
@@ -8,26 +7,25 @@ Identity Manager::addIdentity(const Name &entity) {
   return identity;
 }
 
-Data Manager::getCertificate(const Name &identity) {
-  Data d;
+Data Manager::getSafeBag(const Name &identity) {
+  Identity id = AppKeyChain.createIdentity(identity);
+  Certificate cert = id.getDefaultKey().getDefaultCertificate();
+  shared_ptr<SafeBag> safeBag = AppKeyChain.exportSafeBag(cert, NULL, 0);
+  Data d(safeBag->wireEncode());
+  Name bagName(m_prefix);
+  bagName.append(NAME_COMPONENT_IDENTITY);
+  bagName.append(identity);
+  d.setName(bagName);
   return d;
 }
 
-void Manager::removeIdentity(const Name &identity) {}
+void Manager::removeIdentity(const Name &identity) {
+  Identity id = AppKeyChain.createIdentity(identity);
+  AppKeyChain.deleteIdentity(id);
+}
 
-/**
-* grant @p entity access to @p dataType
-*
-* Details:
-*   - Create a GroupManager /<m_prefix>/READ/<dataType> if not exists
-*   - Create a schedule 7x24 with access if not exists
-*   - Add @p entity's certificate to schedule.
-*/
 void Manager::grantAccess(const Name &entity, const Name &dataType) {}
 
-/**
-* revoke @p entity access to @p dataType
-*/
 void Manager::revokeAccess(const Name &entity, const Name &dataType) {}
 
 void Manager::createGroup(const Name &group, const Name &dataType) {}

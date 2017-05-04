@@ -29,6 +29,11 @@ public:
 
 private:
   // route interests to handlers
+  // should have some middle layer wrappers to pre-process interests and post-
+  // process data.
+  //
+  // in post-processing, data are segmented into chuncks if too large.
+  // business handler can only set the content, content type, and name
   void onInterest(const ndn::InterestFilter &filter, const Interest &interest);
 
   void registerPrefixes();

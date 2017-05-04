@@ -15,21 +15,23 @@ public:
 
 public:
   /**
-   * Manager creates Identity-key-certificate tuple for @p entity
-   * The created tuple is stored in PIB[1], and can be retrieved from
-   * keychain[2].
-   *
-   * [1]
-   * https://github.com/named-data/ndn-cxx/blob/master/src/security/pib/pib.hpp#L36
-   * [2]
-   * https://github.com/named-data/ndn-cxx/blob/master/src/security/v2/key-chain.hpp#L41
-   */
+  * Manager creates Identity-key-certificate tuple for @p entity
+  * The created tuple is stored in PIB[1], and can be retrieved from
+  * keychain[2].
+  *
+  * [1]
+  * https://github.com/named-data/ndn-cxx/blob/master/src/security/pib/pib.hpp#L36
+  * [2]
+  * https://github.com/named-data/ndn-cxx/blob/master/src/security/v2/key-chain.hpp#L41
+  */
   Identity addIdentity(const Name &entity);
 
   /**
-  * Returns the certificate of an identity
+  * Returns a Data packet of SafeBag containing the private key and
+  * certificate of an identity
+  * Data's name should be informat : <prefix>/IDENTITY/for/<entity-name>
   */
-  Data getCertificate(const Name &identity);
+  Data getSafeBag(const Name &identity);
 
   /**
   * Delete certificate from local store. Should call revokeAccess for

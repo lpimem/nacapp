@@ -46,6 +46,9 @@
     "unordered_set": "cpp",
     "utility": "cpp",
     "valarray": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "__locale": "cpp",
+    "locale": "cpp",
+    "thread": "cpp"
   }
 }

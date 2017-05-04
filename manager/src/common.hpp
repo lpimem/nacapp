@@ -42,6 +42,7 @@ using ndn::security::v1::PublicKey;
 using ndn::security::v2::Certificate;
 using ndn::security::pib::Identity;
 using ndn::security::pib::Key;
+using ndn::security::SafeBag;
 
 using ndn::gep::GroupManager;
 using ndn::gep::Schedule;
@@ -57,6 +58,7 @@ const ndn::name::Component NAME_COMPONENT_ACCESS("ACCESS");
 const ndn::name::Component NAME_COMPONENT_E_KEY("E-KEY");
 const ndn::name::Component NAME_COMPONENT_D_KEY("D-KEY");
 const ndn::name::Component NAME_COMPONENT_C_KEY("C-KEY");
+const ndn::name::Component NAME_COMPONENT_IDENTITY("IDENTITY");
 
 } // nacapp
 
