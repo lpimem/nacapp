@@ -50,6 +50,11 @@
     "__locale": "cpp",
     "locale": "cpp",
     "thread": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "__bit_reference": "cpp",
+    "__tree": "cpp",
+    "algorithm": "cpp",
+    "map": "cpp",
+    "set": "cpp"
   }
 }
