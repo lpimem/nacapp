@@ -22,32 +22,18 @@ namespace nacapp {
 class Service {
 
 public:
-  Service(const Name &prefix, shared_ptr<Manager> manager)
-      : m_prefix(prefix), m_manager(manager) {}
+  Service(const Name &prefix) : m_prefix(prefix), m_manager(prefix) {}
 
 public:
-  void serveForever();
-
-private:
-  // route interests to handlers
-  // should have some middle layer wrappers to pre-process interests and post-
-  // process data.
-  //
-  // in post-processing, data are segmented into chuncks if too large.
-  // business handler can only set the content, content type, and name
-  void onInterest(const ndn::InterestFilter &filter, const Interest &interest);
-
-  void registerPrefixes();
-
-  void onRegisterPrefixFailed(const Name &prefix, const string reason);
-
   /* ********** Group Cryptography Handlers ********** */
 
-  // <prefix>/READ/<data-type>/E-Key/<strat>/<end>
-  void onGetEKey(const Interest &interest);
+  // <prefix>/READ/<data-type>/E-Key/<start>/<end>
+  void onGetEKey(const Interest &interest, const Name args,
+                 shared_ptr<Data> data);
 
-  // <prefix>/READ/<data-type>/D-Key/<strat>/<end>
-  void onGetDKey(const Interest &interest);
+  // <prefix>/READ/<data-type>/D-Key/<start>/<end>
+  void onGetDKey(const Interest &interest, const Name args,
+                 shared_ptr<Data> data);
 
   /* ********** Identity Hanlders ********** */
 
@@ -60,7 +46,8 @@ private:
   For example:
     sign-key = HASH(<short-passwd>, <entity-name>, nonce)
   */
-  void onGetIdentityKey(const Interest &interest);
+  void onGetIdentityKey(const Interest &interest, const Name args,
+                        shared_ptr<Data> data);
 
   /* ********** Management Hanlders ********** */
 
@@ -70,21 +57,24 @@ private:
   The trusted key should differ among entities.
   Manager should remember this key at least until the identity's key is served.
   */
-  void onAddIdentity(const Interest &interest);
+  void onAddIdentity(const Interest &interest, const Name args,
+                     shared_ptr<Data> data);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
-  void onRemoveIdentity(const Interest &interest);
+  void onRemoveIdentity(const Interest &interest, const Name args,
+                        shared_ptr<Data> data);
 
   // <prefix>/MANAGEMENT/access/grant/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
-  void onGrant(const Interest &interest);
+  void onGrant(const Interest &interest, const Name args,
+               shared_ptr<Data> data);
 
   // <prefix>/MANAGEMENT/access/revoke/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
-  void onRevoke(const Interest &interest);
+  void onRevoke(const Interest &interest, const Name args,
+                shared_ptr<Data> data);
 
 private:
-  ndn::Face m_face;
   const Name &m_prefix;
-  shared_ptr<Manager> m_manager;
+  Manager m_manager;
 };
 
 } // nacapp

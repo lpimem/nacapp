@@ -8,7 +8,7 @@ namespace nacapp {
 // application interest handlers. @p path is the name components after the
 // application namespace. @p args is the name components after @p path but
 // before the signature components.
-using InterestHandler = void (*)(const Name &path, const Name &args,
+using InterestHandler = void (*)(const Interest &interest, const Name &args,
                                  shared_ptr<Data> data);
 
 // for common validation functions. They are called before interest handlers, if
@@ -42,7 +42,7 @@ public:
   /**
    * setInterestFilter for <m_prefix><path>
    * Parts after <path> and before SIGNATURE is <ARGUMETNS
-   * TODO: make handler more generic. (maybe can use some templating tricks)
+   * TODO: make handler more generic. (maybe use some templating tricks)
    */
   void route(string path, InterestHandler handler);
 

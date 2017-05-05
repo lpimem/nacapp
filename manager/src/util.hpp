@@ -20,6 +20,5 @@ PublicKey getAsPublicKey(const Data &data) {
 }
 
 } // data
-
 } // nacapp
 #endif /* UTIL_HPP */

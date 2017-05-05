@@ -74,7 +74,7 @@ shared_ptr<Data> Node::handleInterest(const Interest &interest,
   }
   InterestHandler handler = m_handlers[path];
   auto data = make_shared<Data>();
-  handler(path, args, data);
+  handler(interest, args, data);
 
   process(path, interest, data);
 
