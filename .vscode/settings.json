@@ -55,6 +55,11 @@
     "__tree": "cpp",
     "algorithm": "cpp",
     "map": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "__split_buffer": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "queue": "cpp",
+    "stack": "cpp"
   }
 }

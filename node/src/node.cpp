@@ -91,7 +91,34 @@ void Node::onFailed(const Interest &interest, string reason) {
 
 vector<Name> Node::parseInterestName(const Interest &interest) {
   vector<Name> v;
-  throw "Node::parseInterestName not implemented";
+  size_t offset = m_prefix.size();
+  const Name iname = interest.getName();
+  Name prefix = iname.getPrefix(offset);
+  if (prefix != m_prefix) {
+    throw "prefix does not match";
+  }
+  v.push_back(prefix);
+
+  bool found = false;
+  for (auto entry : m_handlers) {
+    Name p = entry.first;
+    Name path = iname.getSubName(offset, p.size());
+    if (p == path) {
+      found = true;
+      offset += p.size();
+      v.push_back(path);
+      break;
+    }
+  }
+  if (!found) {
+    throw "no matching handler found";
+  }
+  const size_t SIGNATURE_COMPONENTS = 4;
+
+  Name args =
+      iname.getSubName(offset, iname.size() - offset - SIGNATURE_COMPONENTS);
+  v.push_back(args);
+
   return v;
 }
 
