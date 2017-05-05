@@ -1,6 +1,6 @@
-# project  configured on Thu May  4 19:33:44 2017 by
+# project  configured on Fri May  5 15:36:21 2017 by
 # waf 1.9.8 (abi 99, python 2070df0 on darwin)
-# using /usr/local/bin/waf configure
+# using /usr/local/bin/waf configure build
 #
 ----------------------------------------
 Setting top to
@@ -355,12 +355,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_be4aef41df65a370bbb795b882a70bfa/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_f72d08f7663779abdf34442eee3fe1be/test.cpp[0m
 
-['/usr/bin/clang++', '-Werror', '-std=c++11', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_be4aef41df65a370bbb795b882a70bfa/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_be4aef41df65a370bbb795b882a70bfa/testbuild/testprog[0m
+['/usr/bin/clang++', '-Werror', '-std=c++11', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_f72d08f7663779abdf34442eee3fe1be/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_f72d08f7663779abdf34442eee3fe1be/testbuild/testprog[0m
 
-['/usr/bin/clang++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_be4aef41df65a370bbb795b882a70bfa/testbuild/testprog']
+['/usr/bin/clang++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_f72d08f7663779abdf34442eee3fe1be/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -369,12 +369,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_858dc190662622347da4b968355b5407/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_d2ed474aa03f67e627c4f0c3552e1d22/test.cpp[0m
 
-['/usr/bin/clang++', '-Werror', '-stdlib=libc++', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_858dc190662622347da4b968355b5407/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_858dc190662622347da4b968355b5407/testbuild/testprog[0m
+['/usr/bin/clang++', '-Werror', '-stdlib=libc++', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_d2ed474aa03f67e627c4f0c3552e1d22/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_d2ed474aa03f67e627c4f0c3552e1d22/testbuild/testprog[0m
 
-['/usr/bin/clang++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_858dc190662622347da4b968355b5407/testbuild/testprog']
+['/usr/bin/clang++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_d2ed474aa03f67e627c4f0c3552e1d22/testbuild/testprog']
 -std=c++11 -stdlib=libc++
 ----------------------------------------
 Checking supported LINKFLAGS
@@ -386,12 +386,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_eac4e447ff5360fc55aa2708061deb3c/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_bcc7508b200cdbbadd8f191db3593e85/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_eac4e447ff5360fc55aa2708061deb3c/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_eac4e447ff5360fc55aa2708061deb3c/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_bcc7508b200cdbbadd8f191db3593e85/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_bcc7508b200cdbbadd8f191db3593e85/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-Werror', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_eac4e447ff5360fc55aa2708061deb3c/testbuild/testprog']
+['/usr/bin/clang++', '-Werror', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_bcc7508b200cdbbadd8f191db3593e85/testbuild/testprog']
 -stdlib=libc++
 ----------------------------------------
 Checking supported CXXFLAGS
@@ -403,12 +403,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_64c96fe5dcb9428a31f7b500a4f618e1/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_f25fc076129886d00086e4fc47a8b806/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-O2', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_64c96fe5dcb9428a31f7b500a4f618e1/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_64c96fe5dcb9428a31f7b500a4f618e1/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-O2', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_f25fc076129886d00086e4fc47a8b806/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_f25fc076129886d00086e4fc47a8b806/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_64c96fe5dcb9428a31f7b500a4f618e1/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_f25fc076129886d00086e4fc47a8b806/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -417,12 +417,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_cd11640ff03547c0438a61b7294f7c72/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_2d594586997cb34487d0b7fec4b196be/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-g', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_cd11640ff03547c0438a61b7294f7c72/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_cd11640ff03547c0438a61b7294f7c72/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-g', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_2d594586997cb34487d0b7fec4b196be/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2d594586997cb34487d0b7fec4b196be/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_cd11640ff03547c0438a61b7294f7c72/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_2d594586997cb34487d0b7fec4b196be/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -431,12 +431,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_ee5cede991ab551937996bf179666c23/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_9c8d0501bfe2149a27fc264a6d782fd8/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-pedantic', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_ee5cede991ab551937996bf179666c23/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_ee5cede991ab551937996bf179666c23/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-pedantic', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_9c8d0501bfe2149a27fc264a6d782fd8/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_9c8d0501bfe2149a27fc264a6d782fd8/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_ee5cede991ab551937996bf179666c23/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_9c8d0501bfe2149a27fc264a6d782fd8/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -445,12 +445,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_73b251aacf3bc87f360b15f93b3a5f26/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_6f297a079a9a485912a6ac80d01bfb8a/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wall', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_73b251aacf3bc87f360b15f93b3a5f26/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_73b251aacf3bc87f360b15f93b3a5f26/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wall', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_6f297a079a9a485912a6ac80d01bfb8a/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_6f297a079a9a485912a6ac80d01bfb8a/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_73b251aacf3bc87f360b15f93b3a5f26/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_6f297a079a9a485912a6ac80d01bfb8a/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -459,12 +459,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_b42d7bd50c99dbd6e3fdc1f8d6a08b91/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_fff0452e17d233231d3f9cb35a0c1847/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wextra', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_b42d7bd50c99dbd6e3fdc1f8d6a08b91/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_b42d7bd50c99dbd6e3fdc1f8d6a08b91/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wextra', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_fff0452e17d233231d3f9cb35a0c1847/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_fff0452e17d233231d3f9cb35a0c1847/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_b42d7bd50c99dbd6e3fdc1f8d6a08b91/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_fff0452e17d233231d3f9cb35a0c1847/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -473,12 +473,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_e506445d7b33a2a4a12bda426ce7dcb8/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_401e8bf1c8611fd581dc75e8b0b7ab4b/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wno-unused-parameter', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_e506445d7b33a2a4a12bda426ce7dcb8/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_e506445d7b33a2a4a12bda426ce7dcb8/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wno-unused-parameter', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_401e8bf1c8611fd581dc75e8b0b7ab4b/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_401e8bf1c8611fd581dc75e8b0b7ab4b/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_e506445d7b33a2a4a12bda426ce7dcb8/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_401e8bf1c8611fd581dc75e8b0b7ab4b/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -487,12 +487,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_372487783c89ab19e4b876f3f05bac38/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_93d192093d88081af571c06d33e42c40/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-fcolor-diagnostics', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_372487783c89ab19e4b876f3f05bac38/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_372487783c89ab19e4b876f3f05bac38/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-fcolor-diagnostics', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_93d192093d88081af571c06d33e42c40/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_93d192093d88081af571c06d33e42c40/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_372487783c89ab19e4b876f3f05bac38/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_93d192093d88081af571c06d33e42c40/testbuild/testprog']
 ==>
 
 int main(int argc, char **argv) {
@@ -501,12 +501,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_a8895f6813db926efe1f8f871bffee53/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_3ae8cbc3b619e7921d3cca528e700d1c/test.cpp[0m
 
-['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wno-unused-local-typedef', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_a8895f6813db926efe1f8f871bffee53/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_a8895f6813db926efe1f8f871bffee53/testbuild/testprog[0m
+['/usr/bin/clang++', '-std=c++11', '-stdlib=libc++', '-Werror', '-Wno-unused-local-typedef', '../test.cpp', '-c', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_3ae8cbc3b619e7921d3cca528e700d1c/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_3ae8cbc3b619e7921d3cca528e700d1c/testbuild/testprog[0m
 
-['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_a8895f6813db926efe1f8f871bffee53/testbuild/testprog']
+['/usr/bin/clang++', '-stdlib=libc++', 'test.cpp.1.o', '-o/Users/lei/workspace/ndn_vm/nac-app/node/build/.conf_check_3ae8cbc3b619e7921d3cca528e700d1c/testbuild/testprog']
 -O2 -g -pedantic -Wall -Wextra -Wno-unused-parameter -fcolor-diagnostics -Wno-unused-local-typedef
 ----------------------------------------
 Checking for program 'pkg-config'

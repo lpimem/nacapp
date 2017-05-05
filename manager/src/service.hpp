@@ -65,12 +65,23 @@ public:
                         shared_ptr<Data> data);
 
   // <prefix>/MANAGEMENT/access/grant/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
-  void onGrant(const Interest &interest, const Name args,
-               shared_ptr<Data> data);
+  // path: /MANAGEMENT/access/grant
+  // args:
+  //       /BASE64Encode(<identity-name>)
+  //       /BASE64Encode(<data-type>)
+  //       /start
+  //       /start
+
+  void onGrantFixed(const Interest &interest, const Name args,
+                    shared_ptr<Data> data);
 
   // <prefix>/MANAGEMENT/access/revoke/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
   void onRevoke(const Interest &interest, const Name args,
                 shared_ptr<Data> data);
+
+private:
+  void grant(const Name identity, const Name dataType, string start, string end,
+             string interval);
 
 private:
   const Name &m_prefix;

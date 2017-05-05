@@ -11,7 +11,7 @@ namespace nacapp {
 class Manager {
 
 public:
-  Manager(string prefix) : m_prefix(prefix) {}
+  Manager(const Name &prefix) : m_prefix(prefix) {}
 
 public:
   /**
@@ -25,6 +25,11 @@ public:
   * https://github.com/named-data/ndn-cxx/blob/master/src/security/v2/key-chain.hpp#L41
   */
   Identity addIdentity(const Name &entity);
+
+  /**
+   * add data
+   */
+  void addIdentity(const Name &entity, const &Data data);
 
   /**
   * Returns a Data packet of SafeBag containing the private key and
@@ -72,7 +77,7 @@ private:
   static string getGroupFullName(const Name &group, const Name &dataType);
 
 private:
-  Name m_prefix;
+  const Name m_prefix;
   std::map<string, shared_ptr<Data>> m_dkey_cache;
   std::map<string, shared_ptr<GroupManager>> m_groups;
 };
