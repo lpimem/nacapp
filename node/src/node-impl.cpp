@@ -131,7 +131,12 @@ vector<Name> NodeImpl::parseInterestName(const Interest &interest) {
   if (!found) {
     throw "no matching handler found";
   }
-  const size_t SIGNATURE_COMPONENTS = 4;
+
+  // according to
+  //   http://named-data.net/doc/ndn-cxx/current/tutorials/signed-interest.html
+  // the following value should be 4 instead of 2.
+  // But in test we are only getting 2 instead of 4.
+  const size_t SIGNATURE_COMPONENTS = 2;
 
   Name args =
       iname.getSubName(offset, iname.size() - offset - SIGNATURE_COMPONENTS);
