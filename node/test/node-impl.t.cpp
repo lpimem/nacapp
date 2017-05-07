@@ -1,4 +1,6 @@
 
+#include <ndn-cxx/util/dummy-client-face.hpp>
+
 #include "../../shared/test/catch.hpp"
 #include "../src/node-impl.hpp"
 
@@ -9,7 +11,7 @@ namespace test {
 using ndn::security::v2::KeyChain;
 
 shared_ptr<KeyChain> initKeyChain(const Name &prefix) {
-  auto kc = make_shared<KeyChain>("pib-memory", "tpm-memory");
+  auto kc = make_shared<KeyChain>();
   kc->createIdentity(prefix);
   return kc;
 }
@@ -23,7 +25,52 @@ public:
   NodeImpl impl{prefix, face};
 };
 
-TEST_CASE("NodeImple::route") {}
+TEST_CASE("NodeImple::route") {
+  NodeImplTestFixture fixture;
+  const Name reqPath("/PATH/TO/SERVICE");
+  const Name reqArgs("/ARG1/ARG2/ARG3");
+
+  SECTION("serve local") {
+    fixture.impl.route(
+        reqPath.toUri(),
+        [](const Interest &interest, const Name &args, shared_ptr<Data> data) {
+          uint8_t resp[] = {1};
+          size_t leng = 1;
+          data->setContent(resp, leng);
+        },
+        {}, {});
+
+    fixture.impl.registerPrefixes();
+    fixture.face->processEvents(time::milliseconds(50));
+
+    ndn::util::DummyClientFace client;
+
+    Name req(fixture.prefix);
+    req.append(reqPath);
+    req.append(reqArgs);
+    Interest interest(req, time::milliseconds(100));
+    fixture.keyChain->sign(interest);
+    client.expressInterest(interest,
+                           [&](const Interest &i, const Data &d) {
+                             LOG(INFO) << "on data";
+                             auto buffer = d.getContent().getBuffer();
+                             REQUIRE(buffer->size() == 1);
+                             REQUIRE(*buffer->get() == 1);
+                           },
+                           bind([] {
+                             LOG(ERROR) << "Unexpected NACK";
+                             REQUIRE(false);
+                           }),
+                           bind([] {
+                             LOG(ERROR) << "Unexpected TIMEOUT";
+                             REQUIRE(false);
+                           }));
+
+    CHECK_NOTHROW(client.processEvents(time::milliseconds(10)));
+    CHECK_NOTHROW(fixture.face->processEvents(time::milliseconds(50)));
+    CHECK_NOTHROW(client.processEvents(time::milliseconds(10)));
+  }
+}
 
 TEST_CASE("NodeImple::parseInterestName") {
 
@@ -37,7 +84,7 @@ TEST_CASE("NodeImple::parseInterestName") {
       [](const Interest &interest, const Name &args, shared_ptr<Data> data) {},
       {}, {});
 
-  SECTION("parse interest name ") {
+  SECTION("parse correct interest name ") {
     Name req(fixture.prefix);
     req.append(reqPath);
     req.append(reqArgs);

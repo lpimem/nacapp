@@ -40,6 +40,7 @@ def configure(conf):
                'dependency-checker'])
 
     conf.env.DEFINES = ["ELPP_FEATURE_CRASH_LOG"]
+    # conf.env.DEFINES = ["CATCH_CONFIG_FAST_COMPILE"]
 
     if sys.platform != 'win32':
         conf.env.LIB = ["boost_system", "ndn-cxx"]
