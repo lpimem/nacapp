@@ -14,23 +14,31 @@ shared_ptr<KeyChain> initKeyChain(const Name &prefix) {
   return kc;
 }
 
-TEST_CASE("Node::parseInterestName") {
+class NodeImplTestFixture {
 
-  const Name prefix("/PREFIX");
-  auto face = make_shared<Face>("localhost");
-  NodeImpl impl(prefix, face);
+public:
+  Name prefix{"/PREFIX"};
+  shared_ptr<Face> face = make_shared<Face>("localhost");
+  shared_ptr<KeyChain> keyChain = initKeyChain(prefix);
+  NodeImpl impl{prefix, face};
+};
+
+TEST_CASE("NodeImple::route") {}
+
+TEST_CASE("NodeImple::parseInterestName") {
+
+  NodeImplTestFixture fixture;
 
   const Name reqPath("/PATH/TO/SERVICE");
   const Name reqArgs("/ARG1/ARG2/ARG3");
 
-  impl.route(reqPath.toUri(), [](const Interest &interest, const Name &args,
-                                 shared_ptr<Data> data) {},
-             {}, {});
-
-  auto keyChain = initKeyChain(prefix);
+  fixture.impl.route(
+      reqPath.toUri(),
+      [](const Interest &interest, const Name &args, shared_ptr<Data> data) {},
+      {}, {});
 
   SECTION("parse interest name ") {
-    Name req(prefix);
+    Name req(fixture.prefix);
     req.append(reqPath);
     req.append(reqArgs);
     Interest interest(req);
@@ -43,18 +51,18 @@ TEST_CASE("Node::parseInterestName") {
     //   http://named-data.net/doc/ndn-cxx/current/tutorials/signed-interest.html
     // Signed interested should have 4 more components
     // But here we are only getting 2 more.
-    keyChain->sign(interest);
+    fixture.keyChain->sign(interest);
 
     // LOG(INFO) << "signed interest: " << interest.toUri();
     // LOG(INFO) << interest.getName().size();
 
-    vector<Name> parts = impl.parseInterestName(interest);
+    vector<Name> parts = fixture.impl.parseInterestName(interest);
     REQUIRE(parts.size() == 3);
 
     Name parsedPrefix = parts[0];
     Name parsedPath = parts[1];
     Name parsedArgs = parts[2];
-    REQUIRE(parsedPrefix == prefix);
+    REQUIRE(parsedPrefix == fixture.prefix);
     REQUIRE(parsedPath == reqPath);
     REQUIRE(parsedArgs == reqArgs);
   }
