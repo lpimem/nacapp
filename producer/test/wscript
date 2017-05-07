@@ -4,7 +4,8 @@
 top = "../.."
 
 def build(bld):
-  main = "test.main.cpp"
+  module = bld.env.MODULE_NAME
+  objects = "nacapp-{module}-objects".format(**locals())
   if bld.env['WITH_TESTS']:
     bld(
       source=bld.path.ant_glob(['**/*.cc', 
@@ -12,6 +13,6 @@ def build(bld):
                                 ]),
       target="../unit_tests", 
       features="cxx cxxprogram",
-      use="NDN_CXX nacapp-share nacapp-node",
+      use="NDN_CXX nacapp-share " + objects,
       includes = ["."]
     )

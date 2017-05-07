@@ -9,6 +9,14 @@ top = "."
 out = "build"
 
 
+def build(bld):
+    bld.recurse("shared")
+    bld.recurse("node")
+    # bld.recurse("manager")
+    # bld.recurse("consumer")
+    # bld.recurse("producer")
+
+
 def options(opt):
     opt.load(['compiler_cxx', 'gnu_dirs'])
     opt.load(['default-compiler-flags', 
@@ -21,7 +29,6 @@ def options(opt):
                     default=False,
                     dest='with_tests', 
                     help='''Build unit tests''')
-
 
 
 def configure(conf):
@@ -50,6 +57,4 @@ def configure(conf):
         conf.define('WITH_TESTS', 1)
 
 
-def build(bld):
-    bld.recurse("shared")
-    bld.recurse("node")
+

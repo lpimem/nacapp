@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include "../../shared/test/catch.hpp"
 
 #include "../src/common.hpp"
 #include "../src/manager.hpp"

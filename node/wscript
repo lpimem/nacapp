@@ -8,7 +8,6 @@ from waflib import Logs, Utils, Context
 top = ".."
 
 def build(bld):
-
     bld(
       target = "nacapp-node",
       name = "nacapp-node",
