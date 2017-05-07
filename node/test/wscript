@@ -1,0 +1,19 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+top = "../.."
+
+def build(bld):
+  main = "test.main.cpp"
+  if bld.env['WITH_TESTS']:
+    bld(
+      source=bld.path.ant_glob(['**/*.cc', 
+                                '**/*.cpp',
+                                ]),
+      # source="node-impl.t.cpp",
+      target="../unit_tests", 
+      features="cxx cxxprogram",
+      # use="unit_tests_objects",
+      use="NDN_CXX nacapp-share nacapp-node",
+      includes = ["."]
+    )

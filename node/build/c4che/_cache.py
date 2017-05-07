@@ -16,9 +16,9 @@ CXX_SRC_F = []
 CXX_TGT_F = ['-c', '-o']
 DATADIR = '/usr/local/share'
 DATAROOTDIR = '/usr/local/share'
-DEFINES = ['ELPP_FEATURE_CRASH_LOG', 'HAVE_NDN_CXX=1']
+DEFINES = ['ELPP_FEATURE_CRASH_LOG', 'HAVE_NDN_CXX=1', 'WITH_TESTS=1']
 DEFINES_ST = '-D%s'
-DEFINE_COMMENTS = {'HAVE_NDN_CXX': ''}
+DEFINE_COMMENTS = {'HAVE_NDN_CXX': '', 'WITH_TESTS': ''}
 DEST_BINFMT = 'mac-o'
 DEST_CPU = 'x86_64'
 DEST_OS = 'darwin'
@@ -65,8 +65,9 @@ STLIBPATH_ST = '-L%s'
 STLIB_MARKER = []
 STLIB_ST = '-l%s'
 SYSCONFDIR = '/usr/local/etc'
+WITH_TESTS = 1
 cxxprogram_PATTERN = '%s'
 cxxshlib_PATTERN = 'lib%s.dylib'
 cxxstlib_PATTERN = 'lib%s.a'
-define_key = ['HAVE_NDN_CXX']
+define_key = ['HAVE_NDN_CXX', 'WITH_TESTS']
 macbundle_PATTERN = '%s.bundle'

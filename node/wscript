@@ -5,48 +5,7 @@ import os
 
 from waflib import Logs, Utils, Context
 
-top = "."
-out = "build"
-
-
-def options(opt):
-    opt.load(['compiler_cxx', 'gnu_dirs'])
-    opt.load(['default-compiler-flags', 
-              'compiler-features',
-              'dependency-checker'],
-             tooldir=['.waf-tools'])
-    
-    opt.add_option('--with-tests', 
-                    action='store_true', 
-                    default=False,
-                    dest='with_tests', 
-                    help='''Build unit tests''')
-
-
-
-def configure(conf):
-    print('→ configuring the project in ' + conf.path.abspath())
-
-    conf.load(['compiler_cxx', 'gnu_dirs',
-               'default-compiler-flags', 
-               'compiler-features',
-               'dependency-checker'])
-
-    conf.env.DEFINES = ["ELPP_FEATURE_CRASH_LOG"]
-
-    if sys.platform != 'win32':
-        conf.env.LIB = ["boost_system", "ndn-cxx"]
-        conf.env.LIBPATH = ["/usr/local/lib"]
-        conf.env.INCLUDES = ["/usr/local/include"]
-
-    conf.check_cfg(package='libndn-cxx', 
-                   args=['--cflags', '--libs'],
-                   uselib_store='NDN_CXX', mandatory=True)
-
-    if conf.options.with_tests:
-        conf.env['WITH_TESTS'] = 1
-        conf.define('WITH_TESTS', 1)
-
+top = ".."
 
 def build(bld):
 
@@ -56,19 +15,10 @@ def build(bld):
       features = "cxx",
       source=bld.path.ant_glob(['src/**/*.cc', 
                                 'src/**/*.cpp',
-                                '../shared/src/**/*.cpp'],
-                                excl=['src/main.cpp']),
-      use = "NDN_CXX",
-      includes = [".", "src"],
+                                ]),
+      use = "NDN_CXX nacapp-share",
+      includes = ["nacapp-share", "src"],
       export_includes='src'
     )
-
-    # bld(
-    #   source="src/main.cpp", 
-    #   features="cxx cxxprogram",
-    #   target="nacapp-node", 
-    #   use="nacapp-node",
-    #   includes = [".", "src"]
-    # )
-
-    # bld.recurse("tests")
+    if bld.env['WITH_TESTS']:
+        bld.recurse("test")

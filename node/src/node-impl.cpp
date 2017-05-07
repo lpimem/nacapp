@@ -5,7 +5,7 @@ namespace nacapp {
 void NodeImpl::serveForever() {
   LOG(DEBUG) << "start serving...";
   LOG(DEBUG) << m_handlers.size() << " interest handlers registered";
-  LOG(DEBUG) << m_commonValidators.size() << " interest validators registered";
+  LOG(DEBUG) << m_commonValidators.size() << " interest validators registered ";
   LOG(DEBUG) << m_commonProcessors.size() << " data processors registered";
   LOG(DEBUG) << "start registering prefixes";
   registerPrefixes();
@@ -101,6 +101,10 @@ void NodeImpl::onFailed(const Interest &interest, string reason) {
   data->setContent(reinterpret_cast<const uint8_t *>(reason.c_str()),
                    reason.length());
   sendData(interest, data);
+}
+
+void NodeImpl::sendData(const Interest &interest, shared_ptr<Data> data) {
+  m_face->put(*data);
 }
 
 vector<Name> NodeImpl::parseInterestName(const Interest &interest) {
