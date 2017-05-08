@@ -29,7 +29,7 @@ public:
   /**
    * add data
    */
-  void addIdentity(const Name &entity, const &Data data);
+  void addIdentity(const Name &entity, const Data &cert);
 
   /**
   * Returns a Data packet of SafeBag containing the private key and

@@ -21,3 +21,7 @@ def build(bld):
     )
     if bld.env['WITH_TESTS']:
         bld.recurse("test")
+
+
+def configure(ctx):
+  pass

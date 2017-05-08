@@ -1,11 +1,16 @@
-#ifndef KEYCHAIN_HPP
-#define KEYCHAIN_HPP
+#ifndef NACAPP_KEYCHAIN_HPP
+#define NACAPP_KEYCHAIN_HPP
 
-#include <ndn-cxx/security/key-chain.hpp>
+#include "common.hpp"
 
 namespace nacapp {
 // todo: read configuration file instead
-ndn::security::v2::KeyChain AppKeyChain("pib-memory", "tpm-memory");
+
+// shared_ptr<ndn::security::v2::KeyChain> createAppKeyChain() {
+//   return make_shared<ndn::security::v2::KeyChain>();
+// }
+
+extern KeyChain AppKeyChain;
 }
 
-#endif /* KEYCHAIN_HPP */
+#endif /* NACAPP_KEYCHAIN_HPP */

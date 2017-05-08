@@ -7,6 +7,9 @@ from waflib import Logs, Utils, Context
 
 top = ".."
 
+def configure(ctx):
+  pass
+
 def build(bld):
 
     bld(

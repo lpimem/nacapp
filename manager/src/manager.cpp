@@ -52,7 +52,7 @@ shared_ptr<GroupManager> Manager::createGroup(const Name &group,
 
 void Manager::deleteGroup(const Name &group, const Name &dataType) {
   string groupFullName = getGroupFullName(group, dataType);
-  m_groups.remove(groupFullName);
+  m_groups.erase(groupFullName);
 }
 
 /**

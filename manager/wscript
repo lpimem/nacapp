@@ -8,10 +8,14 @@ from waflib import Logs, Utils, Context
 top = ".."
 
 def configure(ctx):
-    ctx.env.MODULE_NAME = bld.path.abspath().split("/")[-1]
+    ctx.env.MODULE_NAME = ctx.path.abspath().split("/")[-1]
+    print("MODULE: %s" % ctx.env.MODULE_NAME)
+    ctx.check_cfg(package='ndn-group-encrypt', 
+                   args=['--cflags', '--libs'],
+                   uselib_store='NDN_NAC', mandatory=True)
 
 def build(bld):
-    module = ctx.env.MODULE_NAME
+    module = bld.env.MODULE_NAME
     objects = "nacapp-{module}-objects".format(**locals())
     main = "nacapp-{module}-main".format(**locals())
 
@@ -22,8 +26,8 @@ def build(bld):
       source=bld.path.ant_glob(['src/**/*.cc', 
                                 'src/**/*.cpp',
                                 ], excl=['src/main.cpp']),
-      use = "NDN_CXX nacapp-share",
-      includes = ["nacapp-share", "src"],
+      use = "NDN_CXX NDN_NAC nacapp-share nacapp-node",
+      includes = ["nacapp-share", "nacapp-node", "src"],
       export_includes='src'
     )
 

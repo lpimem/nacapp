@@ -1,7 +1,6 @@
 #ifndef SERVICE_HPP
 #define SERVICE_HPP
 
-#include "common.hpp"
 #include "manager.hpp"
 #include "validator/data_type_filter.hpp"
 

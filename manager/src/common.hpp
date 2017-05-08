@@ -10,6 +10,8 @@
 
 namespace nacapp {
 
+using ndn::security::v2::KeyChain;
+
 const string DB_PATH{"./manager-db"};
 
 } // nacapp

@@ -1,33 +1,34 @@
 #include "../../node/src/node.hpp"
-#include "common.hpp"
-#include "manager.hpp"
+
 #include "service.hpp"
 
 INITIALIZE_EASYLOGGINGPP
 
+std::shared_ptr<nacapp::Service> makeService(const std::string prefix,
+                                             std::shared_ptr<ndn::Face> f) {
+  return NULL;
+}
+
+void addRoutes(std::shared_ptr<nacapp::Node> node,
+               std::shared_ptr<nacapp::Service> service) {}
+
+std::shared_ptr<nacapp::Node> makeNode(const std::string prefix,
+                                       std::shared_ptr<ndn::Face> f) {
+  auto node = std::make_shared<nacapp::Node>(prefix, f);
+  auto service = makeService(prefix, f);
+  addRoutes(node, service);
+  return node;
+}
+
 /**
- * main function of manager application
- */
+* main function of manager application
+*/
 int main() {
   LOG(INFO) << ">>> START >>>";
   const std::string PREFIX = "/local-home";
   auto f = std::make_shared<ndn::Face>("127.0.0.1");
-  shared_ptr<nacapp::Node> node = makeNode(PREFIX);
+  std::shared_ptr<nacapp::Node> node = makeNode(PREFIX, f);
   node->serveForever();
   LOG(INFO) << "<<< EXIT <<<";
   return 0;
 }
-
-shared_ptr<nacapp::Node> makeNode(const std::string prefix,
-                                  shared_ptr<ndn::Face> f) {
-  auto node = make_shared<nacapp::Node>(prefix, f);
-  auto service = makeService(prefix, f);
-  addRoutes(ndoe, service);
-  return node;
-}
-
-shared_ptr<nacapp::Service> makeService(const std::string prefix,
-                                        shared_ptr<ndn::Face> f) {}
-
-void addRoutes(shared_ptr<nacapp::Node> node,
-               shared_ptr<nacapp::Service> service) {}

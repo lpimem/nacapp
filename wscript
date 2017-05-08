@@ -9,12 +9,16 @@ top = "."
 out = "build"
 
 
+def recurseCtx(ctx):
+    ctx.recurse("shared")
+    ctx.recurse("node")
+    ctx.recurse("manager")
+    # ctx.recurse("consumer")
+    # ctx.recurse("producer")
+
+
 def build(bld):
-    bld.recurse("shared")
-    bld.recurse("node")
-    # bld.recurse("manager")
-    # bld.recurse("consumer")
-    # bld.recurse("producer")
+    recurseCtx(bld)
 
 
 def options(opt):
@@ -40,7 +44,7 @@ def configure(conf):
                'dependency-checker'])
 
     conf.env.DEFINES = ["ELPP_FEATURE_CRASH_LOG"]
-    # conf.env.DEFINES = ["CATCH_CONFIG_FAST_COMPILE"]
+    conf.env.DEFINES = ["CATCH_CONFIG_FAST_COMPILE"]
 
     if sys.platform != 'win32':
         conf.env.LIB = ["boost_system", "ndn-cxx"]
@@ -56,6 +60,8 @@ def configure(conf):
     if conf.options.with_tests:
         conf.env['WITH_TESTS'] = 1
         conf.define('WITH_TESTS', 1)
+
+    recurseCtx(conf)
 
 
 

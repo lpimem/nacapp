@@ -1,7 +1,7 @@
-#define CATCH_CONFIG_MAIN
 #include "../../shared/test/catch.hpp"
 
 #include "../src/common.hpp"
+#include "../src/keychain.hpp"
 #include "../src/manager.hpp"
 
 namespace nacapp {
