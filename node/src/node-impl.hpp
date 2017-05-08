@@ -26,6 +26,7 @@ public:
 
   void onFailed(const Interest &interest, string reason);
 
+  // TODO : Should handle packet segmentation as Data packets have size limit.
   void sendData(const Interest &interest, shared_ptr<Data> data);
 
   void validate(const Name &path, const Interest &interest);

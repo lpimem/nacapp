@@ -2,6 +2,7 @@
 #define MANAGER_HPP
 
 #include "common.hpp"
+#include "named-schedule.hpp"
 
 namespace nacapp {
 
@@ -15,28 +16,11 @@ public:
 
 public:
   /**
-  * Manager creates Identity-key-certificate tuple for @p entity
-  * The created tuple is stored in PIB[1], and can be retrieved from
-  * keychain[2].
-  *
-  * [1]
-  * https://github.com/named-data/ndn-cxx/blob/master/src/security/pib/pib.hpp#L36
-  * [2]
-  * https://github.com/named-data/ndn-cxx/blob/master/src/security/v2/key-chain.hpp#L41
-  */
-  Identity addIdentity(const Name &entity);
-
-  /**
-   * add data
+   * add identity with given cert packet
    */
   void addIdentity(const Name &entity, const Data &cert);
 
-  /**
-  * Returns a Data packet of SafeBag containing the private key and
-  * certificate of an identity
-  * Data's name should be informat : <prefix>/IDENTITY/for/<entity-name>
-  */
-  Data getSafeBag(const Name &identity);
+  shared_ptr<Certificate> getIdentity(const Name &entity);
 
   /**
   * Delete certificate from local store. Should call revokeAccess for
@@ -52,6 +36,9 @@ public:
   *   - Create a schedule 7x24 with access if not exists
   *   - Add @p entity's certificate to schedule.
   */
+  void grantAccess(const Name &entity, const Name &dataType,
+                   const NamedInterval &schedule);
+
   void grantAccess(const Name &entity, const Name &dataType);
 
   /**
@@ -59,27 +46,45 @@ public:
   */
   void revokeAccess(const Name &entity, const Name &dataType);
 
+  /**
+   * @return the group manager of @p entity for @p dataType
+   */
+  shared_ptr<GroupManager> getGroup(const Name &entity, const Name &dataType);
+
 private:
-  shared_ptr<GroupManager> createGroup(const Name &group, const Name &dataType);
+  shared_ptr<GroupManager> createGroup(const Name &dataType);
 
-  void deleteGroup(const Name &group, const Name &dataType);
+  void deleteGroup(const Name &dataType);
 
-  void addGroupMember(const Name &group, const Name &dataType,
-                      const Name &entity);
+  void addGroupMember(const Name &dataType, const Name &identity,
+                      const string &scheduleName);
 
-  void removeGroupMember(const Name &group, const Name &dataType,
-                         const Name &entity);
+  void removeGroupMember(const Name &dataType, const Name &identity);
 
-  void createSchedule(shared_ptr<GroupManager> group);
+  /**
+   * Creates schedule for @p dataType only when no schedule is found for
+   * @p namedInterval.getName().
+   * @throws string error if no group for @p dataType could be found.
+   * @return schedule name
+   */
+  string createSchedule(const Name &dataType,
+                        const NamedInterval &namedInterval);
+
+  NamedInterval defaultSchedule(const Name &dataType);
 
   Certificate getEntityCert(const Name &entity);
 
   static string getGroupFullName(const Name &group, const Name &dataType);
 
 private:
+  void validateCertificate(const Name &name, shared_ptr<Certificate> cert);
+
+private:
   const Name m_prefix;
+  std::map<string, shared_ptr<Certificate>> m_identities;
   std::map<string, shared_ptr<Data>> m_dkey_cache;
   std::map<string, shared_ptr<GroupManager>> m_groups;
+  std::map<string, set<string>> m_group_schedules;
 };
 
 } // nacapp

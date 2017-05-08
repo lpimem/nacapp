@@ -2,6 +2,6 @@
 
 namespace nacapp {
 
-KeyChain AppKeyChain("pib-memory", "tpm-memory");
+KeyChain AppKeyChain;
 
 } // nacapp

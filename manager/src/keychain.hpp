@@ -6,10 +6,6 @@
 namespace nacapp {
 // todo: read configuration file instead
 
-// shared_ptr<ndn::security::v2::KeyChain> createAppKeyChain() {
-//   return make_shared<ndn::security::v2::KeyChain>();
-// }
-
 extern KeyChain AppKeyChain;
 }
 

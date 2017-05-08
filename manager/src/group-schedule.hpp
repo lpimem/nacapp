@@ -21,6 +21,7 @@ private:
   shared_ptr<GroupManager> m_group;
   shared_ptr<Schedule> m_schedule;
 };
+
 } // nacapp
 
 #endif /* GROUP_SCHEDULE_HPP */
