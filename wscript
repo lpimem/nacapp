@@ -16,6 +16,14 @@ def recurseCtx(ctx):
     # ctx.recurse("consumer")
     # ctx.recurse("producer")
 
+def test(ctx):
+    modules = ["node", "manager"]
+    base = ctx.path.abspath()
+
+    ctx.exec_command("rm {base}/manager-db".format(**locals()))
+    for m in modules:
+        ctx.exec_command("{base}/build/{m}/unit_tests".format(**locals()))
+
 
 def build(bld):
     recurseCtx(bld)

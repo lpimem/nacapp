@@ -30,6 +30,9 @@ TEST_CASE("Manager") {
   SECTION("addIdentity") {
     Data certData(cert);
     fixture.m.addIdentity(entity, certData);
+    bool idexist = AppKeyChain.getPib().getIdentities().find(entity) !=
+                   AppKeyChain.getPib().getIdentities().end();
+    REQUIRE(idexist);
     shared_ptr<Certificate> got = fixture.m.getIdentity(entity);
     REQUIRE(bool(got));
     REQUIRE(got->getName() == cert.getName());
@@ -62,7 +65,15 @@ TEST_CASE("Manager") {
     REQUIRE(result.size() > 0);
   }
 
-  SECTION("revokeAccess") {}
+  SECTION("revokeAccess") {
+    fixture.m.addIdentity(entity, cert);
+    CHECK_NOTHROW(fixture.m.grantAccess(entity, dataType));
+    shared_ptr<GroupManager> group = fixture.m.getGroup(dataType);
+    REQUIRE(bool(group));
+    CHECK_NOTHROW(fixture.m.revokeAccess(entity, dataType));
+    group = fixture.m.getGroup(dataType);
+    REQUIRE(!bool(group))
+  }
 }
 
 } // tests

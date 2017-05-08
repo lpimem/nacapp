@@ -99,8 +99,9 @@ void Manager::addGroupMember(const Name &dataType, const Name &identity,
                              const string &scheduleName) {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
   Certificate cert = getEntityCert(identity);
-  LOG(DEBUG) << "granting access for cert " << cert.getFullName().toUri();
+  LOG(DEBUG) << "granting access for cert [1] " << cert.getFullName().toUri();
   groupManager->addMember(scheduleName, cert);
+  LOG(DEBUG) << "granting access for cert [2] " << cert.getFullName().toUri();
 }
 
 void Manager::removeGroupMember(const Name &dataType, const Name &identity) {
