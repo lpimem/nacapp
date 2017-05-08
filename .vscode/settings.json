@@ -61,6 +61,7 @@
     "list": "cpp",
     "queue": "cpp",
     "stack": "cpp",
-    "wscript": "python"
+    "wscript": "python",
+    "__functional_base": "cpp"
   }
 }

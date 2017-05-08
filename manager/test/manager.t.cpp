@@ -25,6 +25,8 @@ TEST_CASE("Manager") {
   auto key = ident.getDefaultKey();
   Certificate cert = key.getDefaultCertificate();
 
+  Name dataType("health");
+
   SECTION("addIdentity") {
     Data certData(cert);
     fixture.m.addIdentity(entity, certData);
@@ -43,7 +45,22 @@ TEST_CASE("Manager") {
     REQUIRE(!bool(got));
   }
 
-  SECTION("grantAccess") {}
+  SECTION("grantAccess") {
+    // Block dataBlock = cert.wireEncode();
+    // Data certData(dataBlock);
+    // Name certName(entity);
+    // certName.append("KEY").append("ksk-123").append("ID-CERT").append("123");
+    // LOG(INFO) << certName.toUri();
+    // certData.setName(certName);
+
+    fixture.m.addIdentity(entity, cert);
+    CHECK_NOTHROW(fixture.m.grantAccess(entity, dataType));
+    shared_ptr<GroupManager> group = fixture.m.getGroup(dataType);
+    REQUIRE(bool(group));
+    ndn::gep::TimeStamp tp1(boost::posix_time::second_clock::local_time());
+    std::list<Data> result = group->getGroupKey(tp1);
+    REQUIRE(result.size() > 0);
+  }
 
   SECTION("revokeAccess") {}
 }

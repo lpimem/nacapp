@@ -39,14 +39,7 @@ void Manager::removeIdentity(const Name &identity) {
   m_identities.erase(identity.toUri());
 }
 
-void Manager::grantAccess(const Name &entity, const Name &dataType,
-                          const NamedInterval &namedInterval) {
-  string schedule = namedInterval.getName().toUri();
-  schedule = createSchedule(dataType, namedInterval);
-  addGroupMember(dataType, entity, schedule);
-}
-
-NamedInterval defaultSchedule(const Name &dataType) {
+NamedInterval Manager::defaultSchedule(const Name &dataType) {
   ptime now = second_clock::local_time();
   ptime future(now + years(1));
   auto days = (future.date() - now.date()).days();
@@ -61,12 +54,18 @@ void Manager::grantAccess(const Name &entity, const Name &dataType) {
   grantAccess(entity, dataType, namedInterval);
 }
 
+void Manager::grantAccess(const Name &entity, const Name &dataType,
+                          const NamedInterval &namedInterval) {
+  shared_ptr<GroupManager> groupManager = createGroup(dataType);
+  string schedule = createSchedule(groupManager, namedInterval);
+  addGroupMember(dataType, entity, schedule);
+}
+
 void Manager::revokeAccess(const Name &entity, const Name &dataType) {
   removeGroupMember(dataType, entity);
 }
 
-shared_ptr<GroupManager> Manager::getGroup(const Name &entity,
-                                           const Name &dataType) {
+shared_ptr<GroupManager> Manager::getGroup(const Name &dataType) {
   const string groupFullName = getGroupFullName(m_prefix, dataType);
   if (m_groups.find(groupFullName) == m_groups.end()) {
     return NULL;
@@ -77,11 +76,13 @@ shared_ptr<GroupManager> Manager::getGroup(const Name &entity,
 shared_ptr<GroupManager> Manager::createGroup(const Name &dataType) {
   string groupFullName = getGroupFullName(m_prefix, dataType);
   if (m_groups.find(groupFullName) != m_groups.end()) {
+    LOG(DEBUG) << groupFullName << "already created";
     return m_groups[groupFullName];
   }
   auto groupManager =
       make_shared<GroupManager>(groupFullName, dataType, DB_PATH, 1024, 1);
   m_groups[groupFullName] = groupManager;
+  LOG(DEBUG) << groupFullName << " created";
   return groupManager;
 }
 
@@ -91,9 +92,6 @@ void Manager::deleteGroup(const Name &dataType) {
 }
 
 /**
- * TODO: wrong if identity wasn't authenticated.
- *        cant't find API in keyring.
- *        app need to manage this information?
  * Note: interest handler should parse dataType and chech if it should be
  * allowed to proceed.
  */
@@ -101,6 +99,7 @@ void Manager::addGroupMember(const Name &dataType, const Name &identity,
                              const string &scheduleName) {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
   Certificate cert = getEntityCert(identity);
+  LOG(DEBUG) << "granting access for cert " << cert.getFullName().toUri();
   groupManager->addMember(scheduleName, cert);
 }
 
@@ -110,15 +109,10 @@ void Manager::removeGroupMember(const Name &dataType, const Name &identity) {
   groupManager->removeMember(identity);
 }
 
-string Manager::createSchedule(const Name &dataType,
+string Manager::createSchedule(shared_ptr<GroupManager> group,
                                const NamedInterval &namedInterval) {
-  const string dataTypeStr = dataType.toUri();
-  if (m_groups.find(dataTypeStr) == m_groups.end()) {
-    throw "no matching group.";
-  }
   const string iname = namedInterval.getName().toUri();
   if (m_group_schedules.find(iname) == m_group_schedules.end()) {
-    shared_ptr<GroupManager> group = m_groups[dataTypeStr];
     Schedule schedule;
     schedule.addWhiteInterval(namedInterval.getInterval());
     group->addSchedule(iname, schedule);

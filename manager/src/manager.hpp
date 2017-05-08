@@ -49,7 +49,7 @@ public:
   /**
    * @return the group manager of @p entity for @p dataType
    */
-  shared_ptr<GroupManager> getGroup(const Name &entity, const Name &dataType);
+  shared_ptr<GroupManager> getGroup(const Name &dataType);
 
 private:
   shared_ptr<GroupManager> createGroup(const Name &dataType);
@@ -67,7 +67,7 @@ private:
    * @throws string error if no group for @p dataType could be found.
    * @return schedule name
    */
-  string createSchedule(const Name &dataType,
+  string createSchedule(shared_ptr<GroupManager> group,
                         const NamedInterval &namedInterval);
 
   NamedInterval defaultSchedule(const Name &dataType);
