@@ -2,11 +2,14 @@
 #define NACAPP_KEYCHAIN_HPP
 
 #include "common.hpp"
+#include "ndn-cxx/security/key-params.hpp"
 
 namespace nacapp {
 // todo: read configuration file instead
 
 extern KeyChain AppKeyChain;
+
+extern const ndn::KeyParams &getDefaultKeyParams();
 }
 
 #endif /* NACAPP_KEYCHAIN_HPP */

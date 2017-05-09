@@ -1,6 +1,8 @@
 #ifndef MANAGER_HPP
 #define MANAGER_HPP
 
+#include "ndn-cxx/security/key-params.hpp"
+
 #include "common.hpp"
 #include "named-schedule.hpp"
 
@@ -51,6 +53,11 @@ public:
    */
   shared_ptr<GroupManager> getGroup(const Name &dataType);
 
+  shared_ptr<Data> getEKey(const Name &dataType, const TimeStamp &timeslot);
+
+  shared_ptr<Data> getDKey(const Name &dataType, const Name &entity,
+                           const TimeStamp &timeslot);
+
 private:
   shared_ptr<GroupManager> createGroup(const Name &dataType);
 
@@ -75,6 +82,8 @@ private:
   Certificate getEntityCert(const Name &entity);
 
   static string getGroupFullName(const Name &group, const Name &dataType);
+
+  Name extractCertName(const Name &dkey) const;
 
 private:
   void validateCertificate(const Name &name, shared_ptr<Certificate> cert);

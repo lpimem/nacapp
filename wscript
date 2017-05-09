@@ -22,7 +22,10 @@ def test(ctx):
 
     ctx.exec_command("rm {base}/manager-db".format(**locals()))
     for m in modules:
+        print("- " * 4 + "Test: " + m + " -" * 4)
         ctx.exec_command("{base}/build/{m}/unit_tests".format(**locals()))
+        print("")
+        print("")
 
 
 def build(bld):

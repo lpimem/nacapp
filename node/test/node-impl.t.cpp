@@ -10,18 +10,21 @@ namespace test {
 
 using ndn::security::v2::KeyChain;
 
+const ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RSA_KEY_PARAMS;
 shared_ptr<KeyChain> initKeyChain(const Name &prefix) {
   auto kc = make_shared<KeyChain>();
-  kc->createIdentity(prefix);
+  kc->createIdentity(prefix, RSA_KEY_PARAMS);
   return kc;
 }
 
 class NodeImplTestFixture {
 
 public:
+  NodeImplTestFixture() { keyChain->setDefaultIdentity(id); }
   Name prefix{"/PREFIX"};
   shared_ptr<Face> face = make_shared<Face>("localhost");
   shared_ptr<KeyChain> keyChain = initKeyChain(prefix);
+  Identity id = keyChain->createIdentity(prefix, RSA_KEY_PARAMS);
   NodeImpl impl{prefix, face};
 };
 

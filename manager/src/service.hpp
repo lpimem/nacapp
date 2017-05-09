@@ -26,7 +26,9 @@ public:
 public:
   /* ********** Group Cryptography Handlers ********** */
 
-  // <prefix>/READ/<data-type>/E-Key/<start>/<end>
+  // <prefix>/READ/<data-type>/E-Key/for/<user>/<start>/<end>
+  // Path : /READ/<data-type>/E-Key/for
+  // Args : /<user>/<timestamp>
   void onGetEKey(const Interest &interest, const Name args,
                  shared_ptr<Data> data);
 
@@ -38,7 +40,10 @@ public:
 
   // <prefix>/IDENTITY/for/<entity-name>
   /**
-  Interest must be signed by a trusted key, which
+
+  Serve the certificate for an identity signed by the manager.
+
+  Interest should be signed by a trusted key, which
   should be the same with the one used to generate
   the identity.
 

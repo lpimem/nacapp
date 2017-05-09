@@ -80,7 +80,8 @@ shared_ptr<GroupManager> Manager::createGroup(const Name &dataType) {
     return m_groups[groupFullName];
   }
   auto groupManager =
-      make_shared<GroupManager>(groupFullName, dataType, DB_PATH, 1024, 1);
+      make_shared<GroupManager>(groupFullName, dataType, DB_PATH,
+                                DEFAULT_RSA_KEY_SIZE, DEFAULT_KEY_FRESH_PERIOD);
   m_groups[groupFullName] = groupManager;
   LOG(DEBUG) << groupFullName << " created";
   return groupManager;
@@ -122,8 +123,37 @@ string Manager::createSchedule(shared_ptr<GroupManager> group,
 }
 
 Certificate Manager::getEntityCert(const Name &entity) {
-  Identity id = AppKeyChain.createIdentity(entity);
+  Identity id = AppKeyChain.createIdentity(entity, getDefaultKeyParams());
   return id.getDefaultKey().getDefaultCertificate();
+}
+
+// TODO : may be incorrect. need test.
+Name Manager::extractCertName(const Name &dkey) const {
+  return Name{dkey.getSubName(m_prefix.size() + 6)};
+}
+
+shared_ptr<Data> Manager::getEKey(const Name &dataType,
+                                  const TimeStamp &timeslot) {
+  shared_ptr<GroupManager> group = getGroup(dataType);
+  std::list<Data> keys = group->getGroupKey(timeslot);
+  std::list<Data>::iterator dataIterator = keys.begin();
+  Data ekey = *dataIterator;
+  // TODO : move to a separate thread
+  for (dataIterator++; dataIterator != keys.end(); dataIterator++) {
+    Data dkey = *dataIterator;
+    Name identityCert = extractCertName(dkey.getName());
+    m_dkey_cache[identityCert.toUri()] = make_shared<Data>(dkey);
+  }
+  return make_shared<Data>(ekey);
+}
+
+shared_ptr<Data> Manager::getDKey(const Name &dataType, const Name &entity,
+                                  const TimeStamp &timeslot) {
+  const string name = entity.toUri();
+  if (m_dkey_cache.find(name) == m_dkey_cache.end()) {
+    getEKey(dataType, timeslot);
+  }
+  return m_dkey_cache[name];
 }
 
 } // nacapp
