@@ -1,12 +1,17 @@
 #ifndef NODE_IMPL_HPP
 #define NODE_IMPL_HPP
 
+#include <ndn-cxx/lp/nack.hpp>
+
 #include "common.hpp"
 #include "handlers.hpp"
+#include "../../shared/src/ndn-util.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
-class NodeImpl {
+class NodeImpl
+{
 
 public:
   NodeImpl(Name prefix, shared_ptr<Face> f) : m_prefix(prefix), m_face(f) {}
@@ -38,6 +43,8 @@ public:
 
   shared_ptr<Data> handleInterest(const Interest &interest,
                                   vector<Name> parsedParts);
+
+  void showInterest(const Interest &interest, DataReceiver proc);
 
 private:
   Name m_prefix;

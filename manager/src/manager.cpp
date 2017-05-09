@@ -43,7 +43,7 @@ NamedInterval Manager::defaultSchedule(const Name &dataType) {
   ptime now = second_clock::local_time();
   ptime future(now + years(1));
   auto days = (future.date() - now.date()).days();
-  RepetitiveInterval oneYearFromNow(now, future, 0, 24, days,
+  RepetitiveInterval oneYearFromNow(now, future, 0, 24, 1,
                                     RepetitiveInterval::RepeatUnit::DAY);
   NamedInterval ni(SCHEDULE_NAME_EVERY_DAY, oneYearFromNow);
   return ni;
@@ -80,7 +80,7 @@ shared_ptr<GroupManager> Manager::createGroup(const Name &dataType) {
     return m_groups[groupFullName];
   }
   auto groupManager =
-      make_shared<GroupManager>(groupFullName, dataType, DB_PATH,
+      make_shared<GroupManager>(m_prefix, dataType, DB_PATH,
                                 DEFAULT_RSA_KEY_SIZE, DEFAULT_KEY_FRESH_PERIOD);
   m_groups[groupFullName] = groupManager;
   LOG(DEBUG) << groupFullName << " created";

@@ -4,20 +4,24 @@
 #include "../../shared/test/catch.hpp"
 #include "../src/node-impl.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
-namespace test {
+namespace test
+{
 
 using ndn::security::v2::KeyChain;
 
 const ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RSA_KEY_PARAMS;
-shared_ptr<KeyChain> initKeyChain(const Name &prefix) {
+shared_ptr<KeyChain> initKeyChain(const Name &prefix)
+{
   auto kc = make_shared<KeyChain>();
   kc->createIdentity(prefix, RSA_KEY_PARAMS);
   return kc;
 }
 
-class NodeImplTestFixture {
+class NodeImplTestFixture
+{
 
 public:
   NodeImplTestFixture() { keyChain->setDefaultIdentity(id); }
@@ -28,15 +32,17 @@ public:
   NodeImpl impl{prefix, face};
 };
 
-TEST_CASE("NodeImple::route") {
+TEST_CASE("NodeImple::route")
+{
   NodeImplTestFixture fixture;
   const Name reqPath("/PATH/TO/SERVICE");
   const Name reqArgs("/ARG1/ARG2/ARG3");
 
-  SECTION("serve local") {
+  SECTION("serve local")
+  {
     fixture.impl.route(
         reqPath.toUri(),
-        [](const Interest &interest, const Name &args, shared_ptr<Data> data) {
+        [](const Interest &interest, const Name &args, shared_ptr<Data> data, InterestShower showInterest) {
           uint8_t resp[] = {1};
           size_t leng = 1;
           data->setContent(resp, leng);
@@ -76,7 +82,8 @@ TEST_CASE("NodeImple::route") {
   }
 }
 
-TEST_CASE("NodeImple::parseInterestName") {
+TEST_CASE("NodeImple::parseInterestName")
+{
 
   NodeImplTestFixture fixture;
 
@@ -85,10 +92,11 @@ TEST_CASE("NodeImple::parseInterestName") {
 
   fixture.impl.route(
       reqPath.toUri(),
-      [](const Interest &interest, const Name &args, shared_ptr<Data> data) {},
+      [](const Interest &interest, const Name &args, shared_ptr<Data> data, InterestShower show) {},
       {}, {});
 
-  SECTION("parse correct interest name ") {
+  SECTION("parse correct interest name ")
+  {
     Name req(fixture.prefix);
     req.append(reqPath);
     req.append(reqArgs);

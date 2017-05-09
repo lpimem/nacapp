@@ -1,9 +1,10 @@
+#include <ndn-cxx/util/string-helper.hpp>
+
 #include "../../shared/test/catch.hpp"
 
 #include "../src/common.hpp"
 #include "../src/keychain.hpp"
 #include "../src/manager.hpp"
-#include "ndn-cxx/util/string-helper.hpp"
 
 namespace nacapp {
 namespace tests {

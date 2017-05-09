@@ -1,6 +1,8 @@
 #ifndef SERVICE_HPP
 #define SERVICE_HPP
 
+#include <ndn-cxx/key-locator.hpp>
+
 #include "manager.hpp"
 #include "validator/data_type_filter.hpp"
 
@@ -26,13 +28,15 @@ public:
 public:
   /* ********** Group Cryptography Handlers ********** */
 
-  // <prefix>/READ/<data-type>/E-Key/for/<user>/<start>/<end>
+  // <prefix>/READ/<data-type>/E-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
   void onGetEKey(const Interest &interest, const Name args,
                  shared_ptr<Data> data);
 
-  // <prefix>/READ/<data-type>/D-Key/<start>/<end>
+  // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
+  // Path : /READ/<data-type>/D-Key/for
+  // Args : /<user>/<timestamp>
   void onGetDKey(const Interest &interest, const Name args,
                  shared_ptr<Data> data);
 
@@ -46,9 +50,12 @@ public:
   Interest should be signed by a trusted key, which
   should be the same with the one used to generate
   the identity.
-
   For example:
     sign-key = HASH(<short-passwd>, <entity-name>, nonce)
+
+  Path: /IDENTITY/for
+  Args: <entity-name>
+
   */
   void onGetIdentityKey(const Interest &interest, const Name args,
                         shared_ptr<Data> data);
@@ -60,6 +67,9 @@ public:
   Interest must be signed by a trusted key.
   The trusted key should differ among entities.
   Manager should remember this key at least until the identity's key is served.
+
+  Path: /MANAGEMENT/identity/add
+  Args: <identity-name>
   */
   void onAddIdentity(const Interest &interest, const Name args,
                      shared_ptr<Data> data);

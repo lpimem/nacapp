@@ -16,6 +16,7 @@ def recurseCtx(ctx):
     # ctx.recurse("consumer")
     # ctx.recurse("producer")
 
+
 def test(ctx):
     modules = ["node", "manager"]
     base = ctx.path.abspath()
@@ -73,6 +74,3 @@ def configure(conf):
         conf.define('WITH_TESTS', 1)
 
     recurseCtx(conf)
-
-
-

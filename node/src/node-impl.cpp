@@ -1,8 +1,10 @@
 #include "node-impl.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
-void NodeImpl::serveForever() {
+void NodeImpl::serveForever()
+{
   LOG(DEBUG) << "start serving...";
   LOG(DEBUG) << m_handlers.size() << " interest handlers registered";
   LOG(DEBUG) << m_commonValidators.size() << " interest validators registered ";
@@ -16,17 +18,21 @@ void NodeImpl::serveForever() {
 
 void NodeImpl::route(string path, InterestHandler handler,
                      vector<InterestValidator> validators,
-                     vector<DataProcessor> processors) {
+                     vector<DataProcessor> processors)
+{
   m_handlers[path] = handler;
-  if (validators.size() > 0) {
+  if (validators.size() > 0)
+  {
     m_validators[path] = validators;
   }
-  if (processors.size() > 0) {
+  if (processors.size() > 0)
+  {
     m_processors[path] = processors;
   }
 }
 
-void NodeImpl::registerPrefixes() {
+void NodeImpl::registerPrefixes()
+{
   m_face->setInterestFilter(
       m_prefix, bind(&NodeImpl::onInterest, this, _1, _2),
       ndn::RegisterPrefixSuccessCallback(),
@@ -34,101 +40,160 @@ void NodeImpl::registerPrefixes() {
 }
 
 void NodeImpl::onRegisterPrefixFailed(const Name &prefix,
-                                      const std::string &reason) {
+                                      const std::string &reason)
+{
   LOG(ERROR) << "cannot register prefix[" << prefix.toUri() << "]: " << reason;
   throw std::runtime_error("prefix registeration error");
 }
 
-void NodeImpl::onInterest(const Name &filter, const Interest &interest) {
-  try {
+void NodeImpl::showInterest(const Interest &interest, DataReceiver proc)
+{
+  m_face->expressInterest(interest,
+                          // on satisfied
+                          [&](const Interest &i, const Data &d) {
+                            proc(d);
+                          },
+                          // on NACK
+                          [&](const Interest &i, const ndn::lp::Nack &n) {
+                            LOG(ERROR) << i.toUri() << ": " << n.getReason();
+                            const string reason = "network error";
+                            Data d;
+                            d.setName(i.getName());
+                            d.setContentType(ndn::tlv::ContentType_Nack);
+                            data::setStringContent(d, reason);
+                            auto dataPtr = make_shared<Data>(d);
+                            for (DataProcessor processor : m_commonProcessors)
+                            {
+                              processor(dataPtr);
+                            }
+                            proc(d);
+                          },
+                          // on timeout
+                          [&](const Interest &i) {
+                            LOG(ERROR) << i.toUri() << ": TIMEOUT";
+                            const string reason = "interest timeout";
+                            Data d;
+                            d.setName(i.getName());
+                            d.setContentType(ndn::tlv::ContentType_Nack);
+                            data::setStringContent(d, reason);
+                            auto dataPtr = make_shared<Data>(d);
+                            for (DataProcessor processor : m_commonProcessors)
+                            {
+                              processor(dataPtr);
+                            }
+                            proc(d);
+                          });
+}
+
+void NodeImpl::onInterest(const Name &filter, const Interest &interest)
+{
+  try
+  {
     LOG(DEBUG) << "In: " << interest.toUri();
     vector<Name> parts = parseInterestName(interest);
     shared_ptr<Data> data = handleInterest(interest, parts);
-  } catch (string e) {
+  }
+  catch (string e)
+  {
     LOG(ERROR) << "Error handling " << interest.toUri() << ": " << e;
     onFailed(interest, e);
     return;
   }
 }
 
-void NodeImpl::validate(const Name &path, const Interest &interest) {
-  for (InterestValidator validator : m_commonValidators) {
+void NodeImpl::validate(const Name &path, const Interest &interest)
+{
+  for (InterestValidator validator : m_commonValidators)
+  {
     validator(interest);
   }
-  if (m_validators.find(path) != m_validators.end()) {
-    for (InterestValidator validator : m_validators[path]) {
+  if (m_validators.find(path) != m_validators.end())
+  {
+    for (InterestValidator validator : m_validators[path])
+    {
       validator(interest);
     }
   }
 }
 
 void NodeImpl::process(const Name &path, const Interest &interest,
-                       shared_ptr<Data> data) {
-  for (DataProcessor processor : m_commonProcessors) {
+                       shared_ptr<Data> data)
+{
+  for (DataProcessor processor : m_commonProcessors)
+  {
     processor(data);
   }
-  if (m_processors.find(path) != m_processors.end()) {
-    for (DataProcessor processor : m_processors[path]) {
+  if (m_processors.find(path) != m_processors.end())
+  {
+    for (DataProcessor processor : m_processors[path])
+    {
       processor(data);
     }
   }
 }
 
 shared_ptr<Data> NodeImpl::handleInterest(const Interest &interest,
-                                          vector<Name> parsedParts) {
-
+                                          vector<Name> parsedParts)
+{
   Name prefix = parsedParts[0];
   Name path = parsedParts[1];
   Name args = parsedParts[2];
 
   validate(path, interest);
 
-  if (m_handlers.find(path) == m_handlers.end()) {
+  if (m_handlers.find(path) == m_handlers.end())
+  {
     throw "Cannot find handler for interest: " + interest.getName().toUri();
   }
   InterestHandler handler = m_handlers[path];
   auto data = make_shared<Data>();
-  handler(interest, args, data);
-
+  InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
+  handler(interest, args, data, show);
   process(path, interest, data);
-
   return data;
 }
 
-void NodeImpl::onFailed(const Interest &interest, string reason) {
+void NodeImpl::onFailed(const Interest &interest, string reason)
+{
   auto data = make_shared<Data>();
   data->setContentType(ndn::tlv::ContentType_Nack);
-  data->setContent(reinterpret_cast<const uint8_t *>(reason.c_str()),
-                   reason.length());
+  data::setStringContent(*data, reason);
+  // process()
   sendData(interest, data);
 }
 
-void NodeImpl::sendData(const Interest &interest, shared_ptr<Data> data) {
+void NodeImpl::sendData(const Interest &interest, shared_ptr<Data> data)
+{
   m_face->put(*data);
 }
 
-vector<Name> NodeImpl::parseInterestName(const Interest &interest) {
+vector<Name> NodeImpl::parseInterestName(const Interest &interest)
+{
   vector<Name> v;
   size_t offset = m_prefix.size();
   const Name iname = interest.getName();
   Name prefix = iname.getPrefix(offset);
-  if (prefix != m_prefix) {
+  if (prefix != m_prefix)
+  {
     throw "prefix does not match";
   }
   v.push_back(prefix);
 
   bool found = false;
-  for (auto entry : m_handlers) {
+  for (auto entry : m_handlers)
+  {
     Name p = entry.first;
     Name path = iname.getSubName(offset, p.size());
-    if (p == path) {
+    if (p == path)
+    {
       found = true;
       offset += p.size();
       v.push_back(path);
       break;
     }
   }
-  if (!found) {
+  if (!found)
+  {
     throw "no matching handler found";
   }
 
@@ -144,4 +209,5 @@ vector<Name> NodeImpl::parseInterestName(const Interest &interest) {
 
   return v;
 }
+
 } // nacapp
