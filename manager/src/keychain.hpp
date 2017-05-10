@@ -4,8 +4,8 @@
 #include "common.hpp"
 #include "ndn-cxx/security/key-params.hpp"
 
-namespace nacapp {
-// todo: read configuration file instead
+namespace nacapp
+{
 
 extern KeyChain AppKeyChain;
 

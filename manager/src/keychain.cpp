@@ -4,16 +4,13 @@
 namespace nacapp
 {
 
-// KeyChain AppKeyChain{"pib-memory", "tpm-memory"};
 KeyChain AppKeyChain;
 
 typedef ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RsaKeyParams;
 
 const ndn::KeyParams &getDefaultKeyParams()
 {
-  static RsaKeyParams keyParams;
-  // LOG(DEBUG) << "Key Type: " << keyParams.getKeyType();
-  // LOG(DEBUG) << "Key Size: " << keyParams.getKeySize();
+  static RsaKeyParams keyParams(DEFAULT_RSA_KEY_SIZE, ndn::KeyIdType::SHA256);
   return keyParams;
 }
 

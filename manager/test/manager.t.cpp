@@ -23,13 +23,7 @@ public:
         manager(PREFIX, KEY_SIZE)
   {
     ndn::RsaKeyParams keyParams(KEY_SIZE, ndn::KeyIdType::SHA256);
-    // ndn::RsaKeyParams keyParams;
-
-    // LOG(DEBUG) << keyParams.getKeyType();
-    // LOG(DEBUG) << keyParams.getKeySize();
     Identity id = AppKeyChain.createIdentity(prefix, keyParams);
-    // const ndn::KeyParams keyParams = getDefaultKeyParams();
-    // Identity id = AppKeyChain.createIdentity(prefix, keyParams);
     AppKeyChain.setDefaultIdentity(id);
     m_ident = AppKeyChain.createIdentity(entity, keyParams);
     auto key = m_ident.getDefaultKey();
@@ -74,9 +68,6 @@ TEST_CASE_METHOD(ManagerTestFixture, "Manager - removeIdentity")
 
 TEST_CASE_METHOD(ManagerTestFixture, "Manager - grantAccess")
 {
-  // string certHex = ndn::toHex(*getCert().getContent().getBuffer());
-  // LOG(DEBUG) << certHex;
-  // LOG(DEBUG) << "key size: " << getCert().getPublicKey().size() * 8;
   manager.addIdentity(entity, getCert());
   CHECK_NOTHROW(manager.grantAccess(entity, dataType));
   shared_ptr<GroupManager> group = manager.getGroup(dataType);

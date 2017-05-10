@@ -13,7 +13,7 @@ using ndn::gep::Schedule;
 using ndn::gep::RepetitiveInterval;
 using ndn::gep::TimeStamp;
 
-const string SCHEDULE_NAME_EVERY_DAY{"everyday"};
+const std::string SCHEDULE_NAME_EVERY_DAY{"everyday"};
 
 } // nacapp
 #endif
