@@ -5,8 +5,10 @@
 
 #include "manager.hpp"
 #include "validator/data_type_filter.hpp"
+#include "../../node/src/handlers.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
 /**
  * NDN Service endpoint
@@ -20,7 +22,8 @@ namespace nacapp {
  *          SERVICE
  * args   = (\/[^\s\/]+)+
  */
-class Service {
+class Service
+{
 
 public:
   Service(const Name &prefix) : m_prefix(prefix), m_manager(prefix) {}
@@ -32,13 +35,13 @@ public:
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
   void onGetEKey(const Interest &interest, const Name args,
-                 shared_ptr<Data> data);
+                 shared_ptr<Data> data, InterestShower show);
 
   // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/D-Key/for
   // Args : /<user>/<timestamp>
   void onGetDKey(const Interest &interest, const Name args,
-                 shared_ptr<Data> data);
+                 shared_ptr<Data> data, InterestShower show);
 
   /* ********** Identity Hanlders ********** */
 
@@ -58,12 +61,14 @@ public:
 
   */
   void onGetIdentityKey(const Interest &interest, const Name args,
-                        shared_ptr<Data> data);
+                        shared_ptr<Data> data, InterestShower show);
 
   /* ********** Management Hanlders ********** */
 
-  // <prefix>/MANAGEMENT/identity/add/<identity-name>
-  /**
+  /** <prefix>/MANAGEMENT/identity/add/<identity-name>
+
+  Manager should sign an identity's key.
+  
   Interest must be signed by a trusted key.
   The trusted key should differ among entities.
   Manager should remember this key at least until the identity's key is served.
@@ -72,11 +77,11 @@ public:
   Args: <identity-name>
   */
   void onAddIdentity(const Interest &interest, const Name args,
-                     shared_ptr<Data> data);
+                     shared_ptr<Data> data, InterestShower show);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
   void onRemoveIdentity(const Interest &interest, const Name args,
-                        shared_ptr<Data> data);
+                        shared_ptr<Data> data, InterestShower show);
 
   // <prefix>/MANAGEMENT/access/grant/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
   // path: /MANAGEMENT/access/grant
@@ -87,15 +92,20 @@ public:
   //       /start
 
   void onGrantFixed(const Interest &interest, const Name args,
-                    shared_ptr<Data> data);
+                    shared_ptr<Data> data, InterestShower show);
 
   // <prefix>/MANAGEMENT/access/revoke/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
   void onRevoke(const Interest &interest, const Name args,
-                shared_ptr<Data> data);
+                shared_ptr<Data> data, InterestShower show);
 
 private:
   void grant(const Name identity, const Name dataType, string start, string end,
              string interval);
+
+private:
+  Buffer parseIdentityPubKey(const Data &key);
+  Certificate signPubkey(const Buffer &key);
+  void authenticateAddIdentityInterest(const Interest &interest, const Name args);
 
 private:
   const Name &m_prefix;

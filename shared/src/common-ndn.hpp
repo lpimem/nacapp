@@ -6,10 +6,13 @@
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/util/signal.hpp>
 
-namespace nacapp {
+namespace nacapp
+{
 
 using ndn::Interest;
 using ndn::Data;
+using ndn::Buffer;
+using ndn::Block;
 using ndn::Name;
 using ndn::Exclude;
 using ndn::Block;

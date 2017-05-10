@@ -3,21 +3,15 @@
 
 #include "common.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
-namespace data {
+namespace data
+{
 
-string getAsString(const Data &data) {
-  const uint8_t *bytes = data.getContent().value();
-  const int len = data.getContent().value_size();
-  std::string s(reinterpret_cast<char const *>(bytes), len);
-  return s;
-}
+extern string getAsString(const Data &data);
 
-PublicKey getAsPublicKey(const Data &data) {
-  PublicKey key(data.getContent().value(), data.getContent().value_size());
-  return key;
-}
+extern PublicKey getAsPublicKey(const Data &data);
 
 } // data
 } // nacapp

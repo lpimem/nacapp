@@ -14,8 +14,8 @@ using InterestValidator = void (*)(const Interest &);
 using DataProcessor = void (*)(shared_ptr<Data>);
 
 // Process received data
-using DataReceiver = void (*)(const Data &);
-// typedef std::function<void(const Data &)> DataReceiver;
+// using DataReceiver = void (*)(const Data &);
+using DataReceiver = std::function<void(const Data &)>;
 
 // express an interest. Data parameter for @p DataReceiver may be an application Nack.
 // using InterestShower = void (*)(void(const Interest &, DataReceiver));
