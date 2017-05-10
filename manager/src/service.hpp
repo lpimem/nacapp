@@ -15,7 +15,7 @@ namespace nacapp
  *
  * namespace
  * name   = <prefix>/<domain>/<args>
- * prefix = (\/[^\s\/]+)+      // regular expression
+ * prefix = (\/[^\s\/]+)+  // TODO: should recheck with tlv specification
  * domain = READ        |
  *          MANAGEMENT  |
  *          IDENTITY    |
@@ -34,14 +34,18 @@ public:
   // <prefix>/READ/<data-type>/E-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
-  void onGetEKey(const Interest &interest, const Name args,
-                 shared_ptr<Data> data, InterestShower show);
+  void onGetEKey(const Interest &interest,
+                 const Name args,
+                 shared_ptr<Data> data,
+                 InterestShower show);
 
   // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/D-Key/for
   // Args : /<user>/<timestamp>
-  void onGetDKey(const Interest &interest, const Name args,
-                 shared_ptr<Data> data, InterestShower show);
+  void onGetDKey(const Interest &interest,
+                 const Name args,
+                 shared_ptr<Data> data,
+                 InterestShower show);
 
   /* ********** Identity Hanlders ********** */
 
@@ -60,8 +64,10 @@ public:
   Args: <entity-name>
 
   */
-  void onGetIdentityKey(const Interest &interest, const Name args,
-                        shared_ptr<Data> data, InterestShower show);
+  void onGetIdentityKey(const Interest &interest,
+                        const Name args,
+                        shared_ptr<Data> data,
+                        InterestShower show);
 
   /* ********** Management Hanlders ********** */
 
@@ -76,36 +82,47 @@ public:
   Path: /MANAGEMENT/identity/add
   Args: <identity-name>
   */
-  void onAddIdentity(const Interest &interest, const Name args,
-                     shared_ptr<Data> data, InterestShower show);
+  void onAddIdentity(const Interest &interest,
+                     const Name args,
+                     shared_ptr<Data> data,
+                     InterestShower show);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
-  void onRemoveIdentity(const Interest &interest, const Name args,
-                        shared_ptr<Data> data, InterestShower show);
+  void onRemoveIdentity(const Interest &interest,
+                        const Name args,
+                        shared_ptr<Data> data,
+                        InterestShower show);
 
   // <prefix>/MANAGEMENT/access/grant/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
   // path: /MANAGEMENT/access/grant
   // args:
   //       /BASE64Encode(<identity-name>)
   //       /BASE64Encode(<data-type>)
-  //       /start
-  //       /start
-
-  void onGrantFixed(const Interest &interest, const Name args,
-                    shared_ptr<Data> data, InterestShower show);
+  //       /grant type
+  //       /grant arguments (/start/end/startHour/endHour)
+  void onGrant(const Interest &interest,
+               const Name args,
+               shared_ptr<Data> data,
+               InterestShower show);
 
   // <prefix>/MANAGEMENT/access/revoke/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
-  void onRevoke(const Interest &interest, const Name args,
-                shared_ptr<Data> data, InterestShower show);
+  void onRevoke(const Interest &interest,
+                const Name args,
+                shared_ptr<Data> data,
+                InterestShower show);
 
 private:
-  void grant(const Name identity, const Name dataType, string start, string end,
-             string interval);
+  void grant(const Name identity,
+             const Name dataType,
+             string startDate,
+             string endDate,
+             string startHour,
+             string endHour);
 
 private:
   Buffer parseIdentityPubKey(const Data &key);
   Certificate signPubkey(const Buffer &key);
-  void authenticateAddIdentityInterest(const Interest &interest, const Name args);
+  void authenticateManagementInterest(const Interest &interest, const Name args);
 
 private:
   const Name &m_prefix;

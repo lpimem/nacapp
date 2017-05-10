@@ -43,7 +43,7 @@ void Service::onAddIdentity(const Interest &interest, const Name args,
                             shared_ptr<Data> data, InterestShower want)
 {
   Name entity{args};
-  authenticateAddIdentityInterest(interest, entity);
+  authenticateManagementInterest(interest, entity);
   const ndn::KeyLocator keyLocator = interest.getPublisherPublicKeyLocator();
   if (keyLocator.getType() == ndn::KeyLocator::KeyLocator_Name)
   {
@@ -62,13 +62,52 @@ void Service::onAddIdentity(const Interest &interest, const Name args,
 }
 
 void Service::onRemoveIdentity(const Interest &interest, const Name args,
-                               shared_ptr<Data> data, InterestShower want) {}
+                               shared_ptr<Data> data, InterestShower want)
+{
+  Name identity{args};
+  authenticateManagementInterest(interest, identity);
+  m_manager.removeIdentity(identity);
+}
 
-void Service::onGrantFixed(const Interest &interest, const Name args,
-                           shared_ptr<Data> data, InterestShower want) {}
+void Service::onGrant(const Interest &interest,
+                      const Name args,
+                      shared_ptr<Data> data,
+                      InterestShower want)
+{
+  if (args.size() < 7)
+  {
+    throw "onGrant: argument should contains at least 7 components, got :" + args.size();
+  }
+
+  string identityBase64 = args.get(0).toUri();
+  string dataTypeBase64 = args.get(1).toUri();
+  string grantType = args.get(2).toUri();
+  string startDate = args.get(3).toUri();
+  string endDate = args.get(4).toUri();
+  string startHour = args.get(5).toUri();
+  string endHour = args.get(6).toUri();
+}
 
 void Service::onRevoke(const Interest &interest, const Name args,
                        shared_ptr<Data> data, InterestShower want) {}
+
+void Service::grant(const Name identity,
+                    const Name dataType,
+                    string startDate,
+                    string endDate,
+                    string startHour,
+                    string endHour)
+{
+  TimeStamp startD = boost::posix_time::from_iso_string(startDate);
+  TimeStamp endD = boost::posix_time::from_iso_string(endDate);
+  int startH = std::stoi(startHour);
+  int endH = std::stoi(endHour);
+  auto days = (endD.date() - startD.date()).days();
+  RepetitiveInterval schedule(startD, endD, startH, endH, days,
+                              RepetitiveInterval::RepeatUnit::DAY);
+  const string schedule_name{dataType.toUri() + startDate + endDate + startHour + endHour};
+  NamedInterval ni(schedule_name, schedule);
+}
 
 Buffer Service::parseIdentityPubKey(const Data &keyData)
 {
@@ -86,7 +125,7 @@ Certificate Service::signPubkey(const Buffer &key)
   return c;
 }
 
-void Service::authenticateAddIdentityInterest(const Interest &interest, const Name entity)
+void Service::authenticateManagementInterest(const Interest &interest, const Name entity)
 {
   // TODO;
 }
