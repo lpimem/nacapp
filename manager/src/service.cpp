@@ -1,4 +1,5 @@
 #include "service.hpp"
+#include "util.hpp"
 
 namespace nacapp
 {
@@ -76,23 +77,34 @@ void Service::onGrant(const Interest &interest,
 {
   if (args.size() < 7)
   {
-    throw "onGrant: argument should contains at least 7 components, got :" + args.size();
+    throw "onGrant: argument should contains at least 7 components, got :" + std::to_string(args.size());
   }
 
-  string identityBase64 = args.get(0).toUri();
-  string dataTypeBase64 = args.get(1).toUri();
-  string grantType = args.get(2).toUri();
+  string identity = strings::uriDecode(args.get(0).toUri());
+  string dataType = strings::uriDecode(args.get(1).toUri());
+  string grantType = args.get(2).toUri(); // reserved
   string startDate = args.get(3).toUri();
   string endDate = args.get(4).toUri();
   string startHour = args.get(5).toUri();
   string endHour = args.get(6).toUri();
+  grant(identity, dataType, startDate, endDate, startHour, endHour);
 }
 
 void Service::onRevoke(const Interest &interest, const Name args,
-                       shared_ptr<Data> data, InterestShower want) {}
+                       shared_ptr<Data> data, InterestShower want)
+{
+  if (args.size() < 2)
+  {
+    throw "onRevoke: argument should contains at least 2 components, got :" + std::to_string(args.size());
+  }
 
-void Service::grant(const Name identity,
-                    const Name dataType,
+  string identity = strings::uriDecode(args.get(0).toUri());
+  string dataType = strings::uriDecode(args.get(1).toUri());
+  m_manager.revokeAccess(identity, dataType);
+}
+
+void Service::grant(const Name &identity,
+                    const Name &dataType,
                     string startDate,
                     string endDate,
                     string startHour,

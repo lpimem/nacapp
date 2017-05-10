@@ -112,8 +112,8 @@ public:
                 InterestShower show);
 
 private:
-  void grant(const Name identity,
-             const Name dataType,
+  void grant(const Name &identity,
+             const Name &dataType,
              string startDate,
              string endDate,
              string startHour,
