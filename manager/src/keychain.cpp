@@ -1,5 +1,4 @@
 #include "keychain.hpp"
-#include "../../shared/src/easylogging/easylogging++.h"
 
 namespace nacapp
 {

@@ -16,7 +16,8 @@ class Manager
 {
 
 public:
-  Manager(const Name &prefix, uint32_t keysize = DEFAULT_RSA_KEY_SIZE) : m_prefix(prefix), m_default_key_size(keysize) {}
+  Manager(const Name &prefix,
+          uint32_t keysize = DEFAULT_RSA_KEY_SIZE) : m_prefix(prefix), m_default_key_size(keysize) {}
 
 public:
   /**
@@ -40,7 +41,8 @@ public:
   *   - Create a schedule 7x24 with access if not exists
   *   - Add @p entity's certificate to schedule.
   */
-  void grantAccess(const Name &entity, const Name &dataType,
+  void grantAccess(const Name &entity,
+                   const Name &dataType,
                    const NamedInterval &schedule);
 
   void grantAccess(const Name &entity, const Name &dataType);
@@ -57,7 +59,8 @@ public:
 
   shared_ptr<Data> getEKey(const Name &dataType, const TimeStamp &timeslot);
 
-  shared_ptr<Data> getDKey(const Name &dataType, const Name &entity,
+  shared_ptr<Data> getDKey(const Name &dataType,
+                           const Name &entity,
                            const TimeStamp &timeslot);
 
 private:
@@ -65,7 +68,8 @@ private:
 
   void deleteGroup(const Name &dataType);
 
-  void addGroupMember(const Name &dataType, const Name &identity,
+  void addGroupMember(const Name &dataType,
+                      const Name &identity,
                       const string &scheduleName);
 
   void removeGroupMember(const Name &dataType, const Name &identity);
