@@ -6,15 +6,17 @@
 #include "common.hpp"
 #include "named-schedule.hpp"
 
-namespace nacapp {
+namespace nacapp
+{
 
 /**
  * A manager controls access to all data under its namespace.
  */
-class Manager {
+class Manager
+{
 
 public:
-  Manager(const Name &prefix) : m_prefix(prefix) {}
+  Manager(const Name &prefix, uint32_t keysize = DEFAULT_RSA_KEY_SIZE) : m_prefix(prefix), m_default_key_size(keysize) {}
 
 public:
   /**
@@ -90,6 +92,7 @@ private:
 
 private:
   const Name m_prefix;
+  const uint32_t m_default_key_size;
   std::map<string, shared_ptr<Certificate>> m_identities;
   std::map<string, shared_ptr<Data>> m_dkey_cache;
   std::map<string, shared_ptr<GroupManager>> m_groups;

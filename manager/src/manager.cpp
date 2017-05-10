@@ -68,9 +68,13 @@ void Manager::grantAccess(const Name &entity, const Name &dataType)
 void Manager::grantAccess(const Name &entity, const Name &dataType,
                           const NamedInterval &namedInterval)
 {
+  LOG(DEBUG) << "grantAccess " << 1;
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
+  LOG(DEBUG) << "grantAccess " << 2;
   string schedule = createSchedule(groupManager, namedInterval);
+  LOG(DEBUG) << "grantAccess " << 3;
   addGroupMember(dataType, entity, schedule);
+  LOG(DEBUG) << "grantAccess " << 4;
 }
 
 void Manager::revokeAccess(const Name &entity, const Name &dataType)
@@ -93,12 +97,17 @@ shared_ptr<GroupManager> Manager::createGroup(const Name &dataType)
   string groupFullName = getGroupFullName(m_prefix, dataType);
   if (m_groups.find(groupFullName) != m_groups.end())
   {
-    LOG(DEBUG) << groupFullName << "already created";
+    LOG(DEBUG) << groupFullName << " already created";
     return m_groups[groupFullName];
   }
+  // LOG(DEBUG) << "creating group for " << m_prefix.toUri() << "/READ" << dataType.toUri();
+  // LOG(DEBUG) << "\t RSA Key Size: " << m_default_key_size;
+  // LOG(DEBUG) << "\t DB Path: " << DB_PATH;
+  // LOG(DEBUG) << "\t Fresh period: " << DEFAULT_KEY_FRESH_PERIOD;
+
   auto groupManager =
       make_shared<GroupManager>(m_prefix, dataType, DB_PATH,
-                                DEFAULT_RSA_KEY_SIZE, DEFAULT_KEY_FRESH_PERIOD);
+                                m_default_key_size, DEFAULT_KEY_FRESH_PERIOD);
   m_groups[groupFullName] = groupManager;
   LOG(DEBUG) << groupFullName << " created";
   return groupManager;
@@ -114,14 +123,23 @@ void Manager::deleteGroup(const Name &dataType)
  * Note: interest handler should parse dataType and chech if it should be
  * allowed to proceed.
  */
-void Manager::addGroupMember(const Name &dataType, const Name &identity,
+void Manager::addGroupMember(const Name &dataType,
+                             const Name &identity,
                              const string &scheduleName)
 {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
   Certificate cert = getEntityCert(identity);
   LOG(DEBUG) << "granting access for cert [1] " << cert.getFullName().toUri();
-  groupManager->addMember(scheduleName, cert);
-  LOG(DEBUG) << "granting access for cert [2] " << cert.getFullName().toUri();
+  try
+  {
+    groupManager->addMember(scheduleName, cert);
+  }
+  catch (const std::exception &ex)
+  {
+    groupManager->updateMemberSchedule(identity, scheduleName);
+  }
+  LOG(DEBUG)
+      << "granting access for cert [2] " << cert.getFullName().toUri();
 }
 
 void Manager::removeGroupMember(const Name &dataType, const Name &identity)
@@ -139,7 +157,7 @@ string Manager::createSchedule(shared_ptr<GroupManager> group,
   {
     Schedule schedule;
     schedule.addWhiteInterval(namedInterval.getInterval());
-    group->addSchedule(iname, schedule);
+    group->updateSchedule(iname, schedule);
   }
   return iname;
 }

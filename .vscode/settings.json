@@ -1,4 +1,5 @@
 {
+  "editor.formatOnSave": true,
   "files.associations": {
     "array": "cpp",
     "iterator": "cpp",

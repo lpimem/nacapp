@@ -18,7 +18,10 @@ def recurseCtx(ctx):
 
 
 def test(ctx):
-    modules = ["node", "manager"]
+    modules = [
+        # "node", 
+        "manager",
+        ]
     base = ctx.path.abspath()
 
     ctx.exec_command("rm {base}/manager-db".format(**locals()))

@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "custom",
+      "name": "Unittest",
+      "initCommands": [
+        "target create ${workspaceRoot}/build/manager/unit_tests"
+      ],
+      "preRunCommands": [
+        // "settings set target.run-args value1 value2 value3",
+        "process launch"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug",
+      "program": "${workspaceRoot}/build/manager/unit_tests",
+      "args": [
+        "-b"
+      ],
+      "cwd": "${workspaceRoot}"
+    }
+  ]
+}
