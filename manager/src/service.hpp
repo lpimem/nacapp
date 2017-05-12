@@ -3,9 +3,10 @@
 
 #include <ndn-cxx/key-locator.hpp>
 
+#include "../../node/src/handlers.hpp"
+
 #include "manager.hpp"
 #include "validator/data_type_filter.hpp"
-#include "../../node/src/handlers.hpp"
 
 namespace nacapp
 {

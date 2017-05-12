@@ -1,0 +1,43 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import sys
+import os
+
+from waflib import Logs, Utils, Context
+
+top = ".."
+
+def configure(ctx):
+    ctx.env.MODULE_NAME = ctx.path.abspath().split("/")[-1]
+    print("MODULE: %s" % ctx.env.MODULE_NAME)
+    ctx.check_cfg(package='ndn-group-encrypt', 
+                   args=['--cflags', '--libs'],
+                   uselib_store='NDN_NAC', mandatory=True)
+
+def build(bld):
+    module = bld.env.MODULE_NAME
+    objects = "nacapp-{module}-objects".format(**locals())
+    main = "nacapp-{module}-main".format(**locals())
+
+    bld(
+      target = objects,
+      name = objects,
+      features = "cxx",
+      source=bld.path.ant_glob(['src/**/*.cc', 
+                                'src/**/*.cpp',
+                                ], excl=['src/main.cpp']),
+      use = "NDN_CXX NDN_NAC nacapp-share nacapp-node",
+      includes = ["nacapp-share", "nacapp-node", "src"],
+      export_includes='src'
+    )
+
+    bld(
+      source="src/main.cpp", 
+      features="cxx cxxprogram",
+      target=main, 
+      use=objects,
+      includes = ["src"]
+    )
+
+    if bld.env['WITH_TESTS']:
+        bld.recurse("test")
