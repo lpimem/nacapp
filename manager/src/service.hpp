@@ -35,7 +35,7 @@ public:
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
   void onGetEKey(const Interest &interest,
-                 const Name args,
+                 const Name &args,
                  shared_ptr<Data> data,
                  InterestShower show);
 
@@ -43,7 +43,7 @@ public:
   // Path : /READ/<data-type>/D-Key/for
   // Args : /<user>/<timestamp>
   void onGetDKey(const Interest &interest,
-                 const Name args,
+                 const Name &args,
                  shared_ptr<Data> data,
                  InterestShower show);
 
@@ -65,49 +65,46 @@ public:
 
   */
   void onGetIdentityKey(const Interest &interest,
-                        const Name args,
+                        const Name &args,
                         shared_ptr<Data> data,
                         InterestShower show);
 
   /* ********** Management Hanlders ********** */
 
   /** <prefix>/MANAGEMENT/identity/add/<identity-name>
-
-  Manager should sign an identity's key.
-  
-  Interest must be signed by a trusted key.
-  The trusted key should differ among entities.
-  Manager should remember this key at least until the identity's key is served.
-
-  Path: /MANAGEMENT/identity/add
-  Args: <identity-name>
+      Manager should sign an identity's key.
+      Interest must be signed by a trusted key.
+      The trusted key should differ among entities.
+      Manager should remember this key at least until the identity's key is served.
+      Path: /MANAGEMENT/identity/add
+      Args: <identity-name>
   */
   void onAddIdentity(const Interest &interest,
-                     const Name args,
+                     const Name &args,
                      shared_ptr<Data> data,
                      InterestShower show);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
   void onRemoveIdentity(const Interest &interest,
-                        const Name args,
+                        const Name &args,
                         shared_ptr<Data> data,
                         InterestShower show);
 
-  // <prefix>/MANAGEMENT/access/grant/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
+  // <prefix>/MANAGEMENT/access/grant/URIEncode(<identity-name>)/URIEncode(<data-type>)
   // path: /MANAGEMENT/access/grant
   // args:
-  //       /BASE64Encode(<identity-name>)
-  //       /BASE64Encode(<data-type>)
+  //       /URIEncode(<identity-name>)
+  //       /URIEncode(<data-type>)
   //       /grant type
   //       /grant arguments (/start/end/startHour/endHour)
   void onGrant(const Interest &interest,
-               const Name args,
+               const Name &args,
                shared_ptr<Data> data,
                InterestShower show);
 
-  // <prefix>/MANAGEMENT/access/revoke/BASE64Encode(<identity-name>)/BASE64Encode(<data-type>)
+  // <prefix>/MANAGEMENT/access/revoke/URIEncode(<identity-name>)/URIEncode(<data-type>)
   void onRevoke(const Interest &interest,
-                const Name args,
+                const Name &args,
                 shared_ptr<Data> data,
                 InterestShower show);
 

@@ -4,7 +4,7 @@
 namespace nacapp
 {
 
-void Service::onGetEKey(const Interest &interest, const Name args,
+void Service::onGetEKey(const Interest &interest, const Name &args,
                         shared_ptr<Data> data, InterestShower want)
 {
 
@@ -21,7 +21,7 @@ void Service::onGetEKey(const Interest &interest, const Name args,
   data->setContent(ekey->wireEncode());
 }
 
-void Service::onGetDKey(const Interest &interest, const Name args,
+void Service::onGetDKey(const Interest &interest, const Name &args,
                         shared_ptr<Data> data, InterestShower want)
 {
   const Name dataType{interest.getName().at(m_prefix.size() + 1)};
@@ -32,7 +32,7 @@ void Service::onGetDKey(const Interest &interest, const Name args,
   data->setContent(dkey->wireEncode());
 }
 
-void Service::onGetIdentityKey(const Interest &interest, const Name args,
+void Service::onGetIdentityKey(const Interest &interest, const Name &args,
                                shared_ptr<Data> data, InterestShower want)
 {
   Name entity{args};
@@ -40,7 +40,7 @@ void Service::onGetIdentityKey(const Interest &interest, const Name args,
   data->setContent(id->wireEncode());
 }
 
-void Service::onAddIdentity(const Interest &interest, const Name args,
+void Service::onAddIdentity(const Interest &interest, const Name &args,
                             shared_ptr<Data> data, InterestShower want)
 {
   Name entity{args};
@@ -62,7 +62,7 @@ void Service::onAddIdentity(const Interest &interest, const Name args,
   }
 }
 
-void Service::onRemoveIdentity(const Interest &interest, const Name args,
+void Service::onRemoveIdentity(const Interest &interest, const Name &args,
                                shared_ptr<Data> data, InterestShower want)
 {
   Name identity{args};
@@ -71,7 +71,7 @@ void Service::onRemoveIdentity(const Interest &interest, const Name args,
 }
 
 void Service::onGrant(const Interest &interest,
-                      const Name args,
+                      const Name &args,
                       shared_ptr<Data> data,
                       InterestShower want)
 {
@@ -90,7 +90,7 @@ void Service::onGrant(const Interest &interest,
   grant(identity, dataType, startDate, endDate, startHour, endHour);
 }
 
-void Service::onRevoke(const Interest &interest, const Name args,
+void Service::onRevoke(const Interest &interest, const Name &args,
                        shared_ptr<Data> data, InterestShower want)
 {
   if (args.size() < 2)

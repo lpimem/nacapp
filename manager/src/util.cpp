@@ -51,7 +51,7 @@ string uriEncode(const string rawUri)
 string uriDecode(const string encodedUri)
 {
   std::ostringstream os;
-  for (auto i = 0; i < encodedUri.length(); i++)
+  for (string::size_type i = 0; i < encodedUri.length(); i++)
   {
     if (encodedUri[i] == '%')
     {
