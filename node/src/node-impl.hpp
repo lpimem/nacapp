@@ -7,44 +7,55 @@
 #include "handlers.hpp"
 #include "../../shared/src/ndn-util.hpp"
 
-namespace nacapp
-{
+namespace nacapp {
 
 class NodeImpl
 {
+public:
+  NodeImpl(Name prefix, shared_ptr<Face> f)
+    : m_prefix(prefix)
+    , m_face(f)
+  {
+  }
 
 public:
-  NodeImpl(Name prefix, shared_ptr<Face> f) : m_prefix(prefix), m_face(f) {}
+  void
+  serveForever();
+  void
+  route(string path, InterestHandler handler, vector<InterestValidator> validators,
+        vector<DataProcessor> processors);
 
 public:
-  void serveForever();
-  void route(string path, InterestHandler handler,
-             vector<InterestValidator> validators,
-             vector<DataProcessor> processors);
+  void
+  registerPrefixes();
 
-public:
-  void registerPrefixes();
+  void
+  onRegisterPrefixFailed(const Name& prefix, const std::string& reason);
 
-  void onRegisterPrefixFailed(const Name &prefix, const std::string &reason);
+  void
+  onInterest(const Name& filter, const Interest& interest);
 
-  void onInterest(const Name &filter, const Interest &interest);
-
-  void onFailed(const Interest &interest, string reason);
+  void
+  onFailed(const Interest& interest, string reason);
 
   // TODO : Should handle packet segmentation as Data packets have size limit.
-  void sendData(const Interest &interest, shared_ptr<Data> data);
+  void
+  sendData(const Interest& interest, shared_ptr<Data> data);
 
-  void validate(const Name &path, const Interest &interest);
+  void
+  validate(const Name& path, const Interest& interest);
 
-  void process(const Name &path, const Interest &interest,
-               shared_ptr<Data> data);
+  void
+  process(const Name& path, const Interest& interest, shared_ptr<Data> data);
 
-  vector<Name> parseInterestName(const Interest &interest);
+  vector<Name>
+  parseInterestName(const Interest& interest);
 
-  shared_ptr<Data> handleInterest(const Interest &interest,
-                                  vector<Name> parsedParts);
+  shared_ptr<Data>
+  handleInterest(const Interest& interest, vector<Name> parsedParts);
 
-  void showInterest(const Interest &interest, DataReceiver proc);
+  void
+  showInterest(const Interest& interest, DataReceiver proc);
 
 private:
   Name m_prefix;
