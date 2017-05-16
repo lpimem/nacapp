@@ -6,8 +6,9 @@
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/util/signal.hpp>
 
-namespace nacapp
-{
+namespace nacapp {
+
+using ndn::make_unique;
 
 using ndn::Interest;
 using ndn::Data;

@@ -7,23 +7,36 @@
 
 #include "service.hpp"
 
-namespace nacapp
-{
+namespace nacapp {
 class ManagerServiceNode
 {
 public:
   ManagerServiceNode(Name prefix, shared_ptr<Face> f)
-      : m_prefix(prefix), m_node(prefix, f), m_service(prefix) {}
+    : m_prefix(prefix)
+    , m_node(prefix, f)
+    , m_service(prefix)
+  {
+  }
 
 public:
-  void serveForever();
+  void
+  serveForever();
 
-  const Name &getName() { return m_prefix; }
+  const Name&
+  getName()
+  {
+    return m_prefix;
+  }
 
-  const Node &getNode() { return m_node; }
+  const Node&
+  getNode()
+  {
+    return m_node;
+  }
 
 protected:
-  void addRoutes();
+  void
+  addRoutes();
 
 private:
   Name m_prefix;

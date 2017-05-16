@@ -5,15 +5,26 @@
 
 namespace nacapp {
 
-class NamedInterval {
-
+class NamedInterval
+{
 public:
   NamedInterval(Name name, RepetitiveInterval interval)
-      : m_name(name), m_interval(interval) {}
+    : m_name(name)
+    , m_interval(interval)
+  {
+  }
 
-  const Name &getName() const { return m_name; }
+  const Name&
+  getName() const
+  {
+    return m_name;
+  }
 
-  const RepetitiveInterval &getInterval() const { return m_interval; }
+  const RepetitiveInterval&
+  getInterval() const
+  {
+    return m_interval;
+  }
 
 private:
   Name m_name;
