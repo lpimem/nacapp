@@ -5,8 +5,7 @@
 #include "handlers.hpp"
 #include "node-impl.hpp"
 
-namespace nacapp
-{
+namespace nacapp {
 
 /**
  * Handles interests with name in the following format
@@ -23,32 +22,38 @@ namespace nacapp
 class Node
 {
 public:
-  Node(Name prefix, shared_ptr<Face> f) : impl(prefix, f) {}
+  Node(Name prefix, shared_ptr<Face> f)
+    : impl(prefix, f)
+  {
+  }
 
 public:
   /**
    * Start serving.
    */
-  void serveForever();
+  void
+  serveForever();
 
   /**
    * setInterestFilter for <m_prefix><path>
    * Parts after <path> and before SIGNATURE is <ARGUMETNS
    * TODO: make handler more generic and type-safe. (maybe use some templating tricks)
    */
-  void route(string path, InterestHandler handler);
+  void
+  route(string path, InterestHandler handler);
 
-  void route(string path, InterestHandler handler,
-             vector<InterestValidator> validators);
+  void
+  route(string path, InterestHandler handler, vector<InterestValidator> validators);
 
-  void route(string path, InterestHandler handler,
-             vector<DataProcessor> processors);
+  void
+  route(string path, InterestHandler handler, vector<DataProcessor> processors);
 
-  void route(string path, InterestHandler handler,
-             vector<InterestValidator> validators,
-             vector<DataProcessor> processors);
+  void
+  route(string path, InterestHandler handler, vector<InterestValidator> validators,
+        vector<DataProcessor> processors);
 
-  void showInterest(const Interest &, DataReceiver);
+  void
+  showInterest(const Interest&, DataReceiver);
 
 private:
   NodeImpl impl;

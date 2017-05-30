@@ -6,16 +6,27 @@
 
 namespace nacapp {
 
-class DataTypeFilter {
+class DataTypeFilter
+{
+public:
+  DataTypeFilter()
+  {
+  }
+  DataTypeFilter(std::initializer_list<std::string> list)
+    : m_allowed(list)
+  {
+  }
 
 public:
-  DataTypeFilter() {}
-  DataTypeFilter(std::initializer_list<std::string> list) : m_allowed(list) {}
+  void
+  allow(const std::string& dataType)
+  {
+    m_allowed.insert(dataType);
+  }
 
-public:
-  void allow(const std::string &dataType) { m_allowed.insert(dataType); }
-
-  bool isAllowed(const std::string &dataType) {
+  bool
+  isAllowed(const std::string& dataType)
+  {
     return m_allowed.find(dataType) != m_allowed.end();
   }
 

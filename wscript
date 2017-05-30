@@ -19,8 +19,8 @@ def recurseCtx(ctx):
 
 def test(ctx):
     modules = [
-        # "node", 
-        "manager",
+        "node", 
+        # "manager",
         ]
     base = ctx.path.abspath()
 
