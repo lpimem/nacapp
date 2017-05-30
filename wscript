@@ -14,13 +14,13 @@ def recurseCtx(ctx):
     ctx.recurse("node")
     ctx.recurse("manager")
     # ctx.recurse("consumer")
-    # ctx.recurse("producer")
+    ctx.recurse("producer")
 
 
 def test(ctx):
     modules = [
         "node", 
-        # "manager",
+        "manager",
         ]
     base = ctx.path.abspath()
 

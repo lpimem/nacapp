@@ -6,8 +6,7 @@
 #include <ndn-group-encrypt/group-manager.hpp>
 #include <ndn-group-encrypt/schedule.hpp>
 
-namespace nacapp
-{
+namespace nacapp {
 using ndn::gep::GroupManager;
 using ndn::gep::Schedule;
 using ndn::gep::RepetitiveInterval;

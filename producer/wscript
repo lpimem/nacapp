@@ -8,10 +8,10 @@ from waflib import Logs, Utils, Context
 top = ".."
 
 def configure(ctx):
-    ctx.env.MODULE_NAME = bld.path.abspath().split("/")[-1]
+    ctx.env.MODULE_NAME = ctx.path.abspath().split("/")[-1]
 
 def build(bld):
-    module = ctx.env.MODULE_NAME
+    module = bld.env.MODULE_NAME
     objects = "nacapp-{module}-objects".format(**locals())
     main = "nacapp-{module}-main".format(**locals())
 
