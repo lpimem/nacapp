@@ -9,6 +9,9 @@ top = ".."
 
 def configure(ctx):
     ctx.env.MODULE_NAME = ctx.path.abspath().split("/")[-1]
+    ctx.check_cfg(package='ndn-group-encrypt', 
+                   args=['--cflags', '--libs'],
+                   uselib_store='NDN_NAC', mandatory=True)
 
 def build(bld):
     module = bld.env.MODULE_NAME
@@ -22,8 +25,8 @@ def build(bld):
       source=bld.path.ant_glob(['src/**/*.cc', 
                                 'src/**/*.cpp',
                                 ], excl=['src/main.cpp']),
-      use = "NDN_CXX nacapp-share",
-      includes = ["nacapp-share", "src"],
+      use = "NDN_CXX NDN_NAC nacapp-share nacapp-node",
+      includes = ["nacapp-share", "nacapp-node", "src"],
       export_includes='src'
     )
 

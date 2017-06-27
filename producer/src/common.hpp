@@ -6,6 +6,10 @@
 #include "../../shared/src/common-cxx.hpp"
 #include "../../shared/src/common-nac.hpp"
 #include "../../shared/src/common-ndn.hpp"
+#include "../../shared/src/easylogging/easylogging++.h"
+
+#include "../../node/src/node.hpp"
+
 
 namespace nacapp {
 namespace producer {

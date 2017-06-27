@@ -12,7 +12,7 @@ out = "build"
 def recurseCtx(ctx):
     ctx.recurse("shared")
     ctx.recurse("node")
-    ctx.recurse("manager")
+    # ctx.recurse("manager")
     # ctx.recurse("consumer")
     ctx.recurse("producer")
 
