@@ -38,13 +38,21 @@ public:
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
   void
-  onGetEKey(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onGetEKey(const Interest& interest,
+            const Name& args,
+            shared_ptr<Data> data,
+            InterestShower show,
+            PutData put);
 
   // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/D-Key/for
   // Args : /<user>/<timestamp>
   void
-  onGetDKey(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onGetDKey(const Interest& interest,
+            const Name& args,
+            shared_ptr<Data> data,
+            InterestShower show,
+            PutData put);
 
   /* ********** Identity Hanlders ********** */
 
@@ -64,7 +72,11 @@ public:
 
   */
   void
-  onGetIdentityKey(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onGetIdentityKey(const Interest& interest,
+                   const Name& args,
+                   shared_ptr<Data> data,
+                   InterestShower show,
+                   PutData put);
 
   /* ********** Management Hanlders ********** */
 
@@ -77,11 +89,19 @@ public:
       Args: <identity-name>
   */
   void
-  onAddIdentity(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onAddIdentity(const Interest& interest,
+                const Name& args,
+                shared_ptr<Data> data,
+                InterestShower show,
+                PutData put);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
   void
-  onRemoveIdentity(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onRemoveIdentity(const Interest& interest,
+                   const Name& args,
+                   shared_ptr<Data> data,
+                   InterestShower show,
+                   PutData put);
 
   // <prefix>/MANAGEMENT/access/grant/URIEncode(<identity-name>)/URIEncode(<data-type>)
   // path: /MANAGEMENT/access/grant
@@ -91,11 +111,19 @@ public:
   //       /grant type
   //       /grant arguments (/start/end/startHour/endHour)
   void
-  onGrant(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onGrant(const Interest& interest,
+          const Name& args,
+          shared_ptr<Data> data,
+          InterestShower show,
+          PutData put);
 
   // <prefix>/MANAGEMENT/access/revoke/URIEncode(<identity-name>)/URIEncode(<data-type>)
   void
-  onRevoke(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show);
+  onRevoke(const Interest& interest,
+           const Name& args,
+           shared_ptr<Data> data,
+           InterestShower show,
+           PutData put);
 
 private:
   void

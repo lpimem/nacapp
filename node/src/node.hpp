@@ -28,6 +28,12 @@ public:
   }
 
 public:
+  void
+  setPrefix(Name prefix)
+  {
+    impl.setPrefix(prefix);
+  }
+
   /**
    * Start serving.
    */
@@ -49,7 +55,9 @@ public:
   route(string path, InterestHandler handler, vector<DataProcessor> processors);
 
   void
-  route(string path, InterestHandler handler, vector<InterestValidator> validators,
+  route(string path,
+        InterestHandler handler,
+        vector<InterestValidator> validators,
         vector<DataProcessor> processors);
 
   void

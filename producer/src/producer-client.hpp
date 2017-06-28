@@ -16,14 +16,33 @@ public:
   ProducerClient(string prefix, shared_ptr<Node> node, shared_ptr<Producer> gepProd)
     : m_prefix(prefix)
     , m_node(node)
-    , m_prod(gepProd)
+    , m_producer(gepProd)
   {
   }
 
-private:
-  void
-  registerPrefixes();
+public:
+  // TODO:
+  // void
+  // bootstrap(OnSuccess&, OnFail&);
 
+  // return the underlying application node object
+  shared_ptr<Node>
+  getNode()
+  {
+    return m_node;
+  }
+
+  shared_ptr<Producer>
+  getNACProducer()
+  {
+    return m_producer;
+  }
+
+  // start listening for incoming interests
+  void
+  serve();
+
+private:
   // <prefix>/SAMPLES/<dataType>/[timestamp]
   // args:
   //    0: dataType
@@ -49,7 +68,8 @@ private:
 private:
   string m_prefix;
   shared_ptr<Node> m_node;
-  shared_ptr<Producer> m_prod;
+  shared_ptr<Producer> m_producer;
+  // std::map<string, shared_ptr<
 };
 
 } // producer

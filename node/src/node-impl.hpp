@@ -22,12 +22,17 @@ public:
   void
   serveForever();
   void
-  route(string path, InterestHandler handler, vector<InterestValidator> validators,
+  route(string path,
+        InterestHandler handler,
+        vector<InterestValidator> validators,
         vector<DataProcessor> processors);
 
 public:
   void
   registerPrefixes();
+
+  void
+  setPrefix(Name prefix);
 
   void
   onRegisterPrefixFailed(const Name& prefix, const std::string& reason);
@@ -38,9 +43,8 @@ public:
   void
   onFailed(const Interest& interest, string reason);
 
-  // TODO : Should handle packet segmentation as Data packets have size limit.
   void
-  sendData(const Interest& interest, shared_ptr<Data> data);
+  sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data);
 
   void
   validate(const Name& path, const Interest& interest);

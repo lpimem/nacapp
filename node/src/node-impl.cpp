@@ -17,7 +17,9 @@ NodeImpl::serveForever()
 }
 
 void
-NodeImpl::route(string path, InterestHandler handler, vector<InterestValidator> validators,
+NodeImpl::route(string path,
+                InterestHandler handler,
+                vector<InterestValidator> validators,
                 vector<DataProcessor> processors)
 {
   m_handlers[path] = handler;
@@ -32,9 +34,16 @@ NodeImpl::route(string path, InterestHandler handler, vector<InterestValidator> 
 void
 NodeImpl::registerPrefixes()
 {
-  m_face->setInterestFilter(m_prefix, bind(&NodeImpl::onInterest, this, _1, _2),
+  m_face->setInterestFilter(m_prefix,
+                            bind(&NodeImpl::onInterest, this, _1, _2),
                             ndn::RegisterPrefixSuccessCallback(),
                             bind(&NodeImpl::onRegisterPrefixFailed, this, _1, _2));
+}
+
+void
+NodeImpl::setPrefix(Name prefix)
+{
+  m_prefix = prefix;
 }
 
 void
@@ -86,7 +95,7 @@ NodeImpl::onInterest(const Name& filter, const Interest& interest)
   try {
     LOG(DEBUG) << "In: " << interest.toUri();
     vector<Name> parts = parseInterestName(interest);
-    shared_ptr<Data> data = handleInterest(interest, parts);
+    handleInterest(interest, parts);
   }
   catch (string e) {
     LOG(ERROR) << "Error handling " << interest.toUri() << ": " << e;
@@ -136,8 +145,12 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   InterestHandler handler = m_handlers[path];
   auto data = make_shared<Data>();
   InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
-  handler(interest, args, data, show);
-  process(path, interest, data);
+  bool sent = false;
+  PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
+  handler(interest, args, data, show, put);
+  if (!sent) {
+    put(data);
+  }
   return data;
 }
 
@@ -147,14 +160,16 @@ NodeImpl::onFailed(const Interest& interest, string reason)
   auto data = make_shared<Data>();
   data->setContentType(ndn::tlv::ContentType_Nack);
   data::setStringContent(*data, reason);
-  // process()
-  sendData(interest, data);
+  m_face->put(*data);
 }
 
+
 void
-NodeImpl::sendData(const Interest& interest, shared_ptr<Data> data)
+NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data)
 {
+  process(path, interest, data);
   m_face->put(*data);
+  sent = true;
 }
 
 vector<Name>

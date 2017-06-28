@@ -4,8 +4,11 @@
 namespace nacapp {
 
 void
-Service::onGetEKey(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                   InterestShower want)
+Service::onGetEKey(const Interest& interest,
+                   const Name& args,
+                   shared_ptr<Data> data,
+                   InterestShower want,
+                   PutData put)
 {
   if (args.size() < 2) {
     throw "onGetEKey requires at least 2 arguments, got : " + args.toUri();
@@ -20,8 +23,11 @@ Service::onGetEKey(const Interest& interest, const Name& args, shared_ptr<Data> 
 }
 
 void
-Service::onGetDKey(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                   InterestShower want)
+Service::onGetDKey(const Interest& interest,
+                   const Name& args,
+                   shared_ptr<Data> data,
+                   InterestShower want,
+                   PutData put)
 {
   const Name dataType{interest.getName().at(m_prefix.size() + 1)};
   const Name entity{args.at(0)};
@@ -32,8 +38,11 @@ Service::onGetDKey(const Interest& interest, const Name& args, shared_ptr<Data> 
 }
 
 void
-Service::onGetIdentityKey(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                          InterestShower want)
+Service::onGetIdentityKey(const Interest& interest,
+                          const Name& args,
+                          shared_ptr<Data> data,
+                          InterestShower want,
+                          PutData put)
 {
   Name entity{args};
   shared_ptr<Certificate> id = m_manager.getIdentity(entity);
@@ -41,8 +50,11 @@ Service::onGetIdentityKey(const Interest& interest, const Name& args, shared_ptr
 }
 
 void
-Service::onAddIdentity(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                       InterestShower want)
+Service::onAddIdentity(const Interest& interest,
+                       const Name& args,
+                       shared_ptr<Data> data,
+                       InterestShower want,
+                       PutData put)
 {
   Name entity{args};
   authenticateManagementInterest(interest, entity);
@@ -62,8 +74,11 @@ Service::onAddIdentity(const Interest& interest, const Name& args, shared_ptr<Da
 }
 
 void
-Service::onRemoveIdentity(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                          InterestShower want)
+Service::onRemoveIdentity(const Interest& interest,
+                          const Name& args,
+                          shared_ptr<Data> data,
+                          InterestShower want,
+                          PutData put)
 {
   Name identity{args};
   authenticateManagementInterest(interest, identity);
@@ -71,7 +86,11 @@ Service::onRemoveIdentity(const Interest& interest, const Name& args, shared_ptr
 }
 
 void
-Service::onGrant(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower want)
+Service::onGrant(const Interest& interest,
+                 const Name& args,
+                 shared_ptr<Data> data,
+                 InterestShower want,
+                 PutData put)
 {
   if (args.size() < 7) {
     throw "onGrant: argument should contains at least 7 components, got :" +
@@ -89,8 +108,11 @@ Service::onGrant(const Interest& interest, const Name& args, shared_ptr<Data> da
 }
 
 void
-Service::onRevoke(const Interest& interest, const Name& args, shared_ptr<Data> data,
-                  InterestShower want)
+Service::onRevoke(const Interest& interest,
+                  const Name& args,
+                  shared_ptr<Data> data,
+                  InterestShower want,
+                  PutData put)
 {
   if (args.size() < 2) {
     throw "onRevoke: argument should contains at least 2 components, got :" +
