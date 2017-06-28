@@ -34,7 +34,8 @@ void
 Thermometer::onGetTemperature(const Interest& interest,
                               const Name& args,
                               shared_ptr<Data> data,
-                              InterestShower show)
+                              InterestShower show,
+                              PutData put)
 {
   const int t = readTemp();
   auto now = time::system_clock::now();
@@ -51,19 +52,29 @@ void
 Thermometer::onGetContentKey(const Interest& interest,
                              const Name& args,
                              shared_ptr<Data> data,
-                             InterestShower show)
+                             InterestShower show,
+                             PutData put)
 {
   Name timeslotArg{args.at(0)};
   std::string timeExpr = timeslotArg.toUri();
   time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
   m_producer->createContentKey(timeslot,
-                               std::bind(&Thermometer::onContentKeyEncrypted, this, _1),
+                               std::bind(&Thermometer::onContentKeyEncrypted, this, put, interest, _1),
                                std::bind(&Thermometer::onNACProduceError, this, _1, _2));
 }
 
 void
-Thermometer::onContentKeyEncrypted(const std::vector<Data>& d)
+Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d)
 {
+  LOG(DEBUG) << "content key retrieved: ";
+  for (auto one : d) {
+    LOG(DEBUG) << "    " << one.getName();
+    if (one.getName() == interest.getName()) {
+      put(make_shared<Data>(one));
+      break;
+    }
+  }
+  LOG(ERROR) << "no encrypted content key found for " << interest.getName();
 }
 
 void
@@ -75,15 +86,16 @@ Thermometer::onNACProduceError(const ndn::gep::ErrorCode& code, const std::strin
 void
 Thermometer::registerPrefixes()
 {
-  m_node->route(m_dataType, std::bind(&Thermometer::onGetTemperature, this, _1, _2, _3, _4));
+  m_node->route(m_dataType, std::bind(&Thermometer::onGetTemperature, this, _1, _2, _3, _4, _5));
 
-  std::string ckeyPath = m_dataType + "/C-KEY";
-  m_node->route(ckeyPath, std::bind(&Thermometer::onGetContentKey, this, _1, _2, _3, _4));
+  const std::string ckeyPath = m_dataType + "/C-KEY";
+  m_node->route(ckeyPath, std::bind(&Thermometer::onGetContentKey, this, _1, _2, _3, _4, _5));
 }
 
 int
 Thermometer::readTemp()
 {
+  // TODO: read from raspberry pi
   return 76;
 }
 } // thermometer

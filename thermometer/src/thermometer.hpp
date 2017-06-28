@@ -32,13 +32,15 @@ private:
   onGetTemperature(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
-                   InterestShower show);
+                   InterestShower show,
+                   PutData put);
 
   void
   onGetContentKey(const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,
-                  InterestShower show);
+                  InterestShower show,
+                  PutData put);
 
   void
   setPrefix(Name prefix);
@@ -52,7 +54,7 @@ private:
   onNACProduceError(const ndn::gep::ErrorCode& code, const std::string& msg);
 
   void
-  onContentKeyEncrypted(const std::vector<Data>& d);
+  onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d);
 
 private:
   std::string m_location;
