@@ -5,14 +5,16 @@ namespace nacapp {
 void
 NodeImpl::serveForever()
 {
-  LOG(DEBUG) << "start serving...";
+  LOG(DEBUG) << "node init...";
   LOG(DEBUG) << m_handlers.size() << " interest handlers registered";
   LOG(DEBUG) << m_commonValidators.size() << " interest validators registered ";
   LOG(DEBUG) << m_commonProcessors.size() << " data processors registered";
   LOG(DEBUG) << "start registering prefixes";
   registerPrefixes();
   LOG(DEBUG) << "start serving...";
-  m_face->processEvents();
+  while (true) {
+    m_face->processEvents();
+  }
   LOG(ERROR) << "server quit.";
 }
 
@@ -22,6 +24,8 @@ NodeImpl::route(string path,
                 vector<InterestValidator> validators,
                 vector<DataProcessor> processors)
 {
+  LOG(DEBUG) << "register: " << path << " [ " << validators.size() << " " << processors.size()
+             << " ]";
   m_handlers[path] = handler;
   if (validators.size() > 0) {
     m_validators[path] = validators;
@@ -34,6 +38,7 @@ NodeImpl::route(string path,
 void
 NodeImpl::registerPrefixes()
 {
+  LOG(INFO) << "register prefix : " << m_prefix.toUri();
   m_face->setInterestFilter(m_prefix,
                             bind(&NodeImpl::onInterest, this, _1, _2),
                             ndn::RegisterPrefixSuccessCallback(),
@@ -144,6 +149,7 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   }
   InterestHandler handler = m_handlers[path];
   auto data = make_shared<Data>();
+  data->setName(interest.getName());
   InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
   bool sent = false;
   PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
@@ -160,6 +166,7 @@ NodeImpl::onFailed(const Interest& interest, string reason)
   auto data = make_shared<Data>();
   data->setContentType(ndn::tlv::ContentType_Nack);
   data::setStringContent(*data, reason);
+  m_keychain->sign(*data);
   m_face->put(*data);
 }
 
@@ -168,8 +175,17 @@ void
 NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data)
 {
   process(path, interest, data);
+  // sign the data if it is not signed yet .
+  if (!data->getSignature()) {
+    m_keychain->sign(*data);
+  }
+  if (data->getFreshnessPeriod() == time::milliseconds::zero()) {
+    data->setFreshnessPeriod(time::milliseconds(1000));
+  }
   m_face->put(*data);
   sent = true;
+  LOG(DEBUG) << "[out] Data: " << (*data).getName().toUri();
+  LOG(DEBUG) << "\tSize: " << (*data).getContent().size();
 }
 
 vector<Name>
@@ -196,7 +212,9 @@ NodeImpl::parseInterestName(const Interest& interest)
     }
   }
   if (!found) {
-    throw "no matching handler found";
+    LOG(WARNING) << "didn't find registered path for interest : " << interest.toUri()
+                 << ". Using default handler /";
+    v.push_back(NODE_DEFAULT_PATH);
   }
 
   // according to

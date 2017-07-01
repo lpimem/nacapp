@@ -13,6 +13,7 @@ Thermometer::Thermometer(string localPrefix,
 {
   Name prefix(localPrefix);
   prefix.append(location);
+  prefix.append(m_dataType);
   m_node = make_unique<Node>(prefix, f);
   m_producer = make_unique<Producer>(prefix, m_dataType, *f, producerDbPath);
 }
@@ -24,9 +25,15 @@ Thermometer::run()
   m_node->serveForever();
 }
 
+// Input prefix should be in form :
+//    /local-home/location/some/place
+// Resulting prefix for this app will be:
+//    /local-home/location/some/place/temperature
 void
-Thermometer::setPrefix(Name prefix)
+Thermometer::setPrefix(Name prefix, Name location)
 {
+  prefix.append(location);
+  prefix.append(m_dataType);
   m_node->setPrefix(prefix);
 }
 
@@ -80,16 +87,17 @@ Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const 
 void
 Thermometer::onNACProduceError(const ndn::gep::ErrorCode& code, const std::string& msg)
 {
-  LOG(ERROR) << "Error producing data using NAC" << code << ": " << msg;
+  LOG(ERROR) << "Error producing data using NAC" << msg;
 }
 
 void
 Thermometer::registerPrefixes()
 {
-  m_node->route(m_dataType, std::bind(&Thermometer::onGetTemperature, this, _1, _2, _3, _4, _5));
+  m_node->route(NODE_DEFAULT_PATH,
+                std::bind(&Thermometer::onGetTemperature, this, _1, _2, _3, _4, _5));
 
-  const std::string ckeyPath = m_dataType + "/C-KEY";
-  m_node->route(ckeyPath, std::bind(&Thermometer::onGetContentKey, this, _1, _2, _3, _4, _5));
+  m_node->route(NAME_COMPONENT_C_KEY.toUri(),
+                std::bind(&Thermometer::onGetContentKey, this, _1, _2, _3, _4, _5));
 }
 
 int

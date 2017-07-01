@@ -5,4 +5,9 @@
 #include "../../shared/src/common-ndn.hpp"
 #include "../../shared/src/easylogging/easylogging++.h"
 
+namespace nacapp {
+
+const std::string NODE_DEFAULT_PATH = "/";
+} // nacapp
+
 #endif /* NODE_COMMON_HPP */

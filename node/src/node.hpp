@@ -22,8 +22,8 @@ namespace nacapp {
 class Node
 {
 public:
-  Node(Name prefix, shared_ptr<Face> f)
-    : impl(prefix, f)
+  Node(Name prefix, shared_ptr<Face> f, shared_ptr<KeyChain> keychain)
+    : impl(prefix, f, keychain)
   {
   }
 

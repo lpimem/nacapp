@@ -43,7 +43,7 @@ private:
                   PutData put);
 
   void
-  setPrefix(Name prefix);
+  setPrefix(Name prefix, Name location);
 
 private:
   int

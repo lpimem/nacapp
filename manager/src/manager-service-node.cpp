@@ -1,4 +1,7 @@
+
 #include "manager-service-node.hpp"
+
+#include <ndn-cxx/encoding/tlv.hpp>
 
 namespace nacapp {
 
@@ -12,12 +15,23 @@ ManagerServiceNode::addRoutes()
                    InterestShower show,
                    PutData put) {
                  // args: <data-type>/E-Key/for/...
+                 //            0        1    2    3
+                 if (args.size() < 4) {
+                   string msg{"missing argument for path /READ"};
+                   LOG(ERROR) << msg;
+                   data->setContentType(ndn::tlv::ContentType_Nack);
+                   data->setContent(reinterpret_cast<const uint8_t*>(msg.c_str()), msg.length());
+                   return;
+                 }
                  ndn::name::Component keyType = args.get(1);
                  const Name keyArgs = args.getSubName(3);
                  if (keyType.toUri() == "E-Key")
                    this->m_service.onGetEKey(interest, args, data, show, put);
                  else if (keyType.toUri() == "D-Key")
                    this->m_service.onGetDKey(interest, keyArgs, data, show, put);
+                 else {
+                   LOG(WARNING) << "invalid pattern for path /READ";
+                 }
                });
 
   m_node.route("/IDENTITY/for",

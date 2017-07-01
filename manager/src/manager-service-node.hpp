@@ -11,9 +11,9 @@ namespace nacapp {
 class ManagerServiceNode
 {
 public:
-  ManagerServiceNode(Name prefix, shared_ptr<Face> f)
+  ManagerServiceNode(Name prefix, shared_ptr<Face> f, shared_ptr<KeyChain> kc)
     : m_prefix(prefix)
-    , m_node(prefix, f)
+    , m_node(prefix, f, kc)
     , m_service(prefix)
   {
   }

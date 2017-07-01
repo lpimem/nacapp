@@ -12,9 +12,10 @@ namespace nacapp {
 class NodeImpl
 {
 public:
-  NodeImpl(Name prefix, shared_ptr<Face> f)
+  NodeImpl(Name prefix, shared_ptr<Face> f, shared_ptr<KeyChain> keychain)
     : m_prefix(prefix)
     , m_face(f)
+    , m_keychain(keychain)
   {
   }
 
@@ -33,6 +34,12 @@ public:
 
   void
   setPrefix(Name prefix);
+
+  void
+  setKeychain(shared_ptr<KeyChain> kc)
+  {
+    m_keychain = kc;
+  }
 
   void
   onRegisterPrefixFailed(const Name& prefix, const std::string& reason);
@@ -64,6 +71,7 @@ public:
 private:
   Name m_prefix;
   shared_ptr<Face> m_face;
+  shared_ptr<KeyChain> m_keychain;
   map<Name, InterestHandler> m_handlers;
   vector<InterestValidator> m_commonValidators;
   vector<DataProcessor> m_commonProcessors;
