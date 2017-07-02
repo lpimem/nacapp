@@ -3,7 +3,7 @@
 
 namespace nacapp {
 
-void
+bool
 Service::onGetEKey(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
@@ -20,9 +20,10 @@ Service::onGetEKey(const Interest& interest,
   const TimeStamp timeslot = boost::posix_time::from_iso_string(timestamp);
   shared_ptr<Data> ekey = m_manager.getEKey(dataType, timeslot);
   data->setContent(ekey->wireEncode());
+  return false;
 }
 
-void
+bool
 Service::onGetDKey(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
@@ -35,9 +36,10 @@ Service::onGetDKey(const Interest& interest,
   const TimeStamp timeslot = boost::posix_time::from_iso_string(timestamp);
   shared_ptr<Data> dkey = m_manager.getDKey(entity, dataType, timeslot);
   data->setContent(dkey->wireEncode());
+  return false;
 }
 
-void
+bool
 Service::onGetIdentityKey(const Interest& interest,
                           const Name& args,
                           shared_ptr<Data> data,
@@ -47,9 +49,10 @@ Service::onGetIdentityKey(const Interest& interest,
   Name entity{args};
   shared_ptr<Certificate> id = m_manager.getIdentity(entity);
   data->setContent(id->wireEncode());
+  return false;
 }
 
-void
+bool
 Service::onAddIdentity(const Interest& interest,
                        const Name& args,
                        shared_ptr<Data> data,
@@ -71,9 +74,10 @@ Service::onAddIdentity(const Interest& interest,
   else {
     throw "Add identity: interest KeyLocator must contain the name of the key";
   }
+  return false;
 }
 
-void
+bool
 Service::onRemoveIdentity(const Interest& interest,
                           const Name& args,
                           shared_ptr<Data> data,
@@ -83,9 +87,10 @@ Service::onRemoveIdentity(const Interest& interest,
   Name identity{args};
   authenticateManagementInterest(interest, identity);
   m_manager.removeIdentity(identity);
+  return false;
 }
 
-void
+bool
 Service::onGrant(const Interest& interest,
                  const Name& args,
                  shared_ptr<Data> data,
@@ -105,9 +110,10 @@ Service::onGrant(const Interest& interest,
   string startHour = args.get(5).toUri();
   string endHour = args.get(6).toUri();
   grant(identity, dataType, startDate, endDate, startHour, endHour);
+  return false;
 }
 
-void
+bool
 Service::onRevoke(const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,
@@ -122,6 +128,7 @@ Service::onRevoke(const Interest& interest,
   string identity = strings::uriDecode(args.get(0).toUri());
   string dataType = strings::uriDecode(args.get(1).toUri());
   m_manager.revokeAccess(identity, dataType);
+  return false;
 }
 
 void

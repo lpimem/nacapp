@@ -43,6 +43,7 @@ TEST_CASE("NodeImple::route")
                          uint8_t resp[] = {1};
                          size_t leng = 1;
                          data->setContent(resp, leng);
+                         return false;
                        },
                        {},
                        {});
@@ -91,7 +92,7 @@ TEST_CASE("NodeImple::parseInterestName")
                         const Name& args,
                         shared_ptr<Data> data,
                         InterestShower show,
-                        PutData put) {},
+                        PutData put) { return false; },
                      {},
                      {});
 

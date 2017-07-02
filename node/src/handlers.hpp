@@ -27,9 +27,10 @@ using PutData = std::function<void(shared_ptr<Data> d)>;
  * Application interest handler
  * @p path is the name components after the application namespace. 
  * @p args is the name components in between @p path and signature components.
+ * @return true if data is sent asynchronously
  */
 using InterestHandler = std::function<
-  void(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show, PutData put)>;
+  bool(const Interest& interest, const Name& args, shared_ptr<Data> data, InterestShower show, PutData put)>;
 
 } // nacapp
 #endif /* HANDLERS_HPP */

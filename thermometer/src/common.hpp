@@ -21,6 +21,9 @@ using nacapp::Node;
 const ndn::name::Component NAME_COMPONENT_SAMPLES("SAMPLES");
 const ndn::name::Component NAME_COMPONENT_TEMPERATURE("temperature");
 
+// second
+const int QUERY_TIME_DURATION = 10;
+
 } // producer
 } // nacapp
 

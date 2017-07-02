@@ -20,6 +20,7 @@ class Thermometer
 public:
   Thermometer(string localPrefix,
               string location,
+              string dataType,
               shared_ptr<Face> f,
               const string& producerDbPath,
               shared_ptr<KeyChain> kc);
@@ -32,14 +33,14 @@ private:
   void
   registerPrefixes();
 
-  void
+  bool
   onGetTemperature(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
                    InterestShower show,
                    PutData put);
 
-  void
+  bool
   onGetContentKey(const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,

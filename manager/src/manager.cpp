@@ -44,7 +44,7 @@ Manager::validateCertificate(const Name& identity, shared_ptr<Certificate> cert)
 void
 Manager::removeIdentity(const Name& identity)
 {
-  LOG(DEBUG) << "removing identity " << identity.toUri();
+  LOG(INFO) << "removing identity " << identity.toUri();
   m_identities.erase(identity.toUri());
 }
 
@@ -95,13 +95,13 @@ Manager::createGroup(const Name& dataType)
 {
   string groupFullName = getGroupFullName(m_prefix, dataType);
   if (m_groups.find(groupFullName) != m_groups.end()) {
-    LOG(DEBUG) << groupFullName << " already created";
+    LOG(INFO) << groupFullName << " already created";
     return m_groups[groupFullName];
   }
   auto groupManager =
     make_shared<GroupManager>(m_prefix, dataType, DB_PATH, m_default_key_size, DEFAULT_KEY_FRESH_PERIOD);
   m_groups[groupFullName] = groupManager;
-  LOG(DEBUG) << groupFullName << " created";
+  LOG(INFO) << groupFullName << " created";
   return groupManager;
 }
 

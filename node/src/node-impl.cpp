@@ -5,13 +5,13 @@ namespace nacapp {
 void
 NodeImpl::serveForever()
 {
-  LOG(DEBUG) << "node init...";
-  LOG(DEBUG) << m_handlers.size() << " interest handlers registered";
-  LOG(DEBUG) << m_commonValidators.size() << " interest validators registered ";
-  LOG(DEBUG) << m_commonProcessors.size() << " data processors registered";
-  LOG(DEBUG) << "start registering prefixes";
+  LOG(INFO) << "node init...";
+  LOG(INFO) << m_handlers.size() << " interest handlers registered";
+  LOG(INFO) << m_commonValidators.size() << " interest validators registered ";
+  LOG(INFO) << m_commonProcessors.size() << " data processors registered";
+  LOG(INFO) << "start registering prefixes";
   registerPrefixes();
-  LOG(DEBUG) << "start serving...";
+  LOG(INFO) << "start serving...";
   while (true) {
     m_face->processEvents();
   }
@@ -24,8 +24,7 @@ NodeImpl::route(string path,
                 vector<InterestValidator> validators,
                 vector<DataProcessor> processors)
 {
-  LOG(DEBUG) << "register: " << path << " [ " << validators.size() << " " << processors.size()
-             << " ]";
+  LOG(INFO) << "register: " << path << " [ " << validators.size() << " " << processors.size() << " ]";
   m_handlers[path] = handler;
   if (validators.size() > 0) {
     m_validators[path] = validators;
@@ -38,11 +37,42 @@ NodeImpl::route(string path,
 void
 NodeImpl::registerPrefixes()
 {
-  LOG(INFO) << "register prefix : " << m_prefix.toUri();
-  m_face->setInterestFilter(m_prefix,
-                            bind(&NodeImpl::onInterest, this, _1, _2),
-                            ndn::RegisterPrefixSuccessCallback(),
-                            bind(&NodeImpl::onRegisterPrefixFailed, this, _1, _2));
+  for (auto item : m_handlers) {
+    const Name path = item.first;
+    InterestHandler handler = item.second;
+    Name prefix(m_prefix);
+    if (path.toUri() != "/") {
+      prefix.append(path);
+    }
+    LOG(INFO) << "register prefix : " << prefix.toUri();
+    m_face->setInterestFilter(prefix,
+                              bind(&NodeImpl::onInterest, this, _1, _2),
+                              ndn::RegisterPrefixSuccessCallback(),
+                              bind(&NodeImpl::onRegisterPrefixFailed, this, _1, _2));
+  }
+}
+
+void
+NodeImpl::onInterest(const Name& filter, const Interest& interest)
+{
+  string err;
+  bool isError = true;
+  try {
+    LOG(INFO) << "In: " << interest.toUri();
+    vector<Name> parts = parseInterestName(interest);
+    handleInterest(interest, parts);
+    isError = false;
+  }
+  catch (string e) {
+    err = e;
+  }
+  catch (const std::exception& exc) {
+    err = exc.what();
+  }
+  if (isError) {
+    LOG(ERROR) << "Error handling " << interest.toUri() << ": " << err;
+    onFailed(interest, err);
+  }
 }
 
 void
@@ -95,21 +125,6 @@ NodeImpl::showInterest(const Interest& interest, DataReceiver proc)
 }
 
 void
-NodeImpl::onInterest(const Name& filter, const Interest& interest)
-{
-  try {
-    LOG(DEBUG) << "In: " << interest.toUri();
-    vector<Name> parts = parseInterestName(interest);
-    handleInterest(interest, parts);
-  }
-  catch (string e) {
-    LOG(ERROR) << "Error handling " << interest.toUri() << ": " << e;
-    onFailed(interest, e);
-    return;
-  }
-}
-
-void
 NodeImpl::validate(const Name& path, const Interest& interest)
 {
   for (InterestValidator validator : m_commonValidators) {
@@ -141,7 +156,7 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   Name prefix = parsedParts[0];
   Name path = parsedParts[1];
   Name args = parsedParts[2];
-
+  LOG(INFO) << "Handling interest: " << prefix << "|" << path << "|" << args;
 
   validate(path, interest);
 
@@ -155,8 +170,8 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
   bool sent = false;
   PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
-  handler(interest, args, data, show, put);
-  if (!sent) {
+  bool async = handler(interest, args, data, show, put);
+  if (!async && !sent) {
     put(data);
   }
   return data;
@@ -186,8 +201,8 @@ NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, share
   }
   m_face->put(*data);
   sent = true;
-  LOG(DEBUG) << "[out] Data: " << (*data).getName().toUri();
-  LOG(DEBUG) << "\tSize: " << (*data).getContent().size();
+  LOG(INFO) << "[out] Data: " << (*data).getName().toUri();
+  LOG(INFO) << "\tSize: " << (*data).getContent().size();
 }
 
 vector<Name>
@@ -208,7 +223,11 @@ NodeImpl::parseInterestName(const Interest& interest)
   bool found = false;
   for (auto entry : m_handlers) {
     Name p = entry.first;
+    if (p.toUri() == NODE_DEFAULT_PATH) {
+      continue;
+    }
     Name path = iname.getSubName(offset, p.size());
+    // LOG(INFO) << "[D] chech path: " << std::endl << "\t" << p << std::endl << "\t" << path;
     if (p == path) {
       found = true;
       offset += p.size();

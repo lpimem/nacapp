@@ -38,7 +38,7 @@ public:
   // <prefix>/READ/<data-type>/E-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/E-Key/for
   // Args : /<user>/<timestamp>
-  void
+  bool
   onGetEKey(const Interest& interest,
             const Name& args,
             shared_ptr<Data> data,
@@ -48,7 +48,7 @@ public:
   // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
   // Path : /READ/<data-type>/D-Key/for
   // Args : /<user>/<timestamp>
-  void
+  bool
   onGetDKey(const Interest& interest,
             const Name& args,
             shared_ptr<Data> data,
@@ -72,7 +72,7 @@ public:
   Args: <entity-name>
 
   */
-  void
+  bool
   onGetIdentityKey(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
@@ -89,7 +89,7 @@ public:
       Path: /MANAGEMENT/identity/add
       Args: <identity-name>
   */
-  void
+  bool
   onAddIdentity(const Interest& interest,
                 const Name& args,
                 shared_ptr<Data> data,
@@ -97,7 +97,7 @@ public:
                 PutData put);
 
   // <prefix>/MANAGEMENT/identity/remove/<identity-name>
-  void
+  bool
   onRemoveIdentity(const Interest& interest,
                    const Name& args,
                    shared_ptr<Data> data,
@@ -111,7 +111,7 @@ public:
   //       /URIEncode(<data-type>)
   //       /grant type
   //       /grant arguments (/start/end/startHour/endHour)
-  void
+  bool
   onGrant(const Interest& interest,
           const Name& args,
           shared_ptr<Data> data,
@@ -119,7 +119,7 @@ public:
           PutData put);
 
   // <prefix>/MANAGEMENT/access/revoke/URIEncode(<identity-name>)/URIEncode(<data-type>)
-  void
+  bool
   onRevoke(const Interest& interest,
            const Name& args,
            shared_ptr<Data> data,
