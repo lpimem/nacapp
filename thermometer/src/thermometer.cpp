@@ -14,11 +14,13 @@ Thermometer::Thermometer(string localPrefix,
 {
   Name prefix(localPrefix);
   prefix.append(location);
+  prefix.append(NAME_COMPONENT_SAMPLE);
   prefix.append(m_dataType);
   m_node = make_unique<Node>(prefix, f, kc);
 
   Name managerPrefix(localPrefix);
-  managerPrefix.append("manager");
+  managerPrefix.append(location);
+  managerPrefix.append(NAME_COMPONENT_READ);
   m_producer = make_shared<Producer>(managerPrefix, m_dataType, *f, producerDbPath);
 }
 
@@ -32,7 +34,7 @@ Thermometer::run()
 // Input prefix should be in form :
 //    /local-home/location/some/place
 // Resulting prefix for this app will be:
-//    /local-home/location/some/place/temperature
+//    /local-home/location/some/place/SAMPLE/temperature
 void
 Thermometer::setPrefix(Name prefix, Name location)
 {
