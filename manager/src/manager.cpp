@@ -98,8 +98,8 @@ Manager::createGroup(const Name& dataType)
     LOG(DEBUG) << groupFullName << " already created";
     return m_groups[groupFullName];
   }
-  auto groupManager = make_shared<GroupManager>(m_prefix, dataType, DB_PATH, m_default_key_size,
-                                                DEFAULT_KEY_FRESH_PERIOD);
+  auto groupManager =
+    make_shared<GroupManager>(m_prefix, dataType, DB_PATH, m_default_key_size, DEFAULT_KEY_FRESH_PERIOD);
   m_groups[groupFullName] = groupManager;
   LOG(DEBUG) << groupFullName << " created";
   return groupManager;
@@ -154,7 +154,7 @@ Manager::createSchedule(shared_ptr<GroupManager> group, const NamedInterval& nam
 Certificate
 Manager::getEntityCert(const Name& entity)
 {
-  Identity id = AppKeyChain.createIdentity(entity, getDefaultKeyParams());
+  Identity id = m_keychain->createIdentity(entity, getDefaultKeyParams());
   return id.getDefaultKey().getDefaultCertificate();
 }
 

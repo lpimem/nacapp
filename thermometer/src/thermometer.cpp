@@ -7,15 +7,19 @@ namespace thermometer {
 Thermometer::Thermometer(string localPrefix,
                          string location,
                          shared_ptr<Face> f,
-                         const string& producerDbPath)
+                         const string& producerDbPath,
+                         shared_ptr<KeyChain> kc)
   : m_location(location)
   , m_dataType("temperature")
 {
   Name prefix(localPrefix);
   prefix.append(location);
   prefix.append(m_dataType);
-  m_node = make_unique<Node>(prefix, f);
-  m_producer = make_unique<Producer>(prefix, m_dataType, *f, producerDbPath);
+  m_node = make_unique<Node>(prefix, f, kc);
+
+  Name managerPrefix(localPrefix);
+  managerPrefix.append("manager");
+  m_producer = make_shared<Producer>(managerPrefix, m_dataType, *f, producerDbPath);
 }
 
 void
@@ -44,13 +48,11 @@ Thermometer::onGetTemperature(const Interest& interest,
                               InterestShower show,
                               PutData put)
 {
-  const int t = readTemp();
+  int t = readTemp();
   auto now = time::system_clock::now();
-  m_producer->produce(*data,
-                      now,
-                      (uint8_t*)t,
-                      1,
-                      std::bind(&Thermometer::onNACProduceError, this, _1, _2));
+  auto callback = std::bind(&Thermometer::onNACProduceError, this, _1, _2);
+  uint8_t content[] = {(uint8_t)t};
+  m_producer->produce(*data, now, content, sizeof(content), callback);
 }
 
 // args: timeslot

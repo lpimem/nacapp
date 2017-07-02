@@ -6,39 +6,48 @@
 
 #include "test.common.hpp"
 
-namespace nacapp
-{
-namespace tests
-{
+namespace nacapp {
+namespace tests {
 
 const std::string PREFIX = "/prefix";
 const std::uint32_t KEY_SIZE = 2048;
 
 class ManagerTestFixture
 {
-
 public:
   ManagerTestFixture()
-      : prefix(PREFIX), entity(PREFIX + "/Alice"), dataType("health"),
-        manager(PREFIX, KEY_SIZE)
+    : prefix(PREFIX)
+    , entity(PREFIX + "/Alice")
+    , dataType("health")
+    , m_keychain(createMemoryKeyChain())
+    , manager(PREFIX, m_keychain, KEY_SIZE)
   {
     ndn::RsaKeyParams keyParams(KEY_SIZE, ndn::KeyIdType::SHA256);
-    Identity id = AppKeyChain.createIdentity(prefix, keyParams);
-    AppKeyChain.setDefaultIdentity(id);
-    m_ident = AppKeyChain.createIdentity(entity, keyParams);
+    Identity id = m_keychain->createIdentity(prefix, keyParams);
+    m_keychain->setDefaultIdentity(id);
+    m_ident = m_keychain->createIdentity(entity, keyParams);
     auto key = m_ident.getDefaultKey();
     m_cert = key.getDefaultCertificate();
-    AppKeyChain.deleteIdentity(m_ident);
+    m_keychain->deleteIdentity(m_ident);
   }
 
 public:
-  const Identity &getIdentity() { return m_ident; }
-  const Certificate &getCert() { return m_cert; }
+  const Identity&
+  getIdentity()
+  {
+    return m_ident;
+  }
+  const Certificate&
+  getCert()
+  {
+    return m_cert;
+  }
 
 public:
   const Name prefix;
   const Name entity;
   const Name dataType;
+  shared_ptr<KeyChain> m_keychain;
   Manager manager;
 
 private:

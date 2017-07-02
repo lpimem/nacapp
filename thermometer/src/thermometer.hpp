@@ -18,7 +18,11 @@ namespace thermometer {
 class Thermometer
 {
 public:
-  Thermometer(string localPrefix, string location, shared_ptr<Face> f, const string& producerDbPath);
+  Thermometer(string localPrefix,
+              string location,
+              shared_ptr<Face> f,
+              const string& producerDbPath,
+              shared_ptr<KeyChain> kc);
 
 public:
   void
@@ -60,7 +64,8 @@ private:
   std::string m_location;
   std::string m_dataType;
   unique_ptr<Node> m_node;
-  unique_ptr<Producer> m_producer;
+  shared_ptr<Producer> m_producer;
+  // Producer m_producer
 }; // class Thermometer
 } // namespace thermometer
 } // namespace nacapp

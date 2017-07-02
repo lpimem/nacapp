@@ -156,7 +156,7 @@ Service::signPubkey(const Buffer& key)
   Block block(keyPtr, keyPtr->begin(), keyPtr->end());
   Data d(block);
   Certificate c(d);
-  AppKeyChain.sign(c);
+  m_keychain->sign(c);
   return c;
 }
 

@@ -14,8 +14,9 @@ namespace nacapp {
 class Manager
 {
 public:
-  Manager(const Name& prefix, uint32_t keysize = DEFAULT_RSA_KEY_SIZE)
+  Manager(const Name& prefix, shared_ptr<KeyChain> kc, uint32_t keysize = DEFAULT_RSA_KEY_SIZE)
     : m_prefix(prefix)
+    , m_keychain(kc)
     , m_default_key_size(keysize)
   {
   }
@@ -109,6 +110,7 @@ private:
 
 private:
   const Name m_prefix;
+  shared_ptr<KeyChain> m_keychain;
   const uint32_t m_default_key_size;
   std::map<string, shared_ptr<Certificate>> m_identities;
   std::map<string, shared_ptr<Data>> m_dkey_cache;

@@ -14,7 +14,7 @@ public:
   ManagerServiceNode(Name prefix, shared_ptr<Face> f, shared_ptr<KeyChain> kc)
     : m_prefix(prefix)
     , m_node(prefix, f, kc)
-    , m_service(prefix)
+    , m_service(prefix, kc)
   {
   }
 

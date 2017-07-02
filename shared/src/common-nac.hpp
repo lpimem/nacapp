@@ -13,6 +13,7 @@ using ndn::gep::RepetitiveInterval;
 using ndn::gep::TimeStamp;
 
 const std::string SCHEDULE_NAME_EVERY_DAY{"everyday"};
+const uint32_t DEFAULT_RSA_KEY_SIZE = 2048;
 
 } // nacapp
 #endif

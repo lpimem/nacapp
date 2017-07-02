@@ -23,7 +23,7 @@ public:
   shared_ptr<Face> face = make_shared<Face>("localhost");
   shared_ptr<KeyChain> keyChain = make_shared<KeyChain>();
   Identity id = keyChain->createIdentity(prefix, RSA_KEY_PARAMS);
-  NodeImpl impl{prefix, face};
+  NodeImpl impl{prefix, face, keyChain};
 };
 
 TEST_CASE("NodeImple::route")
@@ -35,13 +35,17 @@ TEST_CASE("NodeImple::route")
   SECTION("serve local")
   {
     fixture.impl.route(reqPath.toUri(),
-                       [](const Interest& interest, const Name& args, shared_ptr<Data> data,
-                          InterestShower showInterest) {
+                       [](const Interest& interest,
+                          const Name& args,
+                          shared_ptr<Data> data,
+                          InterestShower showInterest,
+                          PutData put) {
                          uint8_t resp[] = {1};
                          size_t leng = 1;
                          data->setContent(resp, leng);
                        },
-                       {}, {});
+                       {},
+                       {});
 
     fixture.impl.registerPrefixes();
     fixture.face->processEvents(time::milliseconds(10));
@@ -82,9 +86,14 @@ TEST_CASE("NodeImple::parseInterestName")
   const Name reqPath("/PATH/TO/SERVICE");
   const Name reqArgs("/ARG1/ARG2/ARG3");
 
-  fixture.impl.route(reqPath.toUri(), [](const Interest& interest, const Name& args,
-                                         shared_ptr<Data> data, InterestShower show) {},
-                     {}, {});
+  fixture.impl.route(reqPath.toUri(),
+                     [](const Interest& interest,
+                        const Name& args,
+                        shared_ptr<Data> data,
+                        InterestShower show,
+                        PutData put) {},
+                     {},
+                     {});
 
   SECTION("parse correct interest name ")
   {

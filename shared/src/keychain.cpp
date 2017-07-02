@@ -2,7 +2,13 @@
 
 namespace nacapp {
 
-KeyChain AppKeyChain;
+// KeyChain AppKeyChain;
+
+std::shared_ptr<KeyChain>
+createMemoryKeyChain()
+{
+  return make_shared<KeyChain>("pib-memory:", "tpm-memory:", true);
+}
 
 typedef ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RsaKeyParams;
 

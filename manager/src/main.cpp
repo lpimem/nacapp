@@ -13,7 +13,7 @@ main()
   LOG(INFO) << ">>> START >>>";
   const std::string PREFIX = "/local-home/manager";
   auto f = std::make_shared<ndn::Face>("127.0.0.1");
-  auto keychain = std::make_shared<ndn::security::v2::KeyChain>("pib-memory:", "tpm-memory:", true);
+  auto keychain = nacapp::createMemoryKeyChain();
   nacapp::ManagerServiceNode node(PREFIX, f, keychain);
   node.serveForever();
   LOG(INFO) << "<<< EXIT <<<";

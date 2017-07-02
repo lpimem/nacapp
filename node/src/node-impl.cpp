@@ -142,11 +142,13 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   Name path = parsedParts[1];
   Name args = parsedParts[2];
 
+
   validate(path, interest);
 
   if (m_handlers.find(path) == m_handlers.end()) {
     throw "Cannot find handler for interest: " + interest.getName().toUri();
   }
+
   InterestHandler handler = m_handlers[path];
   auto data = make_shared<Data>();
   data->setName(interest.getName());
@@ -194,11 +196,14 @@ NodeImpl::parseInterestName(const Interest& interest)
   vector<Name> v;
   size_t offset = m_prefix.size();
   const Name iname = interest.getName();
+
   Name prefix = iname.getPrefix(offset);
+
   if (prefix != m_prefix) {
     throw "prefix does not match";
   }
   v.push_back(prefix);
+
 
   bool found = false;
   for (auto entry : m_handlers) {

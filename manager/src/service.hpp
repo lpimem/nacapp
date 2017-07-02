@@ -25,9 +25,10 @@ namespace nacapp {
 class Service
 {
 public:
-  Service(const Name& prefix)
+  Service(const Name& prefix, shared_ptr<KeyChain> kc)
     : m_prefix(prefix)
-    , m_manager(prefix)
+    , m_keychain(kc)
+    , m_manager(prefix, kc)
   {
   }
 
@@ -144,6 +145,7 @@ private:
 
 private:
   const Name& m_prefix;
+  shared_ptr<KeyChain> m_keychain;
   Manager m_manager;
 };
 

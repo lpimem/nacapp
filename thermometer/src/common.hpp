@@ -7,6 +7,7 @@
 #include "../../shared/src/common-nac.hpp"
 #include "../../shared/src/common-ndn.hpp"
 #include "../../shared/src/easylogging/easylogging++.h"
+#include "../../shared/src/keychain.hpp"
 
 #include "../../node/src/node.hpp"
 
