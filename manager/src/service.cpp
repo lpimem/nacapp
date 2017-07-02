@@ -26,8 +26,8 @@ Service::onGetEKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
-  LOG(INFO) << "DEBUG: onGetEKey: 3";
-  data->setContent(ekey->wireEncode());
+  LOG(INFO) << "DEBUG: onGetEKey: 3 ekey: " << ekey->getName().toUri();
+  put(ekey);
   LOG(INFO) << "DEBUG: onGetEKey: 4";
   return false;
 }
@@ -49,7 +49,8 @@ Service::onGetDKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
-  data->setContent(dkey->wireEncode());
+  put(dkey);
+  LOG(INFO) << "DEBUG: onGetDKey: 4 Key published.";
   return false;
 }
 
