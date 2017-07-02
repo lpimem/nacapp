@@ -52,7 +52,7 @@ ManagerServiceNode::addRoutes()
                  Name keyType = parts[1];
                  Name keyArgs = parts[2];
 
-                 LOG(INFO) << "[DEBUG] keyType: " << keyType.toUri();
+                //  LOG(INFO) << "[DEBUG] keyType: " << keyType.toUri();
 
                  if (keyType.toUri() == "/E-KEY")
                    return this->m_service->onGetEKey(interest, location, keyArgs, data, show, put);

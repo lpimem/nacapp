@@ -51,7 +51,7 @@ public:
   onFailed(const Interest& interest, string reason);
 
   void
-  sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data);
+  sendData(const Name& path, const Interest& interest, shared_ptr<bool> sent, shared_ptr<Data> data);
 
   void
   validate(const Name& path, const Interest& interest);

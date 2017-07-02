@@ -170,7 +170,7 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
 {
   shared_ptr<GroupManager> group = getGroup(dataType);
   if (group == nullptr) {
-    LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
+    // LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
     return nullptr;
   }
   std::list<Data> keys = group->getGroupKey(timeslot);

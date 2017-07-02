@@ -80,7 +80,6 @@ Thermometer::onGetTemperature(const Interest& interest,
 }
 
 // args: timeslot
-// TODO: how to derive the correct ckey name from a data packet?
 bool
 Thermometer::onGetContentKey(const Interest& interest,
                              const Name& args,
@@ -88,6 +87,10 @@ Thermometer::onGetContentKey(const Interest& interest,
                              InterestShower show,
                              PutData put)
 {
+  if (args.size() < 1) {
+    data->setContentType(ndn::tlv::ContentType_Nack);
+    return false;
+  }
   std::string timeExpr = args.get(0).toUri();
   timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
   time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
@@ -102,14 +105,15 @@ void
 Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d)
 {
   LOG(INFO) << "content key retrieved: [" << d.size() << "]";
+  const Name interestName = interest.getName();
   for (auto one : d) {
     LOG(INFO) << "    " << one.getName();
-    if (one.getName() == interest.getName()) {
+    if (interestName.isPrefixOf(one.getName())) {
       put(make_shared<Data>(one));
       break;
     }
   }
-  LOG(ERROR) << "no encrypted content key found for " << interest.getName();
+  LOG(ERROR) << "no encrypted content key found for " << interestName;
 }
 
 void

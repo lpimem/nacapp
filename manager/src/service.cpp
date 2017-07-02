@@ -16,19 +16,13 @@ Service::onGetEKey(const Interest& interest,
   }
   ndn::Exclude exclude = interest.getExclude();
   const string timeExpr = exclude.begin()->from.toUri();
-  LOG(INFO) << "DEBUG: onGetEKey: " << std::endl
-            << "\t DataType: " << datatype << std::endl
-            << "\t timeslot: " << timeExpr;
   const TimeStamp timeslot = boost::posix_time::from_iso_string(timeExpr);
-  LOG(INFO) << "DEBUG: onGetEKey: 2";
   shared_ptr<Data> ekey = m_manager->getEKey(datatype, timeslot);
   if (ekey == nullptr) {
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
-  LOG(INFO) << "DEBUG: onGetEKey: 3 ekey: " << ekey->getName().toUri();
   put(ekey);
-  LOG(INFO) << "DEBUG: onGetEKey: 4";
   return false;
 }
 

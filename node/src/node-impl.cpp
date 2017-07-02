@@ -69,6 +69,9 @@ NodeImpl::onInterest(const Name& filter, const Interest& interest)
   catch (const std::exception& exc) {
     err = exc.what();
   }
+  catch (...) {
+    err = "unknown error";
+  }
   if (isError) {
     LOG(ERROR) << "Error handling " << interest.toUri() << ": " << err;
     onFailed(interest, err);
@@ -156,7 +159,10 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   Name prefix = parsedParts[0];
   Name path = parsedParts[1];
   Name args = parsedParts[2];
-  LOG(INFO) << "Handling interest: " << prefix << "|" << path << "|" << args;
+  LOG(INFO) << std::endl
+            << "\tPrefix: " << prefix << std::endl
+            << "\tPath: " << path << std::endl
+            << "\tArgs:" << args;
 
   validate(path, interest);
 
@@ -168,7 +174,7 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   auto data = make_shared<Data>();
   data->setName(interest.getName());
   InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
-  bool sent = false;
+  shared_ptr<bool> sent = make_shared<bool>(false);
   PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
 
   bool async = handler(interest, args, data, show, put);
@@ -199,7 +205,10 @@ sendNack(shared_ptr<Face> face, const Interest& interest)
 
 
 void
-NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data)
+NodeImpl::sendData(const Name& path,
+                   const Interest& interest,
+                   shared_ptr<bool> sent,
+                   shared_ptr<Data> data)
 {
   // NAC process data with nack type as normal data and crashes the application.
   // So we need to convert all nack data into lp::Nack here.
@@ -219,7 +228,7 @@ NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, share
     data->setFreshnessPeriod(time::milliseconds(1000));
   }
   m_face->put(*data);
-  sent = true;
+  *sent = true;
   LOG(INFO) << "[out] Data: " << (*data).getName().toUri();
   LOG(INFO) << "\tSize: " << (*data).getContent().size();
 }
