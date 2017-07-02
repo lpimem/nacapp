@@ -14,7 +14,7 @@ public:
   ManagerServiceNode(Name prefix, shared_ptr<Face> f, shared_ptr<KeyChain> kc)
     : m_prefix(prefix)
     , m_node(prefix, f, kc)
-    , m_service(prefix, kc)
+    , m_service(make_shared<Service>(prefix, kc))
   {
   }
 
@@ -34,6 +34,12 @@ public:
     return m_node;
   }
 
+  shared_ptr<Service>
+  getService()
+  {
+    return m_service;
+  }
+
 protected:
   void
   addRoutes();
@@ -41,7 +47,7 @@ protected:
 private:
   Name m_prefix;
   Node m_node;
-  Service m_service;
+  shared_ptr<Service> m_service;
 };
 } // nacapp
 #endif /* MANAGER_SERVICE_NODE_HPP */

@@ -5,26 +5,36 @@ namespace nacapp {
 
 bool
 Service::onGetEKey(const Interest& interest,
+                   const Name& datatype,
                    const Name& args,
                    shared_ptr<Data> data,
                    InterestShower want,
                    PutData put)
 {
-  if (args.size() < 2) {
-    throw "onGetEKey requires at least 2 arguments, got : " + args.toUri();
+  if (datatype.size() < 1) {
+    throw "onGetEKey requires a valid datatype, got : " + datatype.toUri();
   }
-
-  const Name dataType{interest.getName().at(m_prefix.size() + 1)};
-  const Name entity{args.at(0)};
-  const string timestamp{args.at(1).toUri()};
-  const TimeStamp timeslot = boost::posix_time::from_iso_string(timestamp);
-  shared_ptr<Data> ekey = m_manager.getEKey(dataType, timeslot);
+  ndn::Exclude exclude = interest.getExclude();
+  const string timeExpr = exclude.begin()->from.toUri();
+  LOG(INFO) << "DEBUG: onGetEKey: " << std::endl
+            << "\t DataType: " << datatype << std::endl
+            << "\t timeslot: " << timeExpr;
+  const TimeStamp timeslot = boost::posix_time::from_iso_string(timeExpr);
+  LOG(INFO) << "DEBUG: onGetEKey: 2";
+  shared_ptr<Data> ekey = m_manager->getEKey(datatype, timeslot);
+  if (ekey == nullptr) {
+    data->setContentType(ndn::tlv::ContentType_Nack);
+    return false;
+  }
+  LOG(INFO) << "DEBUG: onGetEKey: 3";
   data->setContent(ekey->wireEncode());
+  LOG(INFO) << "DEBUG: onGetEKey: 4";
   return false;
 }
 
 bool
 Service::onGetDKey(const Interest& interest,
+                   const Name& datatype,
                    const Name& args,
                    shared_ptr<Data> data,
                    InterestShower want,
@@ -34,7 +44,11 @@ Service::onGetDKey(const Interest& interest,
   const Name entity{args.at(0)};
   const string timestamp{args.at(1).toUri()};
   const TimeStamp timeslot = boost::posix_time::from_iso_string(timestamp);
-  shared_ptr<Data> dkey = m_manager.getDKey(entity, dataType, timeslot);
+  shared_ptr<Data> dkey = m_manager->getDKey(entity, dataType, timeslot);
+  if (nullptr == dkey) {
+    data->setContentType(ndn::tlv::ContentType_Nack);
+    return false;
+  }
   data->setContent(dkey->wireEncode());
   return false;
 }
@@ -47,7 +61,7 @@ Service::onGetIdentityKey(const Interest& interest,
                           PutData put)
 {
   Name entity{args};
-  shared_ptr<Certificate> id = m_manager.getIdentity(entity);
+  shared_ptr<Certificate> id = m_manager->getIdentity(entity);
   data->setContent(id->wireEncode());
   return false;
 }
@@ -68,7 +82,7 @@ Service::onAddIdentity(const Interest& interest,
     want(identityKey, [&](const Data& keyData) {
       Buffer pubkey = this->parseIdentityPubKey(keyData);
       Certificate cert = this->signPubkey(pubkey);
-      this->m_manager.addIdentity(entity, cert);
+      this->m_manager->addIdentity(entity, cert);
     });
   }
   else {
@@ -86,7 +100,7 @@ Service::onRemoveIdentity(const Interest& interest,
 {
   Name identity{args};
   authenticateManagementInterest(interest, identity);
-  m_manager.removeIdentity(identity);
+  m_manager->removeIdentity(identity);
   return false;
 }
 
@@ -127,7 +141,7 @@ Service::onRevoke(const Interest& interest,
 
   string identity = strings::uriDecode(args.get(0).toUri());
   string dataType = strings::uriDecode(args.get(1).toUri());
-  m_manager.revokeAccess(identity, dataType);
+  m_manager->revokeAccess(identity, dataType);
   return false;
 }
 

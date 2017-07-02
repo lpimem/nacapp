@@ -170,6 +170,7 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   InterestShower show = std::bind(&NodeImpl::showInterest, this, _1, _2);
   bool sent = false;
   PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
+
   bool async = handler(interest, args, data, show, put);
   if (!async && !sent) {
     put(data);
@@ -187,10 +188,28 @@ NodeImpl::onFailed(const Interest& interest, string reason)
   m_face->put(*data);
 }
 
+void
+sendNack(shared_ptr<Face> face, const Interest& interest)
+{
+  // TODO: does not support customized reason?
+  // ref: https://github.com/named-data/ndn-cxx/blob/master/src/lp/nack-header.hpp#L39
+  ndn::lp::Nack nack(interest);
+  face->put(nack);
+}
+
 
 void
 NodeImpl::sendData(const Name& path, const Interest& interest, bool& sent, shared_ptr<Data> data)
 {
+  // NAC process data with nack type as normal data and crashes the application.
+  // So we need to convert all nack data into lp::Nack here.
+  if (data->getContentType() == ndn::tlv::ContentType_Nack) {
+    LOG(INFO) << "App Nack: " << interest.toUri();
+    sendNack(m_face, interest);
+    return;
+  }
+
+  // apply post processors
   process(path, interest, data);
   // sign the data if it is not signed yet .
   if (!data->getSignature()) {
@@ -209,17 +228,21 @@ vector<Name>
 NodeImpl::parseInterestName(const Interest& interest)
 {
   vector<Name> v;
+
+  // extract prefix
   size_t offset = m_prefix.size();
   const Name iname = interest.getName();
-
+  if (iname.size() < offset) {
+    throw "interest name is less than prefix";
+  }
   Name prefix = iname.getPrefix(offset);
-
   if (prefix != m_prefix) {
     throw "prefix does not match";
   }
   v.push_back(prefix);
 
 
+  // extract path
   bool found = false;
   for (auto entry : m_handlers) {
     Name p = entry.first;
@@ -245,11 +268,17 @@ NodeImpl::parseInterestName(const Interest& interest)
   //   http://named-data.net/doc/ndn-cxx/current/tutorials/signed-interest.html
   // the following value should be 4 instead of 2.
   // But in test we are only getting 2 instead of 4.
-  const size_t SIGNATURE_COMPONENTS = 2;
-
-  Name args = iname.getSubName(offset, iname.size() - offset - SIGNATURE_COMPONENTS);
+  // const size_t SIGNATURE_COMPONENTS = 2;
+  // const size_t n = iname.size() - offset - SIGNATURE_COMPONENTS;
+  const size_t n = iname.size() - offset;
+  Name args;
+  if (n > 0) {
+    args = iname.getSubName(offset, n);
+  }
+  else {
+    args = Name("");
+  }
   v.push_back(args);
-
   return v;
 }
 

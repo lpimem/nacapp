@@ -54,6 +54,10 @@ Thermometer::onGetTemperature(const Interest& interest,
                               InterestShower show,
                               PutData put)
 {
+  if (args.size() <= 0) {
+    LOG(ERROR) << "query missing argument";
+    return false;
+  }
   std::string timeExpr = args.get(0).toUri();
   timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
   time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
@@ -87,18 +91,17 @@ Thermometer::onGetContentKey(const Interest& interest,
   std::string timeExpr = args.get(0).toUri();
   timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
   time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
-  Name keyName =
-    m_producer->createContentKey(timeslot,
-                                 std::bind(&Thermometer::onContentKeyEncrypted, this, put, interest, _1),
-                                 std::bind(&Thermometer::onNACProduceError, this, _1, _2));
-  LOG(INFO) << "creating content key: " << keyName;
+  m_producer->encryptContentKey(timeslot,
+                                std::bind(&Thermometer::onContentKeyEncrypted, this, put, interest, _1),
+                                std::bind(&Thermometer::onNACProduceError, this, _1, _2));
+  LOG(INFO) << "retrieving encrypted content key";
   return true;
 }
 
 void
 Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d)
 {
-  LOG(INFO) << "content key retrieved: ";
+  LOG(INFO) << "content key retrieved: [" << d.size() << "]";
   for (auto one : d) {
     LOG(INFO) << "    " << one.getName();
     if (one.getName() == interest.getName()) {

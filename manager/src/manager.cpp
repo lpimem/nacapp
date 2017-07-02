@@ -169,10 +169,13 @@ shared_ptr<Data>
 Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
 {
   shared_ptr<GroupManager> group = getGroup(dataType);
+  if (group == nullptr) {
+    LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
+    return nullptr;
+  }
   std::list<Data> keys = group->getGroupKey(timeslot);
   std::list<Data>::iterator dataIterator = keys.begin();
   Data ekey = *dataIterator;
-  // TODO : move to a separate thread
   for (dataIterator++; dataIterator != keys.end(); dataIterator++) {
     Data dkey = *dataIterator;
     Name identityCert = extractCertName(dkey.getName());
@@ -185,8 +188,12 @@ shared_ptr<Data>
 Manager::getDKey(const Name& dataType, const Name& entity, const TimeStamp& timeslot)
 {
   const string name = entity.toUri();
+  shared_ptr<Data> ekey = nullptr;
   if (m_dkey_cache.find(name) == m_dkey_cache.end()) {
-    getEKey(dataType, timeslot);
+    ekey = getEKey(dataType, timeslot);
+  }
+  if (ekey == nullptr) {
+    return nullptr;
   }
   return m_dkey_cache[name];
 }

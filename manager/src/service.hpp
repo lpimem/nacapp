@@ -28,7 +28,7 @@ public:
   Service(const Name& prefix, shared_ptr<KeyChain> kc)
     : m_prefix(prefix)
     , m_keychain(kc)
-    , m_manager(prefix, kc)
+    , m_manager(make_shared<Manager>(prefix, kc))
   {
   }
 
@@ -40,6 +40,7 @@ public:
   // Args : /<user>/<timestamp>
   bool
   onGetEKey(const Interest& interest,
+            const Name& datatype,
             const Name& args,
             shared_ptr<Data> data,
             InterestShower show,
@@ -50,6 +51,7 @@ public:
   // Args : /<user>/<timestamp>
   bool
   onGetDKey(const Interest& interest,
+            const Name& datatype,
             const Name& args,
             shared_ptr<Data> data,
             InterestShower show,
@@ -126,6 +128,13 @@ public:
            InterestShower show,
            PutData put);
 
+public:
+  shared_ptr<Manager>
+  getManager()
+  {
+    return m_manager;
+  }
+
 private:
   void
   grant(const Name& identity,
@@ -146,7 +155,7 @@ private:
 private:
   const Name& m_prefix;
   shared_ptr<KeyChain> m_keychain;
-  Manager m_manager;
+  shared_ptr<Manager> m_manager;
 };
 
 } // nacapp

@@ -16,8 +16,18 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug",
-      "program": "${workspaceRoot}/build/manager/unit_tests",
+      "name": "Debug Thermometer",
+      "program": "${workspaceRoot}/build/thermometer/nacapp-thermometer-main",
+      "args": [
+        "-b"
+      ],
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug Manager",
+      "program": "${workspaceRoot}/build/manager/nacapp-manager-main",
       "args": [
         "-b"
       ],

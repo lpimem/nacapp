@@ -64,6 +64,11 @@
     "stack": "cpp",
     "wscript": "python",
     "__functional_base": "cpp",
-    "ios": "cpp"
+    "ios": "cpp",
+    "__hash_table": "cpp",
+    "__functional_base_03": "cpp",
+    "__tuple": "cpp",
+    "chrono": "cpp",
+    "ratio": "cpp"
   }
 }
