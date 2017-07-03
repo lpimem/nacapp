@@ -32,13 +32,15 @@ Manager::getIdentity(const Name& entity)
 void
 Manager::validateCertificate(const Name& identity, shared_ptr<Certificate> cert)
 {
-  auto certIdentity = cert->getIdentity();
-  if (certIdentity != identity) {
-    throw "validateCertificate: identity not match";
-  }
-  if (!cert->isValid()) {
-    throw "validateCertificate: certificate is already expired";
-  }
+  // auto certIdentity = cert->getIdentity();
+  // if (certIdentity != identity) {
+  //   LOG(INFO) << "cert name:\t" << certIdentity.toUri();
+  //   LOG(INFO) << "identity name:\t" << identity.toUri();
+  //   throw "validateCertificate: identity not match";
+  // }
+  // if (!cert->isValid()) {
+  //   throw "validateCertificate: certificate is already expired";
+  // }
 }
 
 void

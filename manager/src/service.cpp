@@ -114,8 +114,15 @@ Service::onGetIdentityKey(const Interest& interest,
                           PutData put)
 {
   Name entity{args};
-  shared_ptr<Certificate> id = m_manager->getIdentity(entity);
-  data->setContent(id->wireEncode());
+  shared_ptr<Certificate> cert = m_manager->getIdentity(entity);
+  if (nullptr == cert) {
+    data->setContentType(ndn::tlv::ContentType_Nack);
+  }
+  else {
+    Certificate copy{*cert};
+    copy.setName(interest.getName());
+    put(make_shared<Certificate>(copy));
+  }
   return false;
 }
 
@@ -127,21 +134,23 @@ Service::onAddIdentity(const Interest& interest,
                        PutData put)
 {
   Name entity{args};
-  authenticateManagementInterest(interest, entity);
-  const ndn::KeyLocator keyLocator = interest.getPublisherPublicKeyLocator();
-  if (keyLocator.getType() == ndn::KeyLocator::KeyLocator_Name) {
-    auto keyName = keyLocator.getName();
-    Interest identityKey(keyName);
-    want(identityKey, [&](const Data& keyData) {
-      Buffer pubkey = this->parseIdentityPubKey(keyData);
-      Certificate cert = this->signPubkey(pubkey);
-      this->m_manager->addIdentity(entity, cert);
-    });
-  }
-  else {
-    throw "Add identity: interest KeyLocator must contain the name of the key";
-  }
-  return false;
+  authenticateManagementInterest(interest, entity); //todo
+  want(entity, std::bind(&Service::onAddIdentityKey, this, interest, data, put, _1));
+  return true;
+}
+
+void
+Service::onAddIdentityKey(const Interest& interest,
+                          shared_ptr<Data> data,
+                          PutData put,
+                          const Data& keyData)
+{
+  Buffer pubkey = parseIdentityPubKey(keyData);
+  Certificate cert = signPubkey(keyData.getName(), pubkey);
+  data->setName(interest.getName());
+  nacapp::data::setStringContent(data, cert.getName().toUri());
+  put(data);
+  m_manager->addIdentity(keyData.getName(), cert);
 }
 
 bool
@@ -224,11 +233,14 @@ Service::parseIdentityPubKey(const Data& keyData)
 }
 
 Certificate
-Service::signPubkey(const Buffer& key)
+Service::signPubkey(const Name& name, const Buffer& key)
 {
   auto keyPtr = make_shared<const Buffer>(key);
-  Block block(keyPtr, keyPtr->begin(), keyPtr->end());
-  Data d(block);
+  Data d;
+  d.setName(name);
+  d.setContent(keyPtr);
+  d.setContentType(ndn::tlv::ContentType_Key);
+  d.setFreshnessPeriod(time::milliseconds(60000)); //TODO: use parameter instead.
   Certificate c(d);
   m_keychain->sign(c);
   return c;

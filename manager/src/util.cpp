@@ -24,6 +24,12 @@ getAsPublicKey(const Data& data)
   return key;
 }
 
+void
+setStringContent(shared_ptr<Data> data, const string& content)
+{
+  data->setContent(reinterpret_cast<const uint8_t*>(content.c_str()), content.length());
+}
+
 } // data
 
 namespace strings {

@@ -97,7 +97,7 @@ NodeImpl::showInterest(const Interest& interest, DataReceiver proc)
 {
   m_face->expressInterest(interest,
                           // on satisfied
-                          [&](const Interest& i, const Data& d) { proc(d); },
+                          [=](const Interest& i, const Data& d) { proc(d); },
                           // on NACK
                           [&](const Interest& i, const ndn::lp::Nack& n) {
                             LOG(ERROR) << i.toUri() << ": " << n.getReason();
@@ -225,7 +225,7 @@ NodeImpl::sendData(const Name& path,
   if (!data->getSignature()) {
     m_keychain->sign(*data);
   }
-  if (data->getFreshnessPeriod() == time::milliseconds::zero()) {
+  if (data->getFreshnessPeriod() <= time::milliseconds::zero()) {
     data->setFreshnessPeriod(time::milliseconds(1000));
   }
   m_face->put(*data);

@@ -143,6 +143,9 @@ private:
             PutData put);
 
   void
+  onAddIdentityKey(const Interest& interest, shared_ptr<Data> data, PutData put, const Data& keyData);
+
+  void
   grant(const Name& identity,
         const Name& dataType,
         string startDate,
@@ -154,7 +157,7 @@ private:
   Buffer
   parseIdentityPubKey(const Data& key);
   Certificate
-  signPubkey(const Buffer& key);
+  signPubkey(const Name& name, const Buffer& key);
   void
   authenticateManagementInterest(const Interest& interest, const Name args);
 
