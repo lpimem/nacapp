@@ -125,6 +125,7 @@ Manager::addGroupMember(const Name& dataType, const Name& identity, const string
     groupManager->addMember(scheduleName, cert);
   }
   catch (const std::exception& ex) {
+    LOG(WARNING) << "cannot add member: " << ex.what();
     groupManager->updateMemberSchedule(identity, scheduleName);
   }
 }
@@ -174,6 +175,10 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
     return nullptr;
   }
   std::list<Data> keys = group->getGroupKey(timeslot);
+  if (keys.size() < 1) {
+    LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
+    return nullptr;
+  }
   std::list<Data>::iterator dataIterator = keys.begin();
   Data ekey = *dataIterator;
   for (dataIterator++; dataIterator != keys.end(); dataIterator++) {

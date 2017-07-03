@@ -14,6 +14,7 @@ NodeImpl::serveForever()
   LOG(INFO) << "start serving...";
   while (true) {
     m_face->processEvents();
+    // continue even if client called m_face->shutdown().
   }
   LOG(ERROR) << "server quit.";
 }
@@ -178,7 +179,7 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   PutData put = std::bind(&NodeImpl::sendData, this, path, interest, sent, _1);
 
   bool async = handler(interest, args, data, show, put);
-  if (!async && !sent) {
+  if (!async && !(*sent)) {
     put(data);
   }
   return data;

@@ -76,6 +76,7 @@ Thermometer::onGetTemperature(const Interest& interest,
   auto onError = std::bind(&Thermometer::onNACProduceError, this, _1, _2);
   uint8_t content[] = {(uint8_t)t};
   m_producer->produce(*data, timeslot, content, sizeof(content), onError);
+  data->setName(interest.getName());
   return false;
 }
 

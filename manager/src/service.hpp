@@ -35,27 +35,17 @@ public:
 public:
   /* ********** Group Cryptography Handlers ********** */
 
-  // <prefix>/READ/<data-type>/E-Key/for/<user>/<timestamp>
-  // Path : /READ/<data-type>/E-Key/for
-  // Args : /<user>/<timestamp>
-  bool
-  onGetEKey(const Interest& interest,
-            const Name& datatype,
-            const Name& args,
-            shared_ptr<Data> data,
-            InterestShower show,
-            PutData put);
 
-  // <prefix>/READ/<data-type>/D-Key/for/<user>/<timestamp>
-  // Path : /READ/<data-type>/D-Key/for
+  // <prefix>/READ/<data-type>/E-Key | D-Key[/for/<user>]?Exclude=<timestamp>, *
+  // Path : /READ/<data-type>/E-Key | D-Key
   // Args : /<user>/<timestamp>
   bool
-  onGetDKey(const Interest& interest,
-            const Name& datatype,
-            const Name& args,
-            shared_ptr<Data> data,
-            InterestShower show,
-            PutData put);
+  onRead(const Interest& interest,
+         const Name& args,
+         shared_ptr<Data> data,
+         InterestShower show,
+         PutData put);
+
 
   /* ********** Identity Hanlders ********** */
 
@@ -136,6 +126,22 @@ public:
   }
 
 private:
+  bool
+  onGetEKey(const Interest& interest,
+            const Name& datatype,
+            const Name& args,
+            shared_ptr<Data> data,
+            InterestShower show,
+            PutData put);
+
+  bool
+  onGetDKey(const Interest& interest,
+            const Name& datatype,
+            const Name& args,
+            shared_ptr<Data> data,
+            InterestShower show,
+            PutData put);
+
   void
   grant(const Name& identity,
         const Name& dataType,

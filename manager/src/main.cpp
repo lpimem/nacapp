@@ -43,6 +43,7 @@ main()
   // debug configurations
   std::shared_ptr<nacapp::Manager> manager = node.getService()->getManager();
   manager->grantAccess("/local-home/dev/tempreader", "/location/bedroom/temperature");
+  manager->grantAccess("/Alice", "/location/bedroom/temperature");
   // end of debug configurations
 
   node.serveForever();
