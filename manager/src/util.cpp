@@ -6,7 +6,50 @@
 #include "util.hpp"
 
 namespace nacapp {
+
+namespace names {
+
+
+Name
+extractPrefix(const Name& name, const ndn::name::Component& token)
+{
+  size_t pos = 0;
+  for (; pos < name.size(); pos++) {
+    ndn::name::Component c = name.get(pos);
+    if (c == token) {
+      break;
+    }
+  }
+  // not found
+  if (pos == name.size()) {
+    pos = 0;
+  }
+  return name.getPrefix(pos);
+}
+
+extern Name
+extractSuffix(const Name& name, const ndn::name::Component& token, size_t n)
+{
+  size_t pos = 0;
+  for (; pos < name.size(); pos++) {
+    ndn::name::Component c = name.get(pos);
+    if (c == token) {
+      break;
+    }
+  }
+  return name.getSubName(pos + 1, n);
+}
+} // names
+
 namespace data {
+
+void
+setFreshnessPeriodIfNotSet(Data& d, time::milliseconds period)
+{
+  if (d.getFreshnessPeriod() < time::milliseconds::zero()) {
+    d.setFreshnessPeriod(period);
+  }
+}
 
 string
 getAsString(const Data& data)

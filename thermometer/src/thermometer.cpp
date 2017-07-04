@@ -111,10 +111,14 @@ Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const 
     LOG(INFO) << "    " << one.getName();
     if (interestName.isPrefixOf(one.getName())) {
       put(make_shared<Data>(one));
-      break;
+      return;
     }
   }
   LOG(ERROR) << "no encrypted content key found for " << interestName;
+  auto nack = make_shared<Data>();
+  nack->setName(interestName);
+  nack->setContentType(ndn::tlv::ContentType_Nack);
+  put(nack);
 }
 
 void

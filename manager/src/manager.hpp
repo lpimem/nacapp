@@ -5,6 +5,7 @@
 
 #include "common.hpp"
 #include "named-schedule.hpp"
+#include "util.hpp"
 
 namespace nacapp {
 
@@ -63,6 +64,9 @@ public:
    */
   shared_ptr<GroupManager>
   getGroup(const Name& dataType);
+
+  std::list<Data>
+  getGroupKeys(const Name& dataType, const TimeStamp& timeslot);
 
   shared_ptr<Data>
   getEKey(const Name& dataType, const TimeStamp& timeslot);

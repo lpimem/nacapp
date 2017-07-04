@@ -6,19 +6,7 @@
 namespace nacapp {
 
 namespace manager {
-// returns prefix before a token in a name
-Name
-extractPrefix(const Name& name, const ndn::name::Component& token)
-{
-  size_t pos = 0;
-  for (; pos < name.size(); pos++) {
-    ndn::name::Component c = name.get(pos);
-    if (c == token) {
-      break;
-    }
-  }
-  return name.getPrefix(pos);
-}
+
 
 std::vector<Name>
 parseReadArgs(const Name& args)
@@ -80,6 +68,9 @@ Service::onGetEKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
+  auto period = time::milliseconds(1000 * 60 * 24);
+  nacapp::data::setFreshnessPeriodIfNotSet(*ekey, period);
+  LOG(INFO) << "[DEBUG] E-Key Freshness Period: " << ekey->getFreshnessPeriod();
   put(ekey);
   return false;
 }
@@ -92,11 +83,17 @@ Service::onGetDKey(const Interest& interest,
                    InterestShower want,
                    PutData put)
 {
-  const Name dataType{interest.getName().at(m_prefix.size() + 1)};
-  const Name entity{args.at(0)};
-  const string timestamp{args.at(1).toUri()};
-  const TimeStamp timeslot = boost::posix_time::from_iso_string(timestamp);
-  shared_ptr<Data> dkey = m_manager->getDKey(entity, dataType, timeslot);
+  if (args.size() < 4) {
+    LOG(ERROR) << "Get D-KEY: Missing arguments";
+    data->setContentType(ndn::tlv::ContentType_Nack);
+    return false;
+  }
+  LOG(INFO) << "[DEBUG] D-KEY Args : " << args.toUri();
+  Name entity = args.getSubName(3);
+  LOG(INFO) << "[DEBUG] D-KEY Entity : " << entity.toUri();
+  const string timeExpr = args.get(0).toUri();
+  const TimeStamp timeslot = boost::posix_time::from_iso_string(timeExpr);
+  shared_ptr<Data> dkey = m_manager->getDKey(datatype, entity, timeslot);
   if (nullptr == dkey) {
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
@@ -173,19 +170,26 @@ Service::onGrant(const Interest& interest,
                  InterestShower want,
                  PutData put)
 {
-  if (args.size() < 7) {
-    throw "onGrant: argument should contains at least 7 components, got :" +
-      std::to_string(args.size());
-  }
-
   string identity = strings::uriDecode(args.get(0).toUri());
   string dataType = strings::uriDecode(args.get(1).toUri());
-  string grantType = args.get(2).toUri(); // reserved
-  string startDate = args.get(3).toUri();
-  string endDate = args.get(4).toUri();
-  string startHour = args.get(5).toUri();
-  string endHour = args.get(6).toUri();
+  LOG(INFO) << std::endl
+            << "= = = = G R A N T = = = = " << std::endl
+            << "identity: " << identity << std::endl
+            << "dataType: " << dataType << std::endl
+            << "- - - - - - - - - - - - - ";
+  string startDate = "20170703T195220Z";
+  string endDate = "20170704T195220Z";
+  string startHour = "01";
+  string endHour = "23";
+
+  // string grantType = args.get(2).toUri(); // reserved
+  // string startDate = args.get(3).toUri();
+  // string endDate = args.get(4).toUri();
+  // string startHour = args.get(5).toUri();
+  // string endHour = args.get(6).toUri();
   grant(identity, dataType, startDate, endDate, startHour, endHour);
+  // std::list<data> keys = m_manager->getGroupKeys(dataType, )
+  // publish EKey and DKeys
   return false;
 }
 
@@ -219,10 +223,12 @@ Service::grant(const Name& identity,
   TimeStamp endD = boost::posix_time::from_iso_string(endDate);
   int startH = std::stoi(startHour);
   int endH = std::stoi(endHour);
+
   auto days = (endD.date() - startD.date()).days();
   RepetitiveInterval schedule(startD, endD, startH, endH, days, RepetitiveInterval::RepeatUnit::DAY);
   const string schedule_name{dataType.toUri() + startDate + endDate + startHour + endHour};
   NamedInterval ni(schedule_name, schedule);
+  m_manager->grantAccess(identity, dataType, ni);
 }
 
 Buffer

@@ -161,22 +161,28 @@ Manager::getEntityCert(const Name& entity)
   return id.getDefaultKey().getDefaultCertificate();
 }
 
-// TODO : may be incorrect. need test.
 Name
 Manager::extractCertName(const Name& dkey) const
 {
-  return Name{dkey.getSubName(m_prefix.size() + 6)};
+  return nacapp::names::extractSuffix(dkey, NAME_COMPONENT_FOR);
+}
+
+std::list<Data>
+Manager::getGroupKeys(const Name& dataType, const TimeStamp& timeslot)
+{
+  shared_ptr<GroupManager> group = getGroup(dataType);
+  if (group == nullptr) {
+    LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
+    std::list<Data> empty;
+    return empty;
+  }
+  return group->getGroupKey(timeslot);
 }
 
 shared_ptr<Data>
 Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
 {
-  shared_ptr<GroupManager> group = getGroup(dataType);
-  if (group == nullptr) {
-    // LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
-    return nullptr;
-  }
-  std::list<Data> keys = group->getGroupKey(timeslot);
+  std::list<Data> keys = getGroupKeys(dataType, timeslot);
   if (keys.size() < 1) {
     LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
     return nullptr;
@@ -186,6 +192,7 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
   for (dataIterator++; dataIterator != keys.end(); dataIterator++) {
     Data dkey = *dataIterator;
     Name identityCert = extractCertName(dkey.getName());
+    LOG(INFO) << "[DEBUG] New D-Key: " << identityCert.toUri();
     m_dkey_cache[identityCert.toUri()] = make_shared<Data>(dkey);
   }
   return make_shared<Data>(ekey);
@@ -195,14 +202,21 @@ shared_ptr<Data>
 Manager::getDKey(const Name& dataType, const Name& entity, const TimeStamp& timeslot)
 {
   const string name = entity.toUri();
-  shared_ptr<Data> ekey = nullptr;
   if (m_dkey_cache.find(name) == m_dkey_cache.end()) {
-    ekey = getEKey(dataType, timeslot);
+    shared_ptr<Data> ekey = getEKey(dataType, timeslot);
+    // no producer for this data type were granted
+    if (ekey == nullptr) {
+      return nullptr;
+    }
   }
-  if (ekey == nullptr) {
-    return nullptr;
+  for (auto entry : m_dkey_cache) {
+    Name keyName = entry.first;
+    if (entity.isPrefixOf(keyName)) {
+      return entry.second;
+    }
   }
-  return m_dkey_cache[name];
+  // this consumer were not granted.
+  return nullptr;
 }
 
 } // nacapp

@@ -26,8 +26,7 @@ class Service
 {
 public:
   Service(const Name& prefix, shared_ptr<KeyChain> kc)
-    : m_prefix(prefix)
-    , m_keychain(kc)
+    : m_keychain(kc)
     , m_manager(make_shared<Manager>(prefix, kc))
   {
   }
@@ -162,7 +161,6 @@ private:
   authenticateManagementInterest(const Interest& interest, const Name args);
 
 private:
-  const Name& m_prefix;
   shared_ptr<KeyChain> m_keychain;
   shared_ptr<Manager> m_manager;
 };
