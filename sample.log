@@ -1,0 +1,43 @@
+2017-07-04 16:14:06,607 INFO  [default] In: /local-home/NAC/MANAGEMENT/identity/add/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9?ndn.MustBeFresh=1&ndn.InterestLifetime=5000&ndn.Nonce=2887289656
+2017-07-04 16:14:06,607 INFO  [default]
+	Prefix: /local-home/NAC
+	Path: /MANAGEMENT/identity/add
+	Args:/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:06,711 INFO  [default] [out] Data: /local-home/NAC/MANAGEMENT/identity/add/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:06,711 INFO  [default] 	Size: 113
+2017-07-04 16:14:06,775 INFO  [default] In: /local-home/NAC/IDENTITY/for/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9?ndn.MustBeFresh=1&ndn.InterestLifetime=5000&ndn.Nonce=2127059446
+2017-07-04 16:14:06,776 INFO  [default]
+	Prefix: /local-home/NAC
+	Path: /IDENTITY/for
+	Args:/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:06,776 INFO  [default] [out] Data: /local-home/NAC/IDENTITY/for/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:06,776 INFO  [default] 	Size: 422
+2017-07-04 16:14:06,862 INFO  [default] In: /local-home/NAC/MANAGEMENT/access/grant/%2Flocal-home%2Fdevice%2Fandroid-app%2Fhome-client%2Ftmp-identity%2FKEY%2Fksk-1499202810403%2FID-CERT%2F%25FD%2500%2500%2501%255D%250Fs%2581%25D9/%2Flocation%2Fbedroom?ndn.MustBeFresh=1&ndn.InterestLifetime=5000&ndn.Nonce=2342063203
+2017-07-04 16:14:06,862 INFO  [default]
+	Prefix: /local-home/NAC
+	Path: /MANAGEMENT/access/grant
+	Args:/%2Flocal-home%2Fdevice%2Fandroid-app%2Fhome-client%2Ftmp-identity%2FKEY%2Fksk-1499202810403%2FID-CERT%2F%25FD%2500%2500%2501%255D%250Fs%2581%25D9/%2Flocation%2Fbedroom
+2017-07-04 16:14:06,863 INFO  [default]
+= = = = G R A N T = = = =
+identity: /local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+dataType: /location/bedroom
+- - - - - - - - - - - - -
+2017-07-04 16:14:06,864 INFO  [default] /local-home/NAC/READ/location/bedroom created
+2017-07-04 16:14:06,866 INFO  [default] /local-home/NAC/READ/location/bedroom already created
+2017-07-04 16:14:07,021 INFO  [default] [out] Data: /local-home/NAC/MANAGEMENT/access/grant/%2Flocal-home%2Fdevice%2Fandroid-app%2Fhome-client%2Ftmp-identity%2FKEY%2Fksk-1499202810403%2FID-CERT%2F%25FD%2500%2500%2501%255D%250Fs%2581%25D9/%2Flocation%2Fbedroom
+2017-07-04 16:14:07,021 INFO  [default] 	Size: 2
+2017-07-04 16:14:12,874 INFO  [default] In: /local-home/NAC/READ/location/bedroom/D-KEY/20170704T010000/20170704T230000/FOR/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9?ndn.MustBeFresh=1&ndn.Nonce=1200293514
+2017-07-04 16:14:12,874 INFO  [default]
+	Prefix: /local-home/NAC
+	Path: /READ
+	Args:/location/bedroom/D-KEY/20170704T010000/20170704T230000/FOR/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:12,875 INFO  [default] [DEBUG] D-KEY Args : /20170704T010000/20170704T230000/FOR/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9
+2017-07-04 16:14:13,430 INFO  [default] [out] Data: /local-home/NAC/READ/location/bedroom/D-KEY/20170704T010000/20170704T230000/FOR/local-home/device/android-app/home-client/tmp-identity/KEY/ksk-1499202810403/ID-CERT/%FD%00%00%01%5D%0Fs%81%D9/KEY/%11w%2A%2F%28%066l%B3%2A%8AB%C4%E2%F6%DF%02%2F%8C%82%A9P%A8%11v%9F%281%C1ab%80
+2017-07-04 16:14:13,430 INFO  [default] 	Size: 1833
+2017-07-04 16:14:13,430 INFO  [default] DEBUG: onGetDKey: 4 Key published.
+
+
+
+
+
+/local-home/device/android-app/home-client/tmp-identity/Consumer/KEY/DSK-308001/ID-CERT/657D099B85197F4C/%16d%1B%01%01%1C_%07%5D%08%0Alocal-home%08%06device%08%0Bandroid-app%08%0Bhome-client%08%0Ctmp-identity%08%03KEY%08%11ksk-1499244166222%08%07ID-CERT/%17%FD%01%005%80h%A9%B6%03%7FW%24S%A1%D0+dZG%CF%1F%1A%BA%93%AF%D1%D3%18%D9L+%18MrV%7C%8F8l%98B%ED%9BK%2Ag%3C%88%FB%B8%90%E1%60Z%D5%5D%06e%CB%B1%1B%80k%9E%F1%21%1D%0F%2C%1B%E8%28%15%FD%81%8D%22%7C%F8%2F%ED%1B%CCx%E44%EA%A69%1C%B3%E91%5C%0F%3FeC%ED%0F%C3%60%FF%8A13%8E%F1%DD%A5%24SCW%F7f%FD%EB%94%0E%3C%A0%FDKADD%5E%40O%F3%C5%01v%18%CC%21%DA%29%B4bY%20F%A4%FE%18%88o%06%F9%03U%ABV%12%C2y%EF%20%83%DD%FE%2A%ED%A5%B8s%A3%1AF%B4%B5%FB%16%85%B9%8E%C7%1F%12%21%D5%F0%E8%0C%BAN%A2Nh%EB%E5s%96%25%1C%9C%DA%CB_%93%AF%E2%E1%E6k%83%D5%0E%AE%DF%5E%B0%14%06%95%AEmn%A8%C1%82I%1E%E9%04%A2%FF%CB%8CG%FC%5BI%B0%C2%A3%3A%BF%8B%D7%D3%E6%C54%C5%A6%3Aw%EFg%09%24T%E9%A3T%C5

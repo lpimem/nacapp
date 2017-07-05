@@ -26,8 +26,11 @@ extractSuffix(const Name& name, const ndn::name::Component& token, size_t n = Na
 
 namespace data {
 
+extern bool
+hasFreshnessPeriod(Data& d);
+
 extern void
-setFreshnessPeriodIfNotSet(Data& d, time::milliseconds period);
+setFreshnessPeriod(Data& d, time::milliseconds period);
 
 extern string
 getAsString(const Data& data);

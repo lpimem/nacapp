@@ -43,12 +43,16 @@ extractSuffix(const Name& name, const ndn::name::Component& token, size_t n)
 
 namespace data {
 
-void
-setFreshnessPeriodIfNotSet(Data& d, time::milliseconds period)
+bool
+hasFreshnessPeriod(Data& d)
 {
-  if (d.getFreshnessPeriod() < time::milliseconds::zero()) {
-    d.setFreshnessPeriod(period);
-  }
+  return d.getFreshnessPeriod() < time::milliseconds::zero();
+}
+
+void
+setFreshnessPeriod(Data& d, time::milliseconds period)
+{
+  d.setFreshnessPeriod(period);
 }
 
 string

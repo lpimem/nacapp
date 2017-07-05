@@ -68,8 +68,10 @@ Service::onGetEKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
-  auto period = time::milliseconds(1000 * 60 * 24);
-  nacapp::data::setFreshnessPeriodIfNotSet(*ekey, period);
+  // auto period = time::milliseconds(1000 * 60 * 24);
+  // TODO: Set
+  auto debugPeriod = time::milliseconds(1000);
+  nacapp::data::setFreshnessPeriod(*ekey, debugPeriod);
   LOG(INFO) << "[DEBUG] E-Key Freshness Period: " << ekey->getFreshnessPeriod();
   put(ekey);
   return false;
@@ -117,6 +119,10 @@ Service::onGetIdentityKey(const Interest& interest,
   }
   else {
     Certificate copy{*cert};
+    LOG(INFO) << "Certificate name changed " << std::endl
+              << "From: " << cert->getName().toUri() << std::endl
+              << "To: " << interest.getName() << std::endl
+              << "KeyName: " << cert->getKeyName() << std::endl;
     copy.setName(interest.getName());
     put(make_shared<Certificate>(copy));
   }
@@ -146,6 +152,7 @@ Service::onAddIdentityKey(const Interest& interest,
   Certificate cert = signPubkey(keyData.getName(), pubkey);
   data->setName(interest.getName());
   nacapp::data::setStringContent(data, cert.getName().toUri());
+  LOG(INFO) << "[DEBUG] onAddIdentityKey: new cert: " << cert.getName().toUri();
   put(data);
   m_manager->addIdentity(keyData.getName(), cert);
 }
@@ -172,15 +179,19 @@ Service::onGrant(const Interest& interest,
 {
   string identity = strings::uriDecode(args.get(0).toUri());
   string dataType = strings::uriDecode(args.get(1).toUri());
+
+  string startDate = "20170703T000000Z";
+  string endDate = "20170730T000000Z";
+  string startHour = "00";
+  string endHour = "23";
+
   LOG(INFO) << std::endl
             << "= = = = G R A N T = = = = " << std::endl
             << "identity: " << identity << std::endl
             << "dataType: " << dataType << std::endl
+            << "start: " << startDate << std::endl
+            << "end: " << endDate << std::endl
             << "- - - - - - - - - - - - - ";
-  string startDate = "20170703T195220Z";
-  string endDate = "20170704T195220Z";
-  string startHour = "01";
-  string endHour = "23";
 
   // string grantType = args.get(2).toUri(); // reserved
   // string startDate = args.get(3).toUri();
@@ -188,8 +199,6 @@ Service::onGrant(const Interest& interest,
   // string startHour = args.get(5).toUri();
   // string endHour = args.get(6).toUri();
   grant(identity, dataType, startDate, endDate, startHour, endHour);
-  // std::list<data> keys = m_manager->getGroupKeys(dataType, )
-  // publish EKey and DKeys
   return false;
 }
 
@@ -223,9 +232,12 @@ Service::grant(const Name& identity,
   TimeStamp endD = boost::posix_time::from_iso_string(endDate);
   int startH = std::stoi(startHour);
   int endH = std::stoi(endHour);
+  // auto days = (endD.date() - startD.date()).days();
+  RepetitiveInterval schedule(startD, endD, startH, endH, 1, RepetitiveInterval::RepeatUnit::DAY);
 
-  auto days = (endD.date() - startD.date()).days();
-  RepetitiveInterval schedule(startD, endD, startH, endH, days, RepetitiveInterval::RepeatUnit::DAY);
+  LOG(INFO) << "[DEBUG] Created schedule " << schedule.getStartDate() << " - "
+            << schedule.getEndDate() << " (" << schedule.getIntervalStartHour() << " ~ "
+            << schedule.getIntervalEndHour() << ") * " << schedule.getNRepeats();
   const string schedule_name{dataType.toUri() + startDate + endDate + startHour + endHour};
   NamedInterval ni(schedule_name, schedule);
   m_manager->grantAccess(identity, dataType, ni);

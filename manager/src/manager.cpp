@@ -97,7 +97,6 @@ Manager::createGroup(const Name& dataType)
 {
   string groupFullName = getGroupFullName(m_prefix, dataType);
   if (m_groups.find(groupFullName) != m_groups.end()) {
-    LOG(INFO) << groupFullName << " already created";
     return m_groups[groupFullName];
   }
   auto groupManager =
@@ -123,8 +122,12 @@ Manager::addGroupMember(const Name& dataType, const Name& identity, const string
 {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
   Certificate cert = getEntityCert(identity);
+  LOG(INFO) << "[DEBUG] addGroupMember: " << std::endl
+            << identity.toUri() << std::endl
+            << cert.getName().toUri();
   try {
-    groupManager->addMember(scheduleName, cert);
+    // groupManager->addMember(scheduleName, cert);
+    groupManager->addMember(scheduleName, identity, cert.getPublicKey());
   }
   catch (const std::exception& ex) {
     LOG(WARNING) << "cannot add member: " << ex.what();
@@ -150,6 +153,9 @@ Manager::createSchedule(shared_ptr<GroupManager> group, const NamedInterval& nam
     Schedule schedule;
     schedule.addWhiteInterval(namedInterval.getInterval());
     group->updateSchedule(iname, schedule);
+  }
+  else {
+    LOG(INFO) << "schedule already exists, ignored. " << iname;
   }
   return iname;
 }
