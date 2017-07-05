@@ -45,7 +45,7 @@ using ndn::Name;
 using ndn::Exclude;
 using ndn::Block;
 
-using ndn::security::v1::PublicKey;
+
 using ndn::security::v2::Certificate;
 using ndn::security::pib::Identity;
 using ndn::security::pib::Key;

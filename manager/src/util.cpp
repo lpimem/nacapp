@@ -64,12 +64,6 @@ getAsString(const Data& data)
   return s;
 }
 
-PublicKey
-getAsPublicKey(const Data& data)
-{
-  PublicKey key(data.getContent().value(), data.getContent().value_size());
-  return key;
-}
 
 void
 setStringContent(shared_ptr<Data> data, const string& content)

@@ -35,9 +35,6 @@ setFreshnessPeriod(Data& d, time::milliseconds period);
 extern string
 getAsString(const Data& data);
 
-extern PublicKey
-getAsPublicKey(const Data& data);
-
 extern void
 setStringContent(shared_ptr<Data> data, const string& content);
 

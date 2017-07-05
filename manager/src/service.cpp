@@ -148,8 +148,11 @@ Service::onAddIdentityKey(const Interest& interest,
                           PutData put,
                           const Data& keyData)
 {
-  Buffer pubkey = parseIdentityPubKey(keyData);
-  Certificate cert = signPubkey(keyData.getName(), pubkey);
+  // TODO: should let manager sign the key
+  // Buffer pubkey = parseIdentityPubKey(keyData);
+  // Certificate cert = signPubkey(keyData.getName(), pubkey);
+  // ----
+  Certificate cert(keyData);
   data->setName(interest.getName());
   nacapp::data::setStringContent(data, cert.getName().toUri());
   LOG(INFO) << "[DEBUG] onAddIdentityKey: new cert: " << cert.getName().toUri();

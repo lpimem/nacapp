@@ -232,6 +232,7 @@ NodeImpl::sendData(const Name& path,
   *sent = true;
   LOG(INFO) << "[out] Data: " << (*data).getName().toUri();
   LOG(INFO) << "\tSize: " << (*data).getContent().size();
+  LOG(INFO) << "\tFreshness Period: " << data->getFreshnessPeriod();
 }
 
 vector<Name>
@@ -274,12 +275,14 @@ NodeImpl::parseInterestName(const Interest& interest)
     v.push_back(NODE_DEFAULT_PATH);
   }
 
-  // according to
+  // According to
   //   http://named-data.net/doc/ndn-cxx/current/tutorials/signed-interest.html
   // the following value should be 4 instead of 2.
   // But in test we are only getting 2 instead of 4.
   // const size_t SIGNATURE_COMPONENTS = 2;
   // const size_t n = iname.size() - offset - SIGNATURE_COMPONENTS;
+  // TODO: Verify this. But for now, we just do not sign the interests.
+
   const size_t n = iname.size() - offset;
   Name args;
   if (n > 0) {

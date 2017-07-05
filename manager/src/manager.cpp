@@ -178,7 +178,7 @@ Manager::getGroupKeys(const Name& dataType, const TimeStamp& timeslot)
 {
   shared_ptr<GroupManager> group = getGroup(dataType);
   if (group == nullptr) {
-    LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
+    // LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
     std::list<Data> empty;
     return empty;
   }
@@ -190,7 +190,7 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
 {
   std::list<Data> keys = getGroupKeys(dataType, timeslot);
   if (keys.size() < 1) {
-    LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
+    // LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
     return nullptr;
   }
   std::list<Data>::iterator dataIterator = keys.begin();
