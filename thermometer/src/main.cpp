@@ -34,7 +34,8 @@ main()
   const std::string PREFIX = "/local-home/NAC";
   const std::string LOCATION = "/location/bedroom";
   const std::string DTYPE = LOCATION + "/temperature";
-  const std::string DB = "./test.db";
+  // const std::string DB = "./test.db";
+  const std::string DB = ":memory:";
 
   auto f = std::make_shared<ndn::Face>("127.0.0.1");
 

@@ -100,6 +100,7 @@ Service::onGetDKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
+  dkey->setFreshnessPeriod(time::milliseconds(1000));
   put(dkey);
   LOG(INFO) << "DEBUG: onGetDKey: 4 Key published.";
   return false;

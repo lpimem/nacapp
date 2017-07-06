@@ -101,16 +101,16 @@ NodeImpl::showInterest(const Interest& interest, DataReceiver proc)
                           // on NACK
                           [&](const Interest& i, const ndn::lp::Nack& n) {
                             LOG(ERROR) << i.toUri() << ": " << n.getReason();
-                            const string reason = "network error";
-                            Data d;
-                            d.setName(i.getName());
-                            d.setContentType(ndn::tlv::ContentType_Nack);
-                            data::setStringContent(d, reason);
-                            auto dataPtr = make_shared<Data>(d);
-                            for (DataProcessor processor : m_commonProcessors) {
-                              processor(dataPtr);
-                            }
-                            proc(d);
+                            // const string reason = "network error";
+                            // Data d;
+                            // d.setName(i.getName());
+                            // d.setContentType(ndn::tlv::ContentType_Nack);
+                            // data::setStringContent(d, reason);
+                            // auto dataPtr = make_shared<Data>(d);
+                            // for (DataProcessor processor : m_commonProcessors) {
+                            //   processor(dataPtr);
+                            // }
+                            // proc(d);
                           },
                           // on timeout
                           [&](const Interest& i) {
