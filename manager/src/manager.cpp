@@ -173,6 +173,10 @@ Manager::extractCertName(const Name& dkey) const
   return nacapp::names::extractSuffix(dkey, NAME_COMPONENT_FOR);
 }
 
+// TODO
+// std::list<Data>
+// Manager::createGroupKeys
+
 std::list<Data>
 Manager::getGroupKeys(const Name& dataType, const TimeStamp& timeslot)
 {
@@ -198,7 +202,6 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
   for (dataIterator++; dataIterator != keys.end(); dataIterator++) {
     Data dkey = *dataIterator;
     Name identityCert = extractCertName(dkey.getName());
-    LOG(INFO) << "[DEBUG] New D-Key: " << identityCert.toUri();
     m_dkey_cache[identityCert.toUri()] = make_shared<Data>(dkey);
   }
   return make_shared<Data>(ekey);

@@ -184,6 +184,12 @@ Service::onGrant(const Interest& interest,
   string identity = strings::uriDecode(args.get(0).toUri());
   string dataType = strings::uriDecode(args.get(1).toUri());
 
+  // string grantType = args.get(2).toUri(); // reserved
+  // string startDate = args.get(3).toUri();
+  // string endDate = args.get(4).toUri();
+  // string startHour = args.get(5).toUri();
+  // string endHour = args.get(6).toUri();
+
   string startDate = "20170703T000000Z";
   string endDate = "20170730T000000Z";
   string startHour = "00";
@@ -197,11 +203,6 @@ Service::onGrant(const Interest& interest,
             << "end: " << endDate << std::endl
             << "- - - - - - - - - - - - - ";
 
-  // string grantType = args.get(2).toUri(); // reserved
-  // string startDate = args.get(3).toUri();
-  // string endDate = args.get(4).toUri();
-  // string startHour = args.get(5).toUri();
-  // string endHour = args.get(6).toUri();
   grant(identity, dataType, startDate, endDate, startHour, endHour);
   return false;
 }
