@@ -186,7 +186,7 @@ Manager::getGroupKeys(const Name& dataType, const TimeStamp& timeslot)
     std::list<Data> empty;
     return empty;
   }
-  return group->getGroupKey(timeslot);
+  return group->getGroupKey(timeslot, false);
 }
 
 shared_ptr<Data>
