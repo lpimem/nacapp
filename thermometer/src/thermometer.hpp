@@ -61,11 +61,15 @@ private:
   void
   onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d);
 
+  shared_ptr<Data>
+  searchCKey(const Name& ckey);
+
 private:
   std::string m_location;
   std::string m_dataType;
   unique_ptr<Node> m_node;
   shared_ptr<Producer> m_producer;
+  map<Name, shared_ptr<Data>> m_ckeys;
   // Producer m_producer
 }; // class Thermometer
 } // namespace thermometer

@@ -1,4 +1,5 @@
 #include "manager.hpp"
+#include <ndn-cxx/util/string-helper.hpp>
 
 namespace nacapp {
 
@@ -121,13 +122,22 @@ void
 Manager::addGroupMember(const Name& dataType, const Name& identity, const string& scheduleName)
 {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
-  Certificate cert = getEntityCert(identity);
+  shared_ptr<Certificate> certPtr = getIdentity(identity);
+  if (certPtr == nullptr) {
+    LOG(ERROR) << "Identity certificate not found in manager: " << identity.toUri();
+    return;
+  }
+  Certificate cert = *certPtr;
+  // Certificate cert = getEntityCert(identity);
   LOG(INFO) << "[DEBUG] addGroupMember: " << std::endl
             << identity.toUri() << std::endl
-            << cert.getName().toUri();
+            << cert.getName().toUri() << std::endl
+            << ndn::toHex(cert.getContent().value(), cert.getContent().value_size(), true) << std::endl
+            << "PUB-KEY: "
+            << ndn::toHex(cert.getPublicKey(), true); 
   try {
-    // groupManager->addMember(scheduleName, cert);
-    groupManager->addMember(scheduleName, identity, cert.getPublicKey());
+    groupManager->addMember(scheduleName, cert);
+    // groupManager->addMember(scheduleName, identity, cert.getPublicKey());
   }
   catch (const std::exception& ex) {
     LOG(WARNING) << "cannot add member: " << ex.what();
@@ -139,7 +149,6 @@ void
 Manager::removeGroupMember(const Name& dataType, const Name& identity)
 {
   shared_ptr<GroupManager> groupManager = createGroup(dataType);
-  Certificate cert = getEntityCert(identity);
   groupManager->removeMember(identity);
   const string groupFullName = getGroupFullName(m_prefix, dataType);
   m_groups.erase(groupFullName);
@@ -160,13 +169,6 @@ Manager::createSchedule(shared_ptr<GroupManager> group, const NamedInterval& nam
   return iname;
 }
 
-Certificate
-Manager::getEntityCert(const Name& entity)
-{
-  Identity id = m_keychain->createIdentity(entity, getDefaultKeyParams());
-  return id.getDefaultKey().getDefaultCertificate();
-}
-
 Name
 Manager::extractCertName(const Name& dkey) const
 {
@@ -182,11 +184,15 @@ Manager::getGroupKeys(const Name& dataType, const TimeStamp& timeslot)
 {
   shared_ptr<GroupManager> group = getGroup(dataType);
   if (group == nullptr) {
-    // LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
+    LOG(WARNING) << "Group not found for datatype: " << dataType.toUri();
     std::list<Data> empty;
     return empty;
   }
-  return group->getGroupKey(timeslot, false);
+  std::list<Data> keys = group->getGroupKey(timeslot, false);
+  if (keys.size() == 0) {
+    LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
+  }
+  return keys;
 }
 
 shared_ptr<Data>
@@ -194,7 +200,6 @@ Manager::getEKey(const Name& dataType, const TimeStamp& timeslot)
 {
   std::list<Data> keys = getGroupKeys(dataType, timeslot);
   if (keys.size() < 1) {
-    // LOG(ERROR) << "NAC BUG? group manager didn't create E-Key";
     return nullptr;
   }
   std::list<Data>::iterator dataIterator = keys.begin();
@@ -228,4 +233,4 @@ Manager::getDKey(const Name& dataType, const Name& entity, const TimeStamp& time
   return nullptr;
 }
 
-} // nacapp
+} // namespace nacapp

@@ -1,4 +1,5 @@
 #include <ndn-cxx/encoding/tlv.hpp>
+#include <ndn-cxx/util/string-helper.hpp>
 
 #include "service.hpp"
 #include "util.hpp"
@@ -23,7 +24,7 @@ parseReadArgs(const Name& args)
   Name keyArgs = args.getSubName(pos + 1);
   return std::vector<Name>{location, keyType, keyArgs};
 }
-}
+} // namespace manager
 
 bool
 Service::onRead(const Interest& interest,
@@ -138,7 +139,8 @@ Service::onAddIdentity(const Interest& interest,
                        PutData put)
 {
   Name entity{args};
-  authenticateManagementInterest(interest, entity); //todo
+  //TODO: implement this function
+  authenticateManagementInterest(interest, entity);
   want(entity, std::bind(&Service::onAddIdentityKey, this, interest, data, put, _1));
   return true;
 }
@@ -149,7 +151,7 @@ Service::onAddIdentityKey(const Interest& interest,
                           PutData put,
                           const Data& keyData)
 {
-  // TODO: should let manager sign the key
+  // TODO: should let manager sign the key?
   // Buffer pubkey = parseIdentityPubKey(keyData);
   // Certificate cert = signPubkey(keyData.getName(), pubkey);
   // ----
@@ -157,6 +159,10 @@ Service::onAddIdentityKey(const Interest& interest,
   data->setName(interest.getName());
   nacapp::data::setStringContent(data, cert.getName().toUri());
   LOG(INFO) << "[DEBUG] onAddIdentityKey: new cert: " << cert.getName().toUri();
+  LOG(INFO) << "Add identity: " << keyData.getName().toUri() << std::endl
+            << "\tData Content: " << ndn::toHex(keyData.getContent().value(), keyData.getContent().value_size(), true) << std::endl
+            << "\tCert Content: " << ndn::toHex(cert.getContent().value(), cert.getContent().value_size(), true) << std::endl
+            << "\tCert Pub-Key: " << ndn::toHex(cert.getPublicKey(), true);
   put(data);
   m_manager->addIdentity(keyData.getName(), cert);
 }
@@ -191,9 +197,9 @@ Service::onGrant(const Interest& interest,
   // string endHour = args.get(6).toUri();
 
   string startDate = "20170703T000000Z";
-  string endDate = "20170730T000000Z";
+  string endDate = "20180730T000000Z";
   string startHour = "00";
-  string endHour = "23";
+  string endHour = "24";
 
   LOG(INFO) << std::endl
             << "= = = = G R A N T = = = = " << std::endl
@@ -275,4 +281,4 @@ Service::authenticateManagementInterest(const Interest& interest, const Name ent
   // TODO;
 }
 
-} // nacapp
+} // namespace nacapp

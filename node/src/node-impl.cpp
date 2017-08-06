@@ -160,10 +160,11 @@ NodeImpl::handleInterest(const Interest& interest, vector<Name> parsedParts)
   Name prefix = parsedParts[0];
   Name path = parsedParts[1];
   Name args = parsedParts[2];
-  LOG(INFO) << std::endl
-            << "\tPrefix: " << prefix << std::endl
-            << "\tPath: " << path << std::endl
-            << "\tArgs:" << args;
+
+  // LOG(INFO) << std::endl
+  //           << "\tPrefix: " << prefix << std::endl
+  //           << "\tPath: " << path << std::endl
+  //           << "\tArgs:" << args;
 
   validate(path, interest);
 
@@ -230,9 +231,9 @@ NodeImpl::sendData(const Name& path,
   }
   m_face->put(*data);
   *sent = true;
-  LOG(INFO) << "[out] Data: " << (*data).getName().toUri();
-  LOG(INFO) << "\tSize: " << (*data).getContent().size();
-  LOG(INFO) << "\tFreshness Period: " << data->getFreshnessPeriod();
+  LOG(INFO) << "[out] Data: " << (*data).getName().toUri() << std::endl
+            << "\tSize: " << (*data).getContent().size() << std::endl
+            << "\tFreshness Period: " << data->getFreshnessPeriod();
 }
 
 vector<Name>
@@ -295,4 +296,4 @@ NodeImpl::parseInterestName(const Interest& interest)
   return v;
 }
 
-} // nacapp
+} // namespace nacapp

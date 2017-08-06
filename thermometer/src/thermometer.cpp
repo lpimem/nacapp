@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string>
 
+#include <ndn-cxx/util/string-helper.hpp>
 #include <ndn-cxx/util/time.hpp>
 
 #include "thermometer.hpp"
@@ -47,6 +48,18 @@ Thermometer::setPrefix(Name prefix, Name location)
   m_node->setPrefix(prefix);
 }
 
+time::system_clock::TimePoint
+parseTimeSlot(string timeExpr, time::system_clock::TimePoint now)
+{
+  time::system_clock::TimePoint timeslot;
+  timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
+  timeslot = time::fromIsoString(timeExpr);
+  if (timeslot > now) {
+    timeslot = now;
+  }
+  return timeslot;
+}
+
 bool
 Thermometer::onGetTemperature(const Interest& interest,
                               const Name& args,
@@ -54,30 +67,42 @@ Thermometer::onGetTemperature(const Interest& interest,
                               InterestShower show,
                               PutData put)
 {
+  time::system_clock::TimePoint timeslot;
+  const time::system_clock::TimePoint now = time::system_clock::now();
   if (args.size() <= 0) {
-    LOG(ERROR) << "query missing argument";
-    return false;
+    LOG(WARNING) << "query missing argument";
+    timeslot = time::system_clock::now();
   }
-  std::string timeExpr = args.get(0).toUri();
-  timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
-  time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
-  time::system_clock::TimePoint now = time::system_clock::now();
-
-  if (timeslot > now) {
-    now = timeslot;
+  else {
+    timeslot = parseTimeSlot(args.get(0).toUri(), now);
   }
 
-  ndn::time::duration<double> sec = now - timeslot;
-  if (sec.count() > QUERY_TIME_DURATION) {
-    LOG(WARNING) << "Queried time is out-dated, will reply for current time as data content.";
-  }
-
-  int t = readTemp();
   auto onError = std::bind(&Thermometer::onNACProduceError, this, _1, _2);
-  uint8_t content[] = {(uint8_t)t};
-  m_producer->produce(*data, timeslot, content, sizeof(content), onError);
-  data->setName(interest.getName());
-  return false;
+  auto doProduce = [=]() {
+    int t = readTemp();
+    string tStr = ndn::to_string(t);
+    std::vector<uint8_t> bytes(tStr.begin(), tStr.end());
+    bytes.push_back('\0');
+    uint8_t* content = &bytes[0];
+    this->m_producer->produce(*data, timeslot, content, bytes.size(), onError);
+    data->setName(interest.getName());
+    put(data);
+  };
+  auto onKeyEncrypted = [=](const std::vector<Data>& d) {
+    for (auto oneKey : d) {
+      Name keyName{oneKey.getName()};
+      this->m_ckeys.insert(std::pair<Name, shared_ptr<Data>>{keyName, make_shared<Data>(oneKey)});
+    }
+    doProduce();
+  };
+
+  LOG(INFO) << "Thermometer::onGetTemperature";
+  Name kname = m_producer->createContentKey(timeslot, onKeyEncrypted, onError);
+  if (nullptr != searchCKey(kname)) {
+    LOG(INFO) << "Using existing key";
+    doProduce();
+  }
+  return true;
 }
 
 // args: timeslot
@@ -92,27 +117,49 @@ Thermometer::onGetContentKey(const Interest& interest,
     data->setContentType(ndn::tlv::ContentType_Nack);
     return false;
   }
+
+  LOG(INFO) << "Thermometer::onGetContentKey";
   std::string timeExpr = args.get(0).toUri();
   timeExpr.erase(std::remove(timeExpr.begin(), timeExpr.end(), '/'), timeExpr.end());
   time::system_clock::TimePoint timeslot = time::fromIsoString(timeExpr);
-  m_producer->encryptContentKey(timeslot,
-                                std::bind(&Thermometer::onContentKeyEncrypted, this, put, interest, _1),
-                                std::bind(&Thermometer::onNACProduceError, this, _1, _2));
-  LOG(INFO) << "retrieving encrypted content key";
-  return true;
+
+  auto onError = std::bind(&Thermometer::onNACProduceError, this, _1, _2);
+  Name keyName = m_producer->createContentKey(timeslot, nullptr, onError);
+  shared_ptr<Data> key = searchCKey(keyName);
+  if (nullptr == key) {
+    LOG(ERROR) << "cannot find ckey " << keyName.toUri();
+  }
+  else {
+    put(key);
+  }
+  return false;
 }
 
 void
 Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d)
 {
   LOG(INFO) << "content key retrieved: [" << d.size() << "]";
+
   const Name interestName = interest.getName();
+  shared_ptr<Data> contentKey = nullptr;
+  string hex;
   for (auto one : d) {
     LOG(INFO) << "    " << one.getName();
     if (interestName.isPrefixOf(one.getName())) {
-      put(make_shared<Data>(one));
-      return;
+      contentKey = make_shared<Data>(one);
+      LOG(INFO) << "    "
+                << "    "
+                << "MATCH";
+      string keyHex = toHex(*one.getContent().getBuffer(), true);
+      std::cout << keyHex << std::endl
+                << "EQUALS prev? " << (keyHex == hex) << std::endl
+                << "- - - - - - - -" << std::endl;
+      hex = keyHex;
     }
+  }
+  if (contentKey != nullptr) {
+    put(contentKey);
+    return;
   }
   LOG(ERROR) << "no encrypted content key found for " << interestName;
   auto nack = make_shared<Data>();
@@ -143,5 +190,23 @@ Thermometer::readTemp()
   // TODO: read from raspberry pi
   return 76;
 }
-} // thermometer
-} // nacapp
+
+shared_ptr<Data>
+Thermometer::searchCKey(const Name& ckey)
+{
+  LOG(INFO) << "searchCKey ... ";
+  auto found = m_ckeys.find(ckey);
+  if (found != m_ckeys.end()) {
+    return found->second;
+  }
+  for (auto pair : m_ckeys) {
+    Name keyName = pair.first;
+    if (ckey.isPrefixOf(keyName)) {
+      return pair.second;
+    }
+  }
+  return nullptr;
+}
+
+} // namespace thermometer
+} // namespace nacapp

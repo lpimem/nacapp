@@ -73,5 +73,6 @@
     "optional": "cpp",
     "system_error": "cpp",
     "atomic": "cpp"
-  }
+  },
+  "editor.lineHeight": 26
 }

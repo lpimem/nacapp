@@ -99,9 +99,6 @@ private:
   NamedInterval
   defaultSchedule(const Name& dataType);
 
-  Certificate
-  getEntityCert(const Name& entity);
-
   static string
   getGroupFullName(const Name& group, const Name& dataType);
 
@@ -122,5 +119,5 @@ private:
   std::map<string, set<string>> m_group_schedules;
 };
 
-} // nacapp
+} // namespace nacapp
 #endif /* MANAGER_HPP */
