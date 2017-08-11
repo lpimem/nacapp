@@ -141,7 +141,9 @@ Service::onAddIdentity(const Interest& interest,
   Name entity{args};
   //TODO: implement this function
   authenticateManagementInterest(interest, entity);
-  want(entity, std::bind(&Service::onAddIdentityKey, this, interest, data, put, _1));
+  DataReceiver onData = std::bind(&Service::onAddIdentityKey, this, interest, data, put, _1);
+  Interest instForEntity{entity};
+  want(instForEntity, onData);
   return true;
 }
 
@@ -160,8 +162,12 @@ Service::onAddIdentityKey(const Interest& interest,
   nacapp::data::setStringContent(data, cert.getName().toUri());
   LOG(INFO) << "[DEBUG] onAddIdentityKey: new cert: " << cert.getName().toUri();
   LOG(INFO) << "Add identity: " << keyData.getName().toUri() << std::endl
-            << "\tData Content: " << ndn::toHex(keyData.getContent().value(), keyData.getContent().value_size(), true) << std::endl
-            << "\tCert Content: " << ndn::toHex(cert.getContent().value(), cert.getContent().value_size(), true) << std::endl
+            << "\tData Content: "
+            << ndn::toHex(keyData.getContent().value(), keyData.getContent().value_size(), true)
+            << std::endl
+            << "\tCert Content: "
+            << ndn::toHex(cert.getContent().value(), cert.getContent().value_size(), true)
+            << std::endl
             << "\tCert Pub-Key: " << ndn::toHex(cert.getPublicKey(), true);
   put(data);
   m_manager->addIdentity(keyData.getName(), cert);
