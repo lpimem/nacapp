@@ -85,6 +85,7 @@ Thermometer::onGetTemperature(const Interest& interest,
     bytes.push_back('\0');
     uint8_t* content = &bytes[0];
     this->m_producer->produce(*data, timeslot, content, bytes.size(), onError);
+    LOG(INFO) << "Thermometer: data sent";
     data->setName(interest.getName());
     put(data);
   };
@@ -138,7 +139,7 @@ Thermometer::onGetContentKey(const Interest& interest,
 void
 Thermometer::onContentKeyEncrypted(PutData put, const Interest& interest, const std::vector<Data>& d)
 {
-  LOG(INFO) << "content key retrieved: [" << d.size() << "]";
+  LOG(INFO) << "content key encrypted [" << d.size() << "]";
 
   const Name interestName = interest.getName();
   shared_ptr<Data> contentKey = nullptr;
@@ -187,6 +188,7 @@ Thermometer::registerPrefixes()
 int
 Thermometer::readTemp()
 {
+  // Fake data for demo.
   // TODO: read from raspberry pi
   return 76;
 }
@@ -194,7 +196,6 @@ Thermometer::readTemp()
 shared_ptr<Data>
 Thermometer::searchCKey(const Name& ckey)
 {
-  LOG(INFO) << "searchCKey ... ";
   auto found = m_ckeys.find(ckey);
   if (found != m_ckeys.end()) {
     return found->second;
