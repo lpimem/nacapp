@@ -8,7 +8,9 @@
                 "/usr/local/include",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
-                "/usr/include"
+                "/usr/include",
+                "../wiringPi",
+                "../../wiringPi"
             ],
             "defines": [],
             "browse": {
@@ -18,7 +20,9 @@
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include",
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
                     "/usr/include",
-                    "${workspaceRoot}"
+                    "${workspaceRoot}",
+                    "../wiringPi",
+                    "../../wiringPi"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
