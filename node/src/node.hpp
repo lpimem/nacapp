@@ -6,7 +6,6 @@
 #include "node-impl.hpp"
 
 namespace nacapp {
-
 /**
  * Handles interests with name in the following format
  *    NAME          ::= PREFIX/PATH/ARGUMETNS/SIGNATURE
@@ -67,5 +66,5 @@ private:
   NodeImpl impl;
 };
 
-} // nacapp
+} // namespace nacapp
 #endif /* NODE_HPP */

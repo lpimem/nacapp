@@ -4,10 +4,13 @@
 #include "../../shared/src/common-cxx.hpp"
 #include "../../shared/src/common-ndn.hpp"
 #include "../../shared/src/easylogging/easylogging++.h"
+#include "../../shared/src/security_helpers.hpp"
+#include "../../shared/src/string_helpers.hpp"
+
 
 namespace nacapp {
 
 const std::string NODE_DEFAULT_PATH = "/";
-} // nacapp
+} // namespace nacapp
 
 #endif /* NODE_COMMON_HPP */
