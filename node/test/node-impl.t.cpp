@@ -113,7 +113,9 @@ TEST_CASE("NodeImple::parseInterestName")
     //   http://named-data.net/doc/ndn-cxx/current/tutorials/signed-interest.html
     // Signed interested should have 4 more components
     // But here we are only getting 2 more.
-    fixture.keyChain->sign(interest);
+    // fixture.keyChain->sign(interest);
+    // Oct 30, 2017: do not require signed interests
+
     vector<Name> parts = fixture.impl.parseInterestName(interest);
     REQUIRE(parts.size() == 3);
 
