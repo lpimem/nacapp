@@ -45,19 +45,22 @@ WaitingForGwAuth::next()
 }
 
 void
-WaitingForGwAuth::onReceiveR2(BtSession* session,
+WaitingForGwAuth::onReceiveR2(shared_ptr<BtSession> session,
                               shared_ptr<DeviceConfig> cfg,
                               const Interest& interest,
                               const Data& data)
 {
   LOG(INFO) << "received data for " << interest.toUri();
-  if (impl::validateR2(session, data)) {
-    session->onSuc(cfg);
+  try {
+    auto payload = impl::parseStep3Payload(session, data);
+    impl::validateR2(session, payload);
+    impl::parseDeviceCertificate(session, payload);
+    session->onSuc(session->getCurrentState()->getConfig());
     session->setDone(true);
     LOG(INFO) << "bootstrap done. ";
   }
-  else {
-    session->onFailed("R2 dismatch");
+  catch (std::string errmsg) {
+    session->onFailed(errmsg);
   }
 }
 

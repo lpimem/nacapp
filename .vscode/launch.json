@@ -3,15 +3,13 @@
   "configurations": [
     {
       "type": "lldb",
-      "request": "custom",
+      "request": "launch",
       "name": "Unittest",
-      "initCommands": [
-        "target create ${workspaceRoot}/build/manager/unit_tests"
+      "program": "${workspaceRoot}/build/node/unit_tests",
+      "args": [
+        "-b"
       ],
-      "preRunCommands": [
-        // "settings set target.run-args value1 value2 value3",
-        "process launch"
-      ]
+      "cwd": "${workspaceRoot}"
     },
     {
       "type": "lldb",

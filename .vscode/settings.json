@@ -73,7 +73,9 @@
     "optional": "cpp",
     "system_error": "cpp",
     "atomic": "cpp",
-    "string_view": "cpp"
-  },
-  "editor.lineHeight": 26
+    "string_view": "cpp",
+    "__nullptr": "cpp"
+  }
+  // ,
+  // "editor.lineHeight": 26
 }

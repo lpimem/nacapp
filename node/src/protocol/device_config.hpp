@@ -43,13 +43,19 @@ public:
   }
 
   /**
-   * TODO: this is actully the owner's key
+   * TODO: rename: this is actully the owner's key
+   * TODO: Delete this method and use @p ownerCert;
+   * 
+   * Return the owner's public key 
    */
   Buffer
   getGwPubKey() const;
 
-  /**
-   * TODO: this is actully the owner's key
+  /** 
+   * TODO: rename: this is actully the owner's key
+   * TODO: Delete this method and use @p ownerCert;
+   * 
+   * Return the owner's public key 
    */
   void
   setGwPubKey(Buffer gwPubKey);
@@ -65,6 +71,18 @@ public:
 
   const std::string
   getPin() const;
+
+public:
+  // TODO: refactor: use accessors instead of public fields.
+
+  // Upon success authentication, the owner will assign a namespace for the
+  // device. The controller uses owner's key to sign device's key and generate
+  // a certificate for this namespace.
+  shared_ptr<Certificate> deviceCert;
+
+  // The device will learn the trust anchor - the owner 's name and public key in
+  // form of a certificate.
+  shared_ptr<Certificate> ownerCert;
 
 private:
   Name m_device_prefix;

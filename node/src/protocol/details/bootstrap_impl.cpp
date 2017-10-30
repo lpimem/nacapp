@@ -1,6 +1,7 @@
 #include "bootstrap_impl.hpp"
 
 #include <ndn-cxx/util/sha256.hpp>
+#include <sstream>
 
 
 namespace nacapp {
@@ -30,7 +31,7 @@ authenticateInterest(const ndn::Interest& interest, ndn::ConstBufferPtr& key)
 }
 
 void
-parseGwPubKey(BtSession* session, const ndn::Data& data, shared_ptr<DeviceConfig> config)
+parseGwPubKey(shared_ptr<BtSession> session, const ndn::Data& data, shared_ptr<DeviceConfig> config)
 {
   LOG(INFO) << "start parsing gw pk";
   ndn::ConstBufferPtr secretKey = generateSecret(session->getCurrentState()->getConfig()->getPin());
@@ -60,7 +61,7 @@ parseGwPubKey(BtSession* session, const ndn::Data& data, shared_ptr<DeviceConfig
 }
 
 ndn::ConstBufferPtr
-encryptDeviceKey(BtSession* session, shared_ptr<DeviceConfig> cfg)
+encryptDeviceKey(shared_ptr<BtSession> session, shared_ptr<DeviceConfig> cfg)
 {
   ndn::ConstBufferPtr secretKey = generateSecret(session->getCurrentState()->getConfig()->getPin());
   const Buffer deviceKey = cfg->getDevicePubKey();
@@ -74,7 +75,7 @@ encryptDeviceKey(BtSession* session, shared_ptr<DeviceConfig> cfg)
 void
 publishDeviceKey(shared_ptr<Face> face,
                  shared_ptr<ndn::KeyChain> kc,
-                 BtSession* session,
+                 shared_ptr<BtSession> session,
                  shared_ptr<DeviceConfig> cfg,
                  const Name& name)
 {
@@ -87,14 +88,45 @@ publishDeviceKey(shared_ptr<Face> face,
   face->put(*data);
 }
 
-bool
-validateR2(BtSession* session, const ndn::Data& data)
+
+Step3Payload
+parseStep3Payload(shared_ptr<BtSession> session, const ndn::Data& data)
 {
-  ndn::ConstBufferPtr secretKey = generateSecret(session->getCurrentState()->getConfig()->getPin());
+  std::string pin = session->getCurrentState()->getConfig()->getPin();
+  std::cout << "pin: " << pin << std::endl;
+  std::cout << "----> " << data.getContent().value_size() << std::endl;
+  ndn::ConstBufferPtr secretKey = generateSecret(pin);
   ndn::ConstBufferPtr content = sec::decrypt_aes(data, secretKey);
   const std::string msg = reinterpret_cast<const char*>(content->get());
   std::vector<std::string> parts = split(msg, '|');
-  return session->getCurrentState()->getR2() == parts[0];
+  if (parts.size() < 3) {
+    std::stringstream ss;
+    ss << "Invalid step 3 payload : expecting 3 parts, got " << parts.size();
+    throw ss.str();
+  }
+  return Step3Payload(parts[0], parts[1]);
+}
+
+void
+validateR2(shared_ptr<BtSession> session, const Step3Payload& payload)
+{
+  if (session->getCurrentState()->getR2() != payload.R2) {
+    std::stringstream ss;
+    ss << "R2 dismatch! " << std::endl
+       << "\t Expecting:\t" << session->getCurrentState()->getR2() << std::endl
+       << "\t Got:\t\t:" << payload.R2 << std::endl;
+    throw ss.str();
+  }
+}
+
+void
+parseDeviceCertificate(shared_ptr<BtSession> session, const Step3Payload& payload)
+{
+  std::string certStr = payload.certEncoded;
+  shared_ptr<Buffer> buf = ndn::fromHex(payload.certEncoded);
+  auto cert = std::make_shared<Certificate>(Block(buf));
+  session->getCurrentState()->getConfig()->deviceCert = cert;
+  return;
 }
 
 } // namespace impl

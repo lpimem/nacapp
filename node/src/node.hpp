@@ -6,6 +6,7 @@
 #include "node-impl.hpp"
 
 namespace nacapp {
+
 /**
  * Handles interests with name in the following format
  *    NAME          ::= PREFIX/PATH/ARGUMETNS/SIGNATURE

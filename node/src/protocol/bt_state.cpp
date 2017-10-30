@@ -28,7 +28,7 @@ BtState::setStage(BtStage stage)
   m_stage = stage;
 }
 
-BtSession*
+shared_ptr<BtSession>
 BtState::getSession()
 {
   return m_session;

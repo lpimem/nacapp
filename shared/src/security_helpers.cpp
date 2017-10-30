@@ -3,6 +3,7 @@
 //
 
 #include <iterator>
+#include <sstream>
 #include <vector>
 
 
@@ -33,6 +34,18 @@ encrypt_aes(const uint8_t* plainText, const int textLength, const uint8_t* key, 
 {
   // TODO: random iv here
   const int ivLength = sizeof(const_iv);
+
+  // std::cout << "[encrypt_aes] SECRET KEY: ";
+  // ndn::printHex(std::cout, key, keyLength, true);
+  // std::cout << std::endl;
+  // std::cout << "[encrypt_aes] IV: ";
+  // ndn::printHex(std::cout, const_iv, ivLength, true);
+  // std::cout << std::endl;
+  // std::cout << "[encrypt_aes] PLAINTEXT: ";
+  // ndn::printHex(std::cout, plainText, textLength, true);
+  // std::cout << std::endl;
+
+
   // encrypt
   ConstBufferPtr cipher = encrypt_aes(plainText, textLength, key, keyLength, const_iv, ivLength);
   // append iv
@@ -48,6 +61,9 @@ encrypt_aes(const uint8_t* plainText, const int textLength, const uint8_t* key, 
     r[cipherSize + i] = *(const_iv + i);
     b->push_back(r[cipherSize + i]);
   }
+  // std::cout << "[encrypt_aes] CIPHER: ";
+  // ndn::printHex(std::cout, b->get(), b->size(), true);
+  // std::cout << std::endl;
   return b;
 }
 
@@ -87,19 +103,8 @@ decrypt_aes(const uint8_t* cipherText,
             const int keyLength,
             const uint8_t* iv)
 {
+  const int ivLength = keyLength;
   try {
-    const int ivLength = keyLength;
-
-    std::cout << "[decrypt_aes] SECRET KEY: ";
-    ndn::printHex(std::cout, key, keyLength, true);
-    std::cout << std::endl;
-    std::cout << "[decrypt_aes] IV: ";
-    ndn::printHex(std::cout, iv, ivLength, true);
-    std::cout << std::endl;
-    std::cout << "[decrypt_aes] CIPHER: ";
-    ndn::printHex(std::cout, cipherText, cipherLength, true);
-    std::cout << std::endl;
-
     ndn::OBufferStream os;
     bufferSource(cipherText, cipherLength) >> blockCipher(ndn::BlockCipherAlgorithm::AES_CBC,
                                                           ndn::CipherOperator::DECRYPT,
@@ -111,8 +116,23 @@ decrypt_aes(const uint8_t* cipherText,
     return os.buf();
   }
   catch (std::exception const& ex) {
-    std::cerr << "Decryption error: " << ex.what() << std::endl;
-    throw ex;
+    std::stringstream ss;
+    ss << "Decryption error: " << ex.what();
+    std::string err = ss.str();
+    std::cerr << err << std::endl;
+
+    std::cout << "[decrypt_aes] SECRET KEY: ";
+    ndn::printHex(std::cout, key, keyLength, true);
+    std::cout << std::endl;
+    std::cout << "[decrypt_aes] IV: ";
+    ndn::printHex(std::cout, iv, ivLength, true);
+    std::cout << std::endl;
+    std::cout << "[decrypt_aes] CIPHER: ";
+    ndn::printHex(std::cout, cipherText, cipherLength, true);
+    std::cout << std::endl;
+    std::cout.flush();
+
+    throw err;
   }
 }
 
@@ -140,7 +160,7 @@ decrypt_aes(const Data& data, ConstBufferPtr key)
   const uint8_t* k = key->get();
   const int keyLength = key->size();
   const int textLength = data.getContent().value_size();
-  LOG(INFO) << "decrypt_aes (Data) : data: " << ndn::toHex(cipher, textLength, true);
+  // LOG(INFO) << "decrypt_aes (Data) : data: " << ndn::toHex(cipher, textLength, true);
   return decrypt_aes(cipher, textLength, k, keyLength);
 }
 

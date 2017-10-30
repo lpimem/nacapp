@@ -11,7 +11,7 @@ class PublishingDevicePubKey : public BtState
 public:
   PublishingDevicePubKey(shared_ptr<Face> face,
                          shared_ptr<KeyChain> keychain,
-                         BtSession* session,
+                         shared_ptr<BtSession> session,
                          shared_ptr<DeviceConfig> cfg)
     : BtState(face, keychain, session, cfg, BtStage::PublishingSelfPubkey)
     , m_registered_prefix_id(nullptr)

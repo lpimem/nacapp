@@ -9,11 +9,13 @@
 #include "bt_state.hpp"
 #include "bt_state_1.hpp"
 
-
 namespace nacapp {
 namespace protocol {
 class BtState;
 
+/**
+ * Implements client-side bootstrapping protocol.
+ **/
 class Bootstrap : public std::enable_shared_from_this<Bootstrap>
 {
 public:
@@ -26,7 +28,7 @@ public:
     , m_keychain(keychain)
     , m_device_prefix(device_prefix)
     , m_controller_prefix(controller_wellknown)
-    , m_session(new BtSession(identity))
+    , m_session(make_shared<BtSession>(identity))
   {
   }
 
@@ -47,7 +49,7 @@ private:
   shared_ptr<KeyChain> m_keychain;
   Name m_device_prefix;
   Name m_controller_prefix;
-  BtSession* m_session;
+  shared_ptr<BtSession> m_session;
 };
 
 } // namespace protocol

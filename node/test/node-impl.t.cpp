@@ -1,4 +1,3 @@
-
 #include <ndn-cxx/util/dummy-client-face.hpp>
 
 #include "../../shared/test/catch.hpp"
@@ -120,5 +119,5 @@ TEST_CASE("NodeImple::parseInterestName")
     REQUIRE(parsedArgs == reqArgs);
   }
 }
-} // test
-} // nacapp
+} // namespace test
+} // namespace nacapp

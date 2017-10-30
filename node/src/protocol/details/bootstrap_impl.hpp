@@ -10,6 +10,20 @@ namespace protocol {
 
 class Bootstrap;
 
+class Step3Payload
+{
+public:
+  Step3Payload(std::string p1, std::string p2)
+    : R2(p1)
+    , certEncoded(p2)
+  {
+  }
+
+public:
+  std::string R2;
+  std::string certEncoded;
+};
+
 class BtHelper
 {
 public:
@@ -17,7 +31,6 @@ public:
   defaultOnNackReceived(const Interest& i, const ndn::lp::Nack& n)
   {
     LOG(ERROR) << "NACK: " << i.getName().toUri() << " : " << n.getReason();
-    // std::exit(1);
     throw "nack " + i.getName().toUri();
   }
 
@@ -31,7 +44,6 @@ public:
   defaultOnTimeout(const Interest& interest)
   {
     LOG(ERROR) << "Timeout: " << interest.toUri();
-    // std::exit(1);
     throw "timeout: " + interest.toUri();
   }
 };
@@ -47,17 +59,23 @@ bool
 authenticateInterest(const ndn::Interest& interest, ndn::ConstBufferPtr& key);
 
 void
-parseGwPubKey(BtSession* session, const ndn::Data& data, shared_ptr<DeviceConfig> config);
+parseGwPubKey(shared_ptr<BtSession> session, const ndn::Data& data, shared_ptr<DeviceConfig> config);
 
 void
 publishDeviceKey(shared_ptr<Face> face,
                  shared_ptr<ndn::KeyChain> kc,
-                 BtSession* session,
+                 shared_ptr<BtSession> session,
                  shared_ptr<DeviceConfig> cfg,
                  const Name& name);
 
-bool
-validateR2(BtSession* session, const ndn::Data& data);
+Step3Payload
+parseStep3Payload(shared_ptr<BtSession> session, const ndn::Data& data);
+
+void
+validateR2(shared_ptr<BtSession> session, const Step3Payload& payload);
+
+void
+parseDeviceCertificate(shared_ptr<BtSession> session, const Step3Payload& payload);
 
 } // namespace impl
 } // namespace protocol

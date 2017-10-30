@@ -27,7 +27,7 @@ class BtState
 public:
   BtState(shared_ptr<Face> face,
           shared_ptr<KeyChain> keychain,
-          BtSession* session,
+          shared_ptr<BtSession> session,
           shared_ptr<DeviceConfig> config,
           BtStage stg)
     : m_face(face)
@@ -51,7 +51,7 @@ public:
   void
   setConfig(shared_ptr<DeviceConfig> config);
 
-  BtSession*
+  shared_ptr<BtSession>
   getSession();
 
   std::string
@@ -100,7 +100,7 @@ protected:
 
 private:
   BtStage m_stage;
-  BtSession* m_session;
+  shared_ptr<BtSession> m_session;
   std::string r1;
   std::string r2;
   bool m_processing;
