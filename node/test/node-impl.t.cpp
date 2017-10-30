@@ -1,4 +1,7 @@
+#include <ndn-cxx/lp/nack.hpp>
 #include <ndn-cxx/util/dummy-client-face.hpp>
+#include <ndn-cxx/util/io.hpp>
+
 
 #include "../../shared/test/catch.hpp"
 #include "../src/node-impl.hpp"
@@ -8,6 +11,7 @@ namespace nacapp {
 namespace test {
 
 using ndn::security::v2::KeyChain;
+using ndn::util::DummyClientFace;
 
 const ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RSA_KEY_PARAMS;
 
@@ -19,8 +23,9 @@ public:
     keyChain->setDefaultIdentity(id);
   }
   Name prefix{"/PREFIX"};
-  shared_ptr<Face> face = make_shared<Face>("localhost");
   shared_ptr<KeyChain> keyChain = make_shared<KeyChain>();
+  shared_ptr<DummyClientFace> face =
+    make_shared<DummyClientFace>(*keyChain, DummyClientFace::Options{true, true});
   Identity id = keyChain->createIdentity(prefix, RSA_KEY_PARAMS);
   NodeImpl impl{prefix, face, keyChain};
 };
@@ -56,7 +61,8 @@ TEST_CASE("NodeImple::route")
     Interest interest(req, time::milliseconds(500));
     fixture.keyChain->sign(interest);
 
-    auto client = make_shared<Face>("localhost");
+    // auto client = make_shared<Face>("localhost");
+    auto client = fixture.face;
     LOG(INFO) << "express interest: " << interest.toUri();
     client->expressInterest(interest,
                             [&](const Interest& i, const Data& d) {
@@ -65,10 +71,10 @@ TEST_CASE("NodeImple::route")
                               REQUIRE(buffer->size() == 1);
                               REQUIRE(*buffer->get() == 1);
                             },
-                            bind([] {
-                              LOG(ERROR) << "Unexpected NACK";
+                            [&](const Interest& i, const ndn::lp::Nack& n) {
+                              LOG(ERROR) << "Unexpected NACK: " << n.getReason();
                               REQUIRE(false);
-                            }),
+                            },
                             bind([] {
                               LOG(ERROR) << "Unexpected TIMEOUT";
                               REQUIRE(false);
