@@ -10,20 +10,19 @@ using std::endl;
 using std::string;
 
 
-// TODO: install/resolve crypto++ libs
-#include "cryptlib.h"
+#include <cryptopp/cryptlib.h>
 using CryptoPP::Exception;
 
-#include "hmac.h"
+#include <cryptopp/hmac.h>
 using CryptoPP::HMAC;
 
-#include "sha.h"
+#include <cryptopp/sha.h>
 using CryptoPP::SHA256;
 
-#include "base64.h"
+#include <cryptopp/base64.h>
 using CryptoPP::Base64Encoder;
 
-#include "filters.h"
+#include <cryptopp/filters.h>
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
 using CryptoPP::HashFilter;
