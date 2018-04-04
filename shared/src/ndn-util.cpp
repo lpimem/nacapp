@@ -48,6 +48,15 @@ setStringContent(Data& d, const std::string& content)
   d.setContent(reinterpret_cast<const uint8_t*>(content.c_str()), content.length());
 }
 
+string
+getAsString(const Data& data)
+{
+  const uint8_t* bytes = data.getContent().value();
+  const int len = data.getContent().value_size();
+  std::string s(reinterpret_cast<char const*>(bytes), len);
+  return s;
+}
+
 time::system_clock::TimePoint
 parseTimePoint(const std::string& expr, const std::string& format)
 {

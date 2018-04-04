@@ -50,6 +50,18 @@ extract_iv(const uint8_t* text, int textLength, int keyLength);
 ConstBufferPtr
 decrypt_aes(const Data& data, ConstBufferPtr key);
 
+
+// /* ---------- ---------- ---------- ---------- */
+// std::string
+// randomHex()
+// {
+//   srand(time(NULL));
+//   int random = rand();
+//   std::stringstream stream;
+//   stream << std::hex << random;
+//   return stream.str();
+// }
+
 } // namespace sec
 } // namespace nacapp
 

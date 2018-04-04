@@ -22,6 +22,9 @@ const std::string DEFAULT_TIME_FORMAT = "";
 extern void
 setStringContent(Data& d, const std::string& content);
 
+extern string
+getAsString(const Data& data);
+
 extern time::system_clock::TimePoint
 parseTimePoint(std::string expr);
 } // namespace data
