@@ -8,8 +8,6 @@
 #include "../../../../shared/src/common-ndn.hpp"
 #include "../../node.hpp"
 
-#include "impl/bootstrap_impl.hpp"
-
 namespace nacapp {
 
 class BootstrapHelper;
@@ -31,12 +29,11 @@ using OnStatusChange = std::function<void(std::shared_ptr<BootstrapHelper>)>;
  * })
  * 
  */
-class BootstrapHelper
+class BootstrapHelper : std::enable_shared_from_this<BootstrapHelper>
 {
 public:
   BootstrapHelper(std::shared_ptr<Node> n)
-    : std::enable_shared_from_this<BootstrapHelper>
-    , m_node(n)
+    : m_node(n)
   {
   }
 
@@ -71,6 +68,19 @@ public:
 
   std::string
   getError();
+
+public:
+  std::string
+  getDeviceId()
+  {
+    return m_deviceId;
+  }
+
+  std::string
+  getDevicePin()
+  {
+    return m_pin;
+  }
 
 private:
   /**
