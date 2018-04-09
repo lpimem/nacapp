@@ -58,16 +58,28 @@ public:
 
 public:
   std::shared_ptr<Node>
-  getNode();
+  getNode()
+  {
+    return m_node;
+  }
 
   std::shared_ptr<Certificate>
-  getDeviceCert();
+  getDeviceCert()
+  {
+    return m_deviceCert;
+  }
 
   std::shared_ptr<Certificate>
-  getOwnerCert();
+  getOwnerCert()
+  {
+    return m_ownerCert;
+  }
 
   std::string
-  getError();
+  getError()
+  {
+    return m_error;
+  }
 
 public:
   std::string
@@ -94,8 +106,8 @@ private:
   enum class BTStatus { STARTED, SERVING, TERMINATED, SUCCESS, FAIL };
 
 private:
-  std::shared_ptr<Certificate> deviceCert;
-  std::shared_ptr<Certificate> ownerCert;
+  std::shared_ptr<Certificate> m_deviceCert;
+  std::shared_ptr<Certificate> m_ownerCert;
 
   OnStatusChange m_onSuccess;
   OnStatusChange m_onFailure;
