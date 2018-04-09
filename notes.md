@@ -1,0 +1,4 @@
+ndn-cxx unit-test failures: 
+../tests/unit-tests/security/v2/key-chain.t.cpp:396: error: in "Security/V2/TestKeyChain/SelfSignedCertValidity": check cert.isValid() has failed
+../tests/unit-tests/security/v2/key-chain.t.cpp:397: error: in "Security/V2/TestKeyChain/SelfSignedCertValidity": check cert.isValid(time::system_clock::now() + time::days(10 * 365)) has failed
+../tests/unit-tests/security/v2/key-chain.t.cpp:399: error: in "Security/V2/TestKeyChain/SelfSignedCertValidity": check cert.getValidityPeriod().getPeriod().second > time::system_clock::now() + time::days(10 * 365) has failed [-2140955335000000000 nanoseconds since Jan 1, 1970 <= 1838651961829822000 nanoseconds since Jan 1, 1970]

@@ -2,8 +2,8 @@
 #define NACAPP_HMAC_HPP
 
 #include <iostream>
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
 
 #include <string>
@@ -23,9 +23,13 @@ using CryptoPP::SHA256;
 using CryptoPP::Base64Encoder;
 
 #include <cryptopp/filters.h>
+using CryptoPP::HashFilter;
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
-using CryptoPP::HashFilter;
+
+#if defined(CRYPTOPP_NO_GLOBAL_BYTE)
+using CryptoPP::byte;
+#endif
 
 extern std::string
 sign_hmac(std::string key, std::string plain);

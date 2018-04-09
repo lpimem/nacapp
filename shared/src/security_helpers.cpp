@@ -54,7 +54,8 @@ encrypt_aes(const uint8_t* plainText, const int textLength, const uint8_t* key, 
   std::vector<u_int8_t> r(cipherSize + ivLength);
   // u_int8_t r[cipherSize + ivLength];
   for (int i = 0; i < cipherSize; i++) {
-    r[i] = *(cipher->get() + i);
+    auto b_start = &cipher->front();
+    r[i] = *(b_start + i);
     b->push_back(r[i]);
   }
   for (auto i = 0; i < ivLength; i++) {
@@ -90,9 +91,10 @@ encrypt_aes(const uint8_t* plainText,
 ConstBufferPtr
 encrypt_aes(const std::string& plainText, ConstBufferPtr key)
 {
+  auto key_buf = &key->front();
   return encrypt_aes(reinterpret_cast<const uint8_t*>(plainText.data()),
                      plainText.size(),
-                     key->get(),
+                     key_buf,
                      key->size());
 }
 
@@ -157,7 +159,7 @@ ConstBufferPtr
 decrypt_aes(const Data& data, ConstBufferPtr key)
 {
   const uint8_t* cipher = data.getContent().value();
-  const uint8_t* k = key->get();
+  const uint8_t* k = &key->front();
   const int keyLength = key->size();
   const int textLength = data.getContent().value_size();
   // LOG(INFO) << "decrypt_aes (Data) : data: " << ndn::toHex(cipher, textLength, true);

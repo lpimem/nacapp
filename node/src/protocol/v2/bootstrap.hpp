@@ -8,8 +8,6 @@
 #include "../../../../shared/src/common-ndn.hpp"
 #include "../../node.hpp"
 
-#include "impl/bootstrap_impl.hpp"
-
 namespace nacapp {
 
 class BootstrapHelper;
@@ -35,8 +33,8 @@ class BootstrapHelper
 {
 public:
   BootstrapHelper(std::shared_ptr<Node> n)
-    : std::enable_shared_from_this<BootstrapHelper>
-    , m_node(n)
+    : m_node(n)
+    , std::enable_shared_from_this<BootstrapHelper>
   {
   }
 
@@ -71,6 +69,19 @@ public:
 
   std::string
   getError();
+
+public:
+  std::string
+  getDeviceId()
+  {
+    return m_deviceId;
+  }
+
+  std::string
+  getDevicePin()
+  {
+    return m_pin;
+  }
 
 private:
   /**
