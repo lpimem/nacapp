@@ -3,6 +3,8 @@
 
 #include "../../../../shared/src/common-ndn.hpp"
 
+#include "bootstrap.hpp"
+
 namespace nacapp {
 namespace bootstrap {
 
