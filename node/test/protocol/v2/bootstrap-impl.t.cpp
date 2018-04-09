@@ -1,6 +1,9 @@
 
 #include <string>
 
+#include <ndn-cxx/util/string-helper.hpp>
+
+#include "../../../../shared/src/buffer-helper.hpp"
 #include "../../../../shared/src/common-cxx.hpp"
 #include "../../../../shared/src/common-nac.hpp"
 #include "../../../../shared/src/common-ndn.hpp"
@@ -23,9 +26,11 @@ const std::string devicePinText = "uns4fe";
 TEST_CASE("hmac")
 {
   const std::string content = "/local-home/bootstrap/owner/Make1-Model2-Version345/1923856";
-  const std::string expect = "c4231e0ae5717a7e8cad7837a78e7f5884b4e0553315f6c6dcad667011e586db";
-  std::string hash = sign_hmac(devicePinText, content);
-  REQUIRE(hash == expect);
+  ndn::ConstBufferPtr expect =
+    ndn::fromHex("c4231e0ae5717a7e8cad7837a78e7f5884b4e0553315f6c6dcad667011e586db");
+
+  auto hash = sign_hmac(fromString(devicePinText), fromString(content));
+  REQUIRE(*hash == *expect);
 }
 
 } // namespace bootstrap
