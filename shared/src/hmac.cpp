@@ -2,10 +2,10 @@
 
 #include <ndn-cxx/security/transform/hmac-filter.hpp>
 
-#include <ndn-cxxencoding/buffer-stream.hpp>
-#include <ndn-cxxsecurity/transform/buffer-source.hpp>
-#include <ndn-cxxsecurity/transform/step-source.hpp>
-#include <ndn-cxxsecurity/transform/stream-sink.hpp>
+#include <ndn-cxx/encoding/buffer-stream.hpp>
+#include <ndn-cxx/security/transform/buffer-source.hpp>
+#include <ndn-cxx/security/transform/step-source.hpp>
+#include <ndn-cxx/security/transform/stream-sink.hpp>
 
 
 string
