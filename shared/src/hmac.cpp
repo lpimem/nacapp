@@ -1,11 +1,12 @@
-#include "security/transform/hmac-filter.hpp"
-
-#include "encoding/buffer-stream.hpp"
-#include "security/transform/buffer-source.hpp"
-#include "security/transform/step-source.hpp"
-#include "security/transform/stream-sink.hpp"
-
 #include "hmac.hpp"
+
+#include <ndn-cxx/security/transform/hmac-filter.hpp>
+
+#include <ndn-cxxencoding/buffer-stream.hpp>
+#include <ndn-cxxsecurity/transform/buffer-source.hpp>
+#include <ndn-cxxsecurity/transform/step-source.hpp>
+#include <ndn-cxxsecurity/transform/stream-sink.hpp>
+
 
 string
 sign_hmac(string key, string plain)
