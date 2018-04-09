@@ -6,6 +6,8 @@
 #include "../../../../shared/src/common-ndn.hpp"
 #include "../../../../shared/src/hmac.hpp"
 
+#include "../../../../shared/test/catch.hpp"
+
 #include "../../../src/protocol/v2/bootstrap-impl.hpp"
 
 
