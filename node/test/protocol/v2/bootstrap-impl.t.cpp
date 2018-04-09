@@ -15,7 +15,7 @@ namespace bootstrap {
 const std::string prefixText = "/local-home";
 const std::string ownerNameText = prefixText + "/owner";
 const std::string deviceIDText = "Make1-Model2-Version345";
-const std::stirng devicePinText = "uns4fe";
+const std::string devicePinText = "uns4fe";
 
 
 TEST_CASE("hmac")
