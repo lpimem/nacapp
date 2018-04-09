@@ -1,3 +1,7 @@
+#include "../../../../shared/src/hmac.hpp"
+#include "../../../../shared/src/ndn-util.hpp"
+#include "../../../../shared/src/string_helpers.hpp"
+
 #include "bootstrap-impl.hpp"
 #include "bootstrap.hpp"
 
