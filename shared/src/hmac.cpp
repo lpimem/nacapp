@@ -37,9 +37,10 @@ sign_hmac(string key, string plain)
 ndn::ConstBufferPtr
 sign_hmac(ndn::ConstBufferPtr key, ndn::ConstBufferPtr plain)
 {
-  OBufferStream os;
-  bufferSource(&plain->front(), plain->size()) >>
-    hmacFilter(DigestAlgorithm::SHA256, &key->front(), key->size()) >> streamSink(os);
+  ndn::OBufferStream os;
+  ndn::security::transform::bufferSource(&plain->front(), plain->size()) >>
+    ndn::security::transform::hmacFilter(ndn::DigestAlgorithm::SHA256, &key->front(), key->size()) >>
+    ndn::security::transform::streamSink(os);
 
   return os.buf();
 }
