@@ -39,7 +39,8 @@ def build(bld):
 
 def options(opt):
     opt.load(['compiler_cxx', 'gnu_dirs'])
-    opt.load(['default-compiler-flags', 
+    opt.load(['boost',
+              'default-compiler-flags', 
               'compiler-features',
               'dependency-checker'],
              tooldir=['.waf-tools'])
@@ -72,6 +73,10 @@ def configure(conf):
     conf.check_cfg(package='libndn-cxx', 
                    args=['--cflags', '--libs'],
                    uselib_store='NDN_CXX', mandatory=True)
+    
+    boost_libs = 'system filesystem date_time iostreams \
+    regex chrono program_options thread log log_setup'
+    conf.check_boost(lib=boost_libs)
 
     if conf.options.with_tests:
         conf.env['WITH_TESTS'] = 1
