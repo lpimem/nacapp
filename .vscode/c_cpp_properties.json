@@ -60,7 +60,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceRoot}",
-                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
+                "G:/ndn/include",
+                "G:/ndn/usr_include"
             ],
             "defines": [
                 "_DEBUG",

@@ -76,7 +76,7 @@ def configure(conf):
     
     boost_libs = 'system filesystem date_time iostreams \
     regex chrono program_options thread log log_setup'
-    conf.check_boost(lib=boost_libs)
+    conf.check_boost(lib=boost_libs, mandatory=True, mt=True)
 
     if conf.options.with_tests:
         conf.env['WITH_TESTS'] = 1

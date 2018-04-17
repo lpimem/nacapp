@@ -15,7 +15,7 @@ def build(bld):
       source=bld.path.ant_glob(['src/**/*.cc', 
                                 'src/**/*.cpp',
                                 ]),
-      use = "NDN_CXX nacapp-share",
+      use = "BOOST NDN_CXX nacapp-share",
       includes = ["nacapp-share", "src"],
       export_includes='src'
     )
