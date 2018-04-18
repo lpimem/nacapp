@@ -1,9 +1,15 @@
+#include "bootstrap-impl.hpp"
+
+#include <ndn-cxx/util/string-helper.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include "../../../../shared/src/buffer-helper.hpp"
 #include "../../../../shared/src/hmac.hpp"
 #include "../../../../shared/src/ndn-util.hpp"
 #include "../../../../shared/src/string_helpers.hpp"
 
-#include "bootstrap-impl.hpp"
 #include "bootstrap.hpp"
+
 
 namespace nacapp {
 
@@ -13,8 +19,11 @@ namespace bootstrap {
 bool
 verifyHash(std::string content, std::string key, std::string hash)
 {
-  auto expected = sign_hmac(key, content);
-  return expected == hash;
+  auto expected = sign_hmac(fromString(key), fromString(content));
+  std::string hex = ndn::toHex(*expected);
+  std::cout << hex << std::endl;
+  std::cout << hash << std::endl;
+  return boost::iequals(hex, hash);
 }
 
 bool
