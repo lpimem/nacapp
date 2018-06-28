@@ -35,7 +35,7 @@ validateOwnerCertResp(const Data& d, std::string expected_r, std::string pin)
   auto r = parts[1];
   auto hash = parts[2];
 
-  return r == expected_r && verifyHash(cert, pin, hash);
+  return r == expected_r && verifyHash(cert + '|' + r, pin, hash);
 }
 
 bool
