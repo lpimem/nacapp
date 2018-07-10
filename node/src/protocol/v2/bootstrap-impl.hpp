@@ -3,7 +3,7 @@
 
 #include "../../../../shared/src/common-ndn.hpp"
 
-#include "bootstrap.hpp"
+#include "bootstrap-helper.hpp"
 
 namespace nacapp {
 namespace bootstrap {
@@ -18,14 +18,19 @@ bool
 validateOwnerRequest(const Interest& interest, const Name& args, std::string pin);
 
 void
-serveDeviceUnsignedCert(std::shared_ptr<BootstrapHelper> helper,
+serveDeviceUnsignedCert(std::shared_ptr<Node> node,
+                        const std::string& deviceId,
+                        const std::string& pin,
+                        std::shared_ptr<Certificate> deviceCertUnsigned,
                         OnStatusChange onSuccess,
                         OnStatusChange onFailure);
 
 void
-startBootstrap(Name ownerName,
-               std::string deviceID,
-               std::shared_ptr<BootstrapHelper> helper,
+startBootstrap(const Name& ownerName,
+               const std::string& deviceId,
+               const std::string& pin,
+               std::shared_ptr<Certificate> deviceCertUnsigned,
+               std::shared_ptr<Node> node,
                OnStatusChange onSuccess,
                OnStatusChange onFailure);
 

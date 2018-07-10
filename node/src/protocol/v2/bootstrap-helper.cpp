@@ -1,4 +1,5 @@
-#include "bootstrap.hpp"
+#include "bootstrap-helper.hpp"
+
 #include "bootstrap-impl.hpp"
 
 namespace nacapp {
@@ -24,7 +25,7 @@ BootstrapHelper::start(Name ownerName,
   m_onSuccess = onSuccess;
   m_onFailure = onFail;
   m_status = BootstrapHelper::BTStatus::STARTED;
-  bootstrap::startBootstrap(ownerName, deviceId, shared_from_this(), m_onSuccess, m_onFailure);
+  bootstrap::startBootstrap(ownerName, deviceId, pin, m_deviceCert, m_node, m_onSuccess, m_onFailure);
 }
 
 } // namespace nacapp

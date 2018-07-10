@@ -12,7 +12,7 @@ namespace nacapp {
 
 class BootstrapHelper;
 
-using OnStatusChange = std::function<void(std::shared_ptr<BootstrapHelper>)>;
+using OnStatusChange = std::function<void(std::shared_ptr<Node>)>;
 
 /**
  * Helper class to initate and manage bootstrapping sessions. 
@@ -29,7 +29,7 @@ using OnStatusChange = std::function<void(std::shared_ptr<BootstrapHelper>)>;
  * })
  * 
  */
-class BootstrapHelper : std::enable_shared_from_this<BootstrapHelper>
+class BootstrapHelper
 {
 public:
   BootstrapHelper(std::shared_ptr<Node> n)

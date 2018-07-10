@@ -5,7 +5,6 @@
 
 #include "../../../../shared/src/buffer-helper.hpp"
 #include "../../../../shared/src/common-cxx.hpp"
-#include "../../../../shared/src/common-nac.hpp"
 #include "../../../../shared/src/common-ndn.hpp"
 #include "../../../../shared/src/hmac.hpp"
 

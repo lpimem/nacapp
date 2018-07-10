@@ -8,11 +8,8 @@
 #include "../../../../shared/src/ndn-util.hpp"
 #include "../../../../shared/src/string_helpers.hpp"
 
-#include "bootstrap.hpp"
-
 
 namespace nacapp {
-
 namespace bootstrap {
 
 
@@ -48,20 +45,21 @@ validateOwnerRequest(const Interest& interest, const Name& args, std::string pin
 }
 
 void
-serveDeviceUnsignedCert(std::shared_ptr<BootstrapHelper> helper,
+serveDeviceUnsignedCert(std::shared_ptr<Node> node,
+                        const std::string& deviceId,
+                        const std::string& pin,
+                        std::shared_ptr<Certificate> deviceCertUnsigned,
                         OnStatusChange onSuccess,
                         OnStatusChange onFailure)
 {
-  auto node = helper->getNode();
-  auto cert = helper->getDeviceCert();
-  node->route(cert->getName().toUri(),
+  node->route(deviceCertUnsigned->getName().toUri(),
               [&](const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,
                   InterestShower show,
                   PutData put) {
-                if (validateOwnerRequest(interest, args, helper->getDevicePin())) {
-                  put(cert);
+                if (validateOwnerRequest(interest, args, pin)) {
+                  put(deviceCertUnsigned);
                   return true;
                 }
                 else {
@@ -72,23 +70,25 @@ serveDeviceUnsignedCert(std::shared_ptr<BootstrapHelper> helper,
 }
 
 void
-startBootstrap(Name ownerName,
-               std::string deviceID,
-               std::shared_ptr<BootstrapHelper> helper,
+startBootstrap(const Name& ownerName,
+               const std::string& deviceId,
+               const std::string& pin,
+               std::shared_ptr<Certificate> deviceCertUnsigned,
+               std::shared_ptr<Node> node,
                OnStatusChange onSuccess,
                OnStatusChange onFailure)
 {
+  Name interestName(ownerName);
   const std::string r1 = randomHex();
-  ownerName.append(deviceID);
-  ownerName.append(r1);
-  Interest startInterest(ownerName);
-  auto node = helper->getNode();
-  node->showInterest(startInterest, [&](const Data& d) {
-    if (!validateOwnerCertResp(d, r1, helper->getDevicePin())) {
-      onFailure(helper);
+  interestName.append(deviceId);
+  interestName.append(r1);
+  Interest interest(interestName);
+  node->showInterest(interest, [&](const Data& d) {
+    if (!validateOwnerCertResp(d, r1, pin)) {
+      onFailure(node);
       return;
     }
-    serveDeviceUnsignedCert(helper, onSuccess, onFailure);
+    serveDeviceUnsignedCert(node, deviceId, pin, deviceCertUnsigned, onSuccess, onFailure);
   });
 }
 
