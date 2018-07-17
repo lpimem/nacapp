@@ -12,14 +12,17 @@ namespace nacapp {
 
 class BootstrapHelper;
 
-using OnStatusChange = std::function<void(std::shared_ptr<BootstrapHelper>)>;
+using OnStatusChange = std::function<void(std::shared_ptr<Node>)>;
 
 /**
  * Helper class to initate and manage bootstrapping sessions. 
  * 
- * shared_ptr<Node> n = make_shared<Node>(...);  
+ * // sample interest name 
+ * // /local-home/bootstrap/device/<deviceId>/[route-prefix/route-arg1/arg2/arg3]
+ * Name devName("/local-home/bootstrap/device/<deviceId>");
+ * shared_ptr<Node> n = make_shared<Node>(devName, ...);  
  * BootstrapHelper bootstrap(n);
- * bootstrap.start("/local-home/owner", "dev123", "unsafe", 
+ * bootstrap.start("/local-home/bootstrap", "dev123", "unsafe", 
  * [](std::shared_ptr<BootstrapHelper> bt){
  *    std::cout << bt.getDeviceCert().getName().toUri() << std::endl;
  *    std::cout << bt.getOwnerCert().getName().toUri() << std::endl;
@@ -34,7 +37,6 @@ class BootstrapHelper
 public:
   BootstrapHelper(std::shared_ptr<Node> n)
     : m_node(n)
-    , std::enable_shared_from_this<BootstrapHelper>
   {
   }
 
@@ -59,16 +61,28 @@ public:
 
 public:
   std::shared_ptr<Node>
-  getNode();
+  getNode()
+  {
+    return m_node;
+  }
 
   std::shared_ptr<Certificate>
-  getDeviceCert();
+  getDeviceCert()
+  {
+    return m_deviceCert;
+  }
 
   std::shared_ptr<Certificate>
-  getOwnerCert();
+  getOwnerCert()
+  {
+    return m_ownerCert;
+  }
 
   std::string
-  getError();
+  getError()
+  {
+    return m_error;
+  }
 
 public:
   std::string
@@ -95,8 +109,8 @@ private:
   enum class BTStatus { STARTED, SERVING, TERMINATED, SUCCESS, FAIL };
 
 private:
-  std::shared_ptr<Certificate> deviceCert;
-  std::shared_ptr<Certificate> ownerCert;
+  std::shared_ptr<Certificate> m_deviceCert;
+  std::shared_ptr<Certificate> m_ownerCert;
 
   OnStatusChange m_onSuccess;
   OnStatusChange m_onFailure;

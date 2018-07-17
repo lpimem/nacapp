@@ -12,7 +12,7 @@ def build(bld):
                                 ]),
       target="../unit_tests", 
       features="cxx cxxprogram",
-      use="NDN_CXX nacapp-share nacapp-node",
+      use="BOOST NDN_CXX nacapp-share nacapp-node",
       includes = ["."]
     )
 

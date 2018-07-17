@@ -1,5 +1,13 @@
 #include "hmac.hpp"
 
+#include <ndn-cxx/security/transform/hmac-filter.hpp>
+
+#include <ndn-cxx/encoding/buffer-stream.hpp>
+#include <ndn-cxx/security/transform/buffer-source.hpp>
+#include <ndn-cxx/security/transform/step-source.hpp>
+#include <ndn-cxx/security/transform/stream-sink.hpp>
+
+
 string
 sign_hmac(string key, string plain)
 {
@@ -24,4 +32,15 @@ sign_hmac(string key, string plain)
   );                                                      // StringSource
 
   return encoded;
+}
+
+ndn::ConstBufferPtr
+sign_hmac(ndn::ConstBufferPtr key, ndn::ConstBufferPtr plain)
+{
+  ndn::OBufferStream os;
+  ndn::security::transform::bufferSource(&plain->front(), plain->size()) >>
+    ndn::security::transform::hmacFilter(ndn::DigestAlgorithm::SHA256, &key->front(), key->size()) >>
+    ndn::security::transform::streamSink(os);
+
+  return os.buf();
 }

@@ -31,6 +31,12 @@ using CryptoPP::StringSource;
 using CryptoPP::byte;
 #endif
 
+#include <ndn-cxx/encoding/buffer.hpp>
+
 extern std::string
 sign_hmac(std::string key, std::string plain);
+
+extern ndn::ConstBufferPtr
+sign_hmac(ndn::ConstBufferPtr key, ndn::ConstBufferPtr plain);
+
 #endif

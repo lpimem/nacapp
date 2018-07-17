@@ -5,3 +5,6 @@ build
 logs
 manager-db
 *.db
+
+.waf-tools/*.pyc
+.waf-2*
