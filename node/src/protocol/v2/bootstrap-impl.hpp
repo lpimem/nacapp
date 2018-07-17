@@ -26,7 +26,7 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         OnStatusChange onFailure);
 
 void
-startBootstrap(const Name& ownerName,
+startBootstrap(const Name& wellknown,
                const std::string& deviceId,
                const std::string& pin,
                std::shared_ptr<Certificate> deviceCertUnsigned,

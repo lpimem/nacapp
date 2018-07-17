@@ -1,0 +1,21 @@
+1. C++ RPi client
+    Protocol : 
+    1. Initiate bootstrapping by sending out first Interest. 
+        /local-home/bootstrap/owner/<device-id>|random-number-1|HMAC(name, shared_key)
+        - Signed using HMAC + shared secret (shared key)
+    2. Serve self un-signed certificate
+        - should we check the interest? 
+            - If we don't, what bad thing will happen?  
+    3. Fetch signed certificate
+        - Cert name: /local-home/bootstrap/device/<device-id>
+        - Owner Interest Name:
+            /local-home/b..p/d..e/<id>/random-number-2/hmac(dev_id+r1+r2, shared_key)
+        - Must this happen after step 2? Cannot we start this immediately afer step 1?  
+            - After step 2: easier to code 
+            - After step 1: may save step 2 if the owner already has the signed the certificate. (Assuming the un-signed certificate does not change)
+
+2. Android Owner App
+    Protocol: 
+    1. Serve well-known bootstrapping name /local-home/bootstrap
+    2. request client cert 
+    3. sign and serve signed client cert

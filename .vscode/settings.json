@@ -75,7 +75,13 @@
     "atomic": "cpp",
     "string_view": "cpp",
     "__nullptr": "cpp",
-    "__functional_03": "cpp"
+    "__functional_03": "cpp",
+    "typeindex": "cpp",
+    "codecvt": "cpp",
+    "condition_variable": "cpp",
+    "mutex": "cpp",
+    "numeric": "cpp",
+    "cinttypes": "cpp"
   }
   // ,
   // "editor.lineHeight": 26

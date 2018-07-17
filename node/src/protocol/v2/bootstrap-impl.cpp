@@ -24,7 +24,7 @@ verifyHash(std::string content, std::string key, std::string hash)
 }
 
 bool
-validateOwnerCertResp(const Data& d, std::string expected_r, std::string pin)
+validateOwnerCertResp(const Data& d, std::string expected_r, std::string sharedSecret)
 {
   auto content = nacapp::data::getAsString(d);
   auto parts = split(content, '|');
@@ -32,33 +32,45 @@ validateOwnerCertResp(const Data& d, std::string expected_r, std::string pin)
   auto r = parts[1];
   auto hash = parts[2];
 
-  return r == expected_r && verifyHash(cert + '|' + r, pin, hash);
+  return r == expected_r && verifyHash(cert + '|' + r, sharedSecret, hash);
 }
 
 bool
-validateOwnerRequest(const Interest& interest, const Name& args, std::string pin)
+validateOwnerRequest(const Interest& interest, const Name& args, std::string sharedSecret)
 {
   auto interestName = interest.getName();
   auto name = interestName.getPrefix(interestName.size() - 1);
-  auto hash = args.get(2).toUri();
-  return verifyHash(name.toUri(), pin, hash);
+  auto hash = args.get(1).toUri();
+  return verifyHash(name.toUri(), sharedSecret, hash);
+}
+
+std::shared_ptr<Data>
+hmacSignUnsignedCert(std::shared_ptr<Certificate> deviceCertUnsigned,
+                     const std::string& deviceId,
+                     const std::string& sharedSecret)
+{
+  // deviceCertUnsigned.content -> base64 -> hash -> concatenate -> new data
+
+  return nullptr;
 }
 
 void
 serveDeviceUnsignedCert(std::shared_ptr<Node> node,
+                        const Name& wellknown,
                         const std::string& deviceId,
-                        const std::string& pin,
+                        const std::string& sharedSecret,
                         std::shared_ptr<Certificate> deviceCertUnsigned,
                         OnStatusChange onSuccess,
                         OnStatusChange onFailure)
 {
-  node->route(deviceCertUnsigned->getName().toUri(),
+  node->route("/",
               [&](const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,
                   InterestShower show,
                   PutData put) {
-                if (validateOwnerRequest(interest, args, pin)) {
+                if (validateOwnerRequest(interest, args, sharedSecret)) {
+                  auto signedCert = hmacSignUnsignedCert(deviceCertUnsigned, deviceId, sharedSecret);
                   put(deviceCertUnsigned);
                   return true;
                 }
@@ -69,26 +81,46 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
               });
 }
 
+Name
+constructBootstrapName(const Name& wellknown,
+                       const std::string& randomNo,
+                       const std::string& deviceId,
+                       const std::string& sharedSecret)
+{
+  Name interestName(wellknown);
+  interestName.append("owner");
+  interestName.append(deviceId);
+  interestName.append(randomNo);
+  auto hash = sign_hmac(fromString(sharedSecret), fromString(interestName.toUri()));
+  std::string hex = ndn::toHex(*hash);
+  interestName.append(hex);
+  return interestName;
+}
+
 void
-startBootstrap(const Name& ownerName,
+startBootstrap(const Name& wellknown,
                const std::string& deviceId,
-               const std::string& pin,
+               const std::string& sharedSecret,
                std::shared_ptr<Certificate> deviceCertUnsigned,
                std::shared_ptr<Node> node,
                OnStatusChange onSuccess,
                OnStatusChange onFailure)
 {
-  Name interestName(ownerName);
-  const std::string r1 = randomHex();
-  interestName.append(deviceId);
-  interestName.append(r1);
+  const std::string randomNo = randomHex();
+  Name interestName = constructBootstrapName(wellknown, randomNo, deviceId, sharedSecret);
   Interest interest(interestName);
   node->showInterest(interest, [&](const Data& d) {
-    if (!validateOwnerCertResp(d, r1, pin)) {
+    if (!validateOwnerCertResp(d, randomNo, sharedSecret)) {
       onFailure(node);
       return;
     }
-    serveDeviceUnsignedCert(node, deviceId, pin, deviceCertUnsigned, onSuccess, onFailure);
+    serveDeviceUnsignedCert(node,
+                            wellknown,
+                            deviceId,
+                            sharedSecret,
+                            deviceCertUnsigned,
+                            onSuccess,
+                            onFailure);
   });
 }
 

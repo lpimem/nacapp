@@ -17,9 +17,12 @@ using OnStatusChange = std::function<void(std::shared_ptr<Node>)>;
 /**
  * Helper class to initate and manage bootstrapping sessions. 
  * 
- * shared_ptr<Node> n = make_shared<Node>(...);  
+ * // sample interest name 
+ * // /local-home/bootstrap/device/<deviceId>/[route-prefix/route-arg1/arg2/arg3]
+ * Name devName("/local-home/bootstrap/device/<deviceId>");
+ * shared_ptr<Node> n = make_shared<Node>(devName, ...);  
  * BootstrapHelper bootstrap(n);
- * bootstrap.start("/local-home/owner", "dev123", "unsafe", 
+ * bootstrap.start("/local-home/bootstrap", "dev123", "unsafe", 
  * [](std::shared_ptr<BootstrapHelper> bt){
  *    std::cout << bt.getDeviceCert().getName().toUri() << std::endl;
  *    std::cout << bt.getOwnerCert().getName().toUri() << std::endl;
