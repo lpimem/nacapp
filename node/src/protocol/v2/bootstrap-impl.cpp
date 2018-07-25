@@ -49,9 +49,19 @@ hmacSignUnsignedCert(std::shared_ptr<Certificate> deviceCertUnsigned,
                      const std::string& deviceId,
                      const std::string& sharedSecret)
 {
-  // deviceCertUnsigned.content -> base64 -> hash -> concatenate -> new data
-
-  return nullptr;
+  // deviceCertUnsigned.content -> hex -> hash -> concatenate -> new data
+  auto block = deviceCertUnsigned->getContent();
+  std::string hex = ndn::toHex(block.value(), block.value_size(), true);
+  auto hash = sign_hmac(fromString(sharedSecret), fromString(hex));
+  auto data_block = deviceCertUnsigned->wireEncode();
+  std::string certHex = ndn::toHex(data_block.value(), data_block.value_size(), true);
+  std::string newContent = certHex + "|" + ndn::toHex(*hash);
+  auto ret = std::make_shared<Data>(deviceCertUnsigned->getName());
+  ndn::ConstBufferPtr contentBuf = nacapp::fromString(newContent);
+  ret->setContent(contentBuf);
+  auto meta = ret->getMetaInfo();
+  meta.setFreshnessPeriod(time::milliseconds(1000));
+  return ret;
 }
 
 void

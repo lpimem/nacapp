@@ -60,7 +60,5 @@ TEST_CASE("Verify Hash - Match")
   REQUIRE(verifyHash(content, devicePinText, expect));
 }
 
-// TEST_CASE("")
-
 } // namespace bootstrap
 } // namespace nacapp
