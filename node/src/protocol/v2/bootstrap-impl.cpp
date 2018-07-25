@@ -35,6 +35,18 @@ validateOwnerCertResp(const Data& d, std::string expected_r, std::string sharedS
   return r == expected_r && verifyHash(cert + '|' + r, sharedSecret, hash);
 }
 
+shared_ptr<Certificate>
+extractOwnerCert(const Data& d)
+{
+  auto content = nacapp::data::getAsString(d);
+  auto parts = split(content, '|');
+  auto certHex = parts[0];
+
+  ndn::ConstBufferPtr buf = ndn::fromHex(certHex);
+  shared_ptr<Certificate> cert = make_shared<Certificate>(Block{buf});
+  return std::dynamic_pointer_cast<Certificate>(cert);
+}
+
 bool
 validateOwnerRequest(const Interest& interest, const Name& args, std::string sharedSecret)
 {
@@ -73,6 +85,10 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         OnStatusChange onSuccess,
                         OnStatusChange onFailure)
 {
+  shared_ptr<int> retry = std::make_shared<int>();
+  shared_ptr<int> retryMax = std::make_shared<int>();
+  *retry = 0;
+  *retryMax = 10;
   node->route("/",
               [&](const Interest& interest,
                   const Name& args,
@@ -81,11 +97,16 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                   PutData put) {
                 if (validateOwnerRequest(interest, args, sharedSecret)) {
                   auto signedCert = hmacSignUnsignedCert(deviceCertUnsigned, deviceId, sharedSecret);
-                  put(deviceCertUnsigned);
+                  put(signedCert);
                   return true;
                 }
                 else {
-                  nacapp::data::setStringContent(*data, "Invalid request");
+                  std::string message = "Invalid request";
+                  if ((*retry)++ > *retryMax) {
+                    message += " - Max Retry Reached";
+                  }
+                  nacapp::data::setStringContent(*data, message);
+                  onFailure(node);
                 }
                 return false;
               });
@@ -113,6 +134,7 @@ startBootstrap(const Name& wellknown,
                const std::string& sharedSecret,
                std::shared_ptr<Certificate> deviceCertUnsigned,
                std::shared_ptr<Node> node,
+               OnOwnerCert onOwnerCert,
                OnStatusChange onSuccess,
                OnStatusChange onFailure)
 {
@@ -124,6 +146,8 @@ startBootstrap(const Name& wellknown,
       onFailure(node);
       return;
     }
+    auto ownerCert = extractOwnerCert(d);
+    onOwnerCert(ownerCert);
     serveDeviceUnsignedCert(node,
                             wellknown,
                             deviceId,

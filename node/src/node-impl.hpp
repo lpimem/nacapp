@@ -2,6 +2,9 @@
 #define NODE_IMPL_HPP
 
 #include <ndn-cxx/lp/nack.hpp>
+#include <ndn-cxx/security/v2/certificate-fetcher-from-network.hpp>
+#include <ndn-cxx/security/v2/validation-policy-simple-hierarchy.hpp>
+#include <ndn-cxx/security/v2/validator.hpp>
 
 #include "common.hpp"
 #include "handlers.hpp"
@@ -16,6 +19,8 @@ public:
     : m_prefix(prefix)
     , m_face(f)
     , m_keychain(keychain)
+    , m_ndn_validator(make_unique<ndn::security::v2::ValidationPolicySimpleHierarchy>(),
+                      make_unique<ndn::security::v2::CertificateFetcherFromNetwork>(*f))
   {
   }
 
@@ -40,6 +45,9 @@ public:
   {
     m_keychain = kc;
   }
+
+  void
+  setTrustAnchor(Certificate& ta);
 
   void
   onRegisterPrefixFailed(const Name& prefix, const std::string& reason);
@@ -75,9 +83,10 @@ private:
   map<Name, InterestHandler> m_handlers;
   vector<InterestValidator> m_commonValidators;
   vector<DataProcessor> m_commonProcessors;
+  ndn::security::v2::Validator m_ndn_validator;
   map<Name, vector<InterestValidator>> m_validators;
   map<Name, vector<DataProcessor>> m_processors;
 };
 
-} // nacapp
+} // namespace nacapp
 #endif /* NODE_IMPL_HPP */
