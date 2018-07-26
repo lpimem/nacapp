@@ -22,7 +22,10 @@ BootstrapHelper::start(Name ownerName,
   m_deviceId = deviceId;
   m_pin = pin;
   m_ownerName = ownerName;
-  m_onSuccess = onSuccess;
+  m_onSuccess = [&](std::shared_ptr<Node> n) {
+    n->setTrustAnchor(*m_ownerCert);
+    onSuccess(n);
+  };
   m_onFailure = onFail;
   m_status = BootstrapHelper::BTStatus::STARTED;
 

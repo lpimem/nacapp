@@ -20,6 +20,12 @@ bool
 validateOwnerRequest(const Interest& interest, const Name& args, std::string pin);
 
 void
+fetchDeviceCert(std::shared_ptr<Node> node,
+                const Name& wellknown,
+                OnStatusChange onSuccess,
+                OnStatusChange onFailure);
+
+void
 serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         const std::string& deviceId,
                         const std::string& pin,

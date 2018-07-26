@@ -61,6 +61,9 @@ public:
         vector<DataProcessor> processors);
 
   void
+  setTrustAnchor(Certificate&);
+
+  void
   showInterest(const Interest&, DataReceiver);
 
 private:

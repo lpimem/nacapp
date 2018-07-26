@@ -129,6 +129,15 @@ constructBootstrapName(const Name& wellknown,
 }
 
 void
+fetchDeviceCert(std::shared_ptr<Node> node,
+                const Name& wellknown,
+                OnStatusChange onSuccess,
+                OnStatusChange onFailure)
+{
+    // node->showInterest()
+}
+
+void
 startBootstrap(const Name& wellknown,
                const std::string& deviceId,
                const std::string& sharedSecret,
