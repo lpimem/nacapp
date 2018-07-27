@@ -9,6 +9,7 @@ namespace nacapp {
 namespace bootstrap {
 
 using OnOwnerCert = std::function<void(std::shared_ptr<Certificate>)>;
+using OnDeviceCertSigned = std::function<void(std::shared_ptr<Certificate>)>;
 
 bool
 verifyHash(std::string content, std::string key, std::string hash);
@@ -30,7 +31,7 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         const std::string& deviceId,
                         const std::string& pin,
                         std::shared_ptr<Certificate> deviceCertUnsigned,
-                        OnStatusChange onSuccess,
+                        OnDeviceCertSigned onDeviceCertSigned,
                         OnStatusChange onFailure);
 
 void
@@ -40,7 +41,7 @@ startBootstrap(const Name& wellknown,
                std::shared_ptr<Certificate> deviceCertUnsigned,
                std::shared_ptr<Node> node,
                OnOwnerCert onOwnerCert,
-               OnStatusChange onSuccess,
+               OnDeviceCertSigned onDeviceCertSigned,
                OnStatusChange onFailure);
 
 } // namespace bootstrap

@@ -33,7 +33,17 @@ BootstrapHelper::start(Name ownerName,
     LOG(INFO) << "Extracted owner cert: " << cert->getName().toUri();
     m_ownerCert = cert;
   };
-  bootstrap::startBootstrap(ownerName, deviceId, pin, m_deviceCert, m_node, cbk, m_onSuccess, m_onFailure);
+  bootstrap::startBootstrap(ownerName,
+                            deviceId,
+                            pin,
+                            m_deviceCert,
+                            m_node,
+                            cbk,
+                            [&](shared_ptr<Certificate> cert) {
+                              m_deviceCert = cert;
+                              m_onSuccess(m_node);
+                            },
+                            m_onFailure);
 }
 
 } // namespace nacapp

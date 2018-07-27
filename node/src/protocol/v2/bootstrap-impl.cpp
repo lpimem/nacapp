@@ -82,7 +82,7 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         const std::string& deviceId,
                         const std::string& sharedSecret,
                         std::shared_ptr<Certificate> deviceCertUnsigned,
-                        OnStatusChange onSuccess,
+                        OnDeviceCertSigned onDeviceCertSigned,
                         OnStatusChange onFailure)
 {
   shared_ptr<int> retry = std::make_shared<int>();
@@ -130,11 +130,15 @@ constructBootstrapName(const Name& wellknown,
 
 void
 fetchDeviceCert(std::shared_ptr<Node> node,
-                const Name& wellknown,
-                OnStatusChange onSuccess,
+                const Name& btCertName,
+                OnDeviceCertSigned onDeviceCertSigned,
                 OnStatusChange onFailure)
 {
-    // node->showInterest()
+  node->showInterest(Interest{btCertName}, [&](const Data& d) {
+    auto certBlock = d.getContent();
+    auto cert = std::make_shared<Certificate>(certBlock);
+    onDeviceCertSigned(cert);
+  });
 }
 
 void
@@ -144,7 +148,7 @@ startBootstrap(const Name& wellknown,
                std::shared_ptr<Certificate> deviceCertUnsigned,
                std::shared_ptr<Node> node,
                OnOwnerCert onOwnerCert,
-               OnStatusChange onSuccess,
+               OnDeviceCertSigned onDeviceCertSigned,
                OnStatusChange onFailure)
 {
   const std::string randomNo = randomHex();
@@ -162,7 +166,7 @@ startBootstrap(const Name& wellknown,
                             deviceId,
                             sharedSecret,
                             deviceCertUnsigned,
-                            onSuccess,
+                            onDeviceCertSigned,
                             onFailure);
   });
 }
