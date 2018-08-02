@@ -16,6 +16,7 @@ void
 BootstrapHelper::start(Name ownerName,
                        std::string deviceId,
                        std::string pin,
+                       std::shared_ptr<ndn::KeyChain> keychain,
                        OnStatusChange onSuccess,
                        OnStatusChange onFail)
 {
@@ -36,11 +37,13 @@ BootstrapHelper::start(Name ownerName,
   bootstrap::startBootstrap(ownerName,
                             deviceId,
                             pin,
-                            m_deviceCert,
+                            keychain,
                             m_node,
                             cbk,
-                            [&](shared_ptr<Certificate> cert) {
+                            [&](const ndn::Name& dname, shared_ptr<Certificate> cert) {
                               m_deviceCert = cert;
+                              auto id = keychain->createIdentity(dname);
+                              id.getDefaultKey().setDefaultCertificate(*cert);
                               m_onSuccess(m_node);
                             },
                             m_onFailure);

@@ -36,11 +36,13 @@ validateOwnerCertResp(const Data& d, std::string expected_r, std::string sharedS
 }
 
 shared_ptr<Certificate>
-extractOwnerCert(const Data& d)
+extractOwnerCert(const Data& d, std::string& dname)
 {
   auto content = nacapp::data::getAsString(d);
   auto parts = split(content, '|');
-  auto certHex = parts[0];
+  auto dnameAndCert = split(parts[0], '^');
+  dname = dnameAndCert[0];
+  auto certHex = dnameAndCert[1];
 
   ndn::ConstBufferPtr buf = ndn::fromHex(certHex);
   shared_ptr<Certificate> cert = make_shared<Certificate>(Block{buf});
@@ -81,6 +83,7 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                         const Name& wellknown,
                         const std::string& deviceId,
                         const std::string& sharedSecret,
+                        const Name& dname,
                         std::shared_ptr<Certificate> deviceCertUnsigned,
                         OnDeviceCertSigned onDeviceCertSigned,
                         OnStatusChange onFailure)
@@ -98,6 +101,7 @@ serveDeviceUnsignedCert(std::shared_ptr<Node> node,
                 if (validateOwnerRequest(interest, args, sharedSecret)) {
                   auto signedCert = hmacSignUnsignedCert(deviceCertUnsigned, deviceId, sharedSecret);
                   put(signedCert);
+                  fetchDeviceCert(node, wellknown, deviceId, dname, onDeviceCertSigned, onFailure);
                   return true;
                 }
                 else {
@@ -130,22 +134,33 @@ constructBootstrapName(const Name& wellknown,
 
 void
 fetchDeviceCert(std::shared_ptr<Node> node,
-                const Name& btCertName,
+                const Name& wellknown,
+                const std::string& deviceId,
+                const Name& dname,
                 OnDeviceCertSigned onDeviceCertSigned,
                 OnStatusChange onFailure)
 {
+  Name btCertName(wellknown);
+  btCertName.append("owner").append(deviceId).append("cert");
   node->showInterest(Interest{btCertName}, [&](const Data& d) {
     auto certBlock = d.getContent();
     auto cert = std::make_shared<Certificate>(certBlock);
-    onDeviceCertSigned(cert);
+    onDeviceCertSigned(dname, cert);
   });
+}
+
+std::shared_ptr<Certificate>
+generateIdentity(std::shared_ptr<ndn::KeyChain> keychain, ndn::Name name)
+{
+  auto id = keychain->createIdentity(name);
+  return std::make_shared<Certificate>(id.getDefaultKey().getDefaultCertificate());
 }
 
 void
 startBootstrap(const Name& wellknown,
                const std::string& deviceId,
                const std::string& sharedSecret,
-               std::shared_ptr<Certificate> deviceCertUnsigned,
+               std::shared_ptr<ndn::KeyChain> keychain,
                std::shared_ptr<Node> node,
                OnOwnerCert onOwnerCert,
                OnDeviceCertSigned onDeviceCertSigned,
@@ -159,12 +174,15 @@ startBootstrap(const Name& wellknown,
       onFailure(node);
       return;
     }
-    auto ownerCert = extractOwnerCert(d);
+    std::string dname;
+    auto ownerCert = extractOwnerCert(d, dname);
+    std::shared_ptr<Certificate> deviceCertUnsigned = generateIdentity(keychain, dname);
     onOwnerCert(ownerCert);
     serveDeviceUnsignedCert(node,
                             wellknown,
                             deviceId,
                             sharedSecret,
+                            dname,
                             deviceCertUnsigned,
                             onDeviceCertSigned,
                             onFailure);

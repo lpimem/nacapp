@@ -35,8 +35,9 @@ using OnStatusChange = std::function<void(std::shared_ptr<Node>)>;
 class BootstrapHelper
 {
 public:
-  BootstrapHelper(std::shared_ptr<Node> n)
+  BootstrapHelper(std::shared_ptr<Node> n, std::shared_ptr<KeyChain> keychain)
     : m_node(n)
+    , m_keychain(keychain)
   {
   }
 
@@ -45,7 +46,12 @@ public:
    * start the bootstrapping session as a device
    */
   void
-  start(Name ownerName, std::string deviceId, std::string pin, OnStatusChange, OnStatusChange);
+  start(Name ownerName,
+        std::string deviceId,
+        std::string pin,
+        std::shared_ptr<ndn::KeyChain>,
+        OnStatusChange,
+        OnStatusChange);
 
   /**
    * start serving bootstrap sessions as an owner
@@ -111,6 +117,8 @@ private:
 private:
   std::shared_ptr<Certificate> m_deviceCert;
   std::shared_ptr<Certificate> m_ownerCert;
+
+  std::shared_ptr<KeyChain> m_keychain;
 
   OnStatusChange m_onSuccess;
   OnStatusChange m_onFailure;
