@@ -8,7 +8,9 @@ Node::serveForever()
 }
 
 void
-Node::route(string path, InterestHandler handler, vector<InterestValidator> validators,
+Node::route(string path,
+            InterestHandler handler,
+            vector<InterestValidator> validators,
             vector<DataProcessor> processors)
 {
   impl.route(path, handler, validators, processors);
@@ -33,9 +35,16 @@ Node::route(string path, InterestHandler handler)
 }
 
 void
+Node::setTrustAnchor(Certificate&& c)
+{
+  Certificate cert = c;
+  impl.setTrustAnchor(cert);
+}
+
+void
 Node::showInterest(const Interest& interest, DataReceiver proc)
 {
   impl.showInterest(interest, proc);
 }
 
-} // nacapp
+} // namespace nacapp

@@ -11,6 +11,7 @@
 
 namespace nacapp {
 namespace bootstrap {
+namespace impl {
 
 
 bool
@@ -24,7 +25,7 @@ verifyHash(std::string content, std::string key, std::string hash)
 }
 
 bool
-validateOwnerCertResp(const Data& d, std::string expected_r, std::string pin)
+validateOwnerCertResp(const Data& d, std::string expected_r, std::string sharedSecret)
 {
   auto content = nacapp::data::getAsString(d);
   auto parts = split(content, '|');
@@ -32,65 +33,206 @@ validateOwnerCertResp(const Data& d, std::string expected_r, std::string pin)
   auto r = parts[1];
   auto hash = parts[2];
 
-  return r == expected_r && verifyHash(cert + '|' + r, pin, hash);
+  return r == expected_r && verifyHash(cert + '|' + r, sharedSecret, hash);
+}
+
+shared_ptr<Certificate>
+extractOwnerCert(const Data& d, std::string& dname)
+{
+  auto content = nacapp::data::getAsString(d);
+  auto parts = split(content, '|');
+  auto dnameAndCert = split(parts[0], '^');
+  dname = dnameAndCert[0];
+  auto certHex = dnameAndCert[1];
+
+  ndn::ConstBufferPtr buf = ndn::fromHex(certHex);
+  shared_ptr<Certificate> cert = make_shared<Certificate>(Block{buf});
+  return std::dynamic_pointer_cast<Certificate>(cert);
 }
 
 bool
-validateOwnerRequest(const Interest& interest, const Name& args, std::string pin)
+validateOwnerRequest(const Interest& interest, const Name& args, std::string sharedSecret)
 {
   auto interestName = interest.getName();
   auto name = interestName.getPrefix(interestName.size() - 1);
-  auto hash = args.get(2).toUri();
-  return verifyHash(name.toUri(), pin, hash);
+  auto hash = args.get(1).toUri();
+  return verifyHash(name.toUri(), sharedSecret, hash);
+}
+
+std::shared_ptr<Data>
+hmacSignUnsignedCert(std::shared_ptr<Certificate> deviceCertUnsigned,
+                     const std::string& deviceId,
+                     const std::string& sharedSecret)
+{
+  auto block = deviceCertUnsigned->getContent();
+  std::string hex = ndn::toHex(block.value(), block.value_size(), true);
+  auto hash = sign_hmac(fromString(sharedSecret), fromString(hex));
+  auto data_block = deviceCertUnsigned->wireEncode();
+  std::string certHex = ndn::toHex(data_block.value(), data_block.value_size(), true);
+  std::string newContent = certHex + "|" + ndn::toHex(*hash);
+  auto ret = std::make_shared<Data>(deviceCertUnsigned->getName());
+  ndn::ConstBufferPtr contentBuf = nacapp::fromString(newContent);
+  ret->setContent(contentBuf);
+  auto meta = ret->getMetaInfo();
+  meta.setFreshnessPeriod(time::milliseconds(1000));
+  return ret;
 }
 
 void
 serveDeviceUnsignedCert(std::shared_ptr<Node> node,
+                        const Name& wellknown,
                         const std::string& deviceId,
-                        const std::string& pin,
+                        const std::string& sharedSecret,
+                        const Name& dname,
                         std::shared_ptr<Certificate> deviceCertUnsigned,
-                        OnStatusChange onSuccess,
-                        OnStatusChange onFailure)
+                        OnDeviceCertSigned onDeviceCertSigned,
+                        OnFail onFail)
 {
-  node->route(deviceCertUnsigned->getName().toUri(),
+  shared_ptr<int> retry = std::make_shared<int>();
+  shared_ptr<int> retryMax = std::make_shared<int>();
+  *retry = 0;
+  *retryMax = 10;
+  node->route("/",
               [&](const Interest& interest,
                   const Name& args,
                   shared_ptr<Data> data,
                   InterestShower show,
                   PutData put) {
-                if (validateOwnerRequest(interest, args, pin)) {
-                  put(deviceCertUnsigned);
+                if (validateOwnerRequest(interest, args, sharedSecret)) {
+                  auto signedCert = hmacSignUnsignedCert(deviceCertUnsigned, deviceId, sharedSecret);
+                  put(signedCert);
+                  fetchDeviceCert(node, wellknown, deviceId, dname, onDeviceCertSigned, onFail);
                   return true;
                 }
                 else {
-                  nacapp::data::setStringContent(*data, "Invalid request");
+                  std::string message = "Invalid request";
+                  if ((*retry)++ > *retryMax) {
+                    message += " - Max Retry Reached";
+                    onFail(message);
+                  }
+                  nacapp::data::setStringContent(*data, message);
                 }
                 return false;
               });
 }
 
-void
-startBootstrap(const Name& ownerName,
-               const std::string& deviceId,
-               const std::string& pin,
-               std::shared_ptr<Certificate> deviceCertUnsigned,
-               std::shared_ptr<Node> node,
-               OnStatusChange onSuccess,
-               OnStatusChange onFailure)
+Name
+constructBootstrapName(const Name& wellknown,
+                       const std::string& randomNo,
+                       const std::string& deviceId,
+                       const std::string& sharedSecret)
 {
-  Name interestName(ownerName);
-  const std::string r1 = randomHex();
+  Name interestName(wellknown);
+  interestName.append("owner");
   interestName.append(deviceId);
-  interestName.append(r1);
-  Interest interest(interestName);
-  node->showInterest(interest, [&](const Data& d) {
-    if (!validateOwnerCertResp(d, r1, pin)) {
-      onFailure(node);
-      return;
-    }
-    serveDeviceUnsignedCert(node, deviceId, pin, deviceCertUnsigned, onSuccess, onFailure);
+  interestName.append(randomNo);
+  auto hash = sign_hmac(fromString(sharedSecret), fromString(interestName.toUri()));
+  std::string hex = ndn::toHex(*hash);
+  interestName.append(hex);
+  return interestName;
+}
+
+void
+fetchDeviceCert(std::shared_ptr<Node> node,
+                const Name& wellknown,
+                const std::string& deviceId,
+                const Name& dname,
+                OnDeviceCertSigned onDeviceCertSigned,
+                OnFail onFail)
+{
+  Name btCertName(wellknown);
+  btCertName.append("owner").append(deviceId).append("cert");
+  node->showInterest(Interest{btCertName}, [&](const Data& d) {
+    auto certBlock = d.getContent();
+    auto cert = std::make_shared<Certificate>(certBlock);
+    onDeviceCertSigned(cert);
   });
 }
 
+std::shared_ptr<Certificate>
+generateIdentity(std::shared_ptr<ndn::KeyChain> keychain, ndn::Name name)
+{
+  auto id = keychain->createIdentity(name);
+  return std::make_shared<Certificate>(id.getDefaultKey().getDefaultCertificate());
+}
+
+void
+startBootstrap(const Name& wellknown,
+               const std::string& deviceId,
+               const std::string& sharedSecret,
+               std::shared_ptr<ndn::KeyChain> keychain,
+               std::shared_ptr<Node> node,
+               OnOwnerCert onOwnerCert,
+               OnDeviceCertSigned onDeviceCertSigned,
+               OnFail onFail)
+{
+  const std::string randomNo = randomHex();
+  Name interestName = constructBootstrapName(wellknown, randomNo, deviceId, sharedSecret);
+  Interest interest(interestName);
+  node->showInterest(interest, [&](const Data& d) {
+    if (!validateOwnerCertResp(d, randomNo, sharedSecret)) {
+      onFail("owner certificate is not valid.");
+      return;
+    }
+    std::string dname;
+    auto ownerCert = extractOwnerCert(d, dname);
+    std::shared_ptr<Certificate> deviceCertUnsigned = generateIdentity(keychain, dname);
+    onOwnerCert(ownerCert);
+    serveDeviceUnsignedCert(node,
+                            wellknown,
+                            deviceId,
+                            sharedSecret,
+                            dname,
+                            deviceCertUnsigned,
+                            onDeviceCertSigned,
+                            onFail);
+  });
+}
+
+
+void
+start(std::shared_ptr<Node> node,
+      std::shared_ptr<Session> session,
+      const Config& cfg,
+      OnOwnerCert onOwnerCert,
+      OnDeviceCertSigned onDeviceCertSigned,
+      OnFail onFail)
+{
+  startBootstrap(cfg.wellknown,
+                 cfg.pairId,
+                 cfg.pairCode,
+                 session->keychain,
+                 node,
+                 onOwnerCert,
+                 onDeviceCertSigned,
+                 onFail);
+}
+
+void
+setTrustAnchor(std::shared_ptr<ndn::security::v2::Validator> validator,
+               std::shared_ptr<Node> node,
+               std::shared_ptr<Certificate> anchor)
+{
+  if (nullptr != validator) {
+    validator->loadAnchor("", Certificate(*anchor));
+  }
+  else {
+    node->setTrustAnchor(Certificate(*anchor));
+  }
+}
+
+
+void
+setDeviceCert(std::shared_ptr<KeyChain> keychain,
+              std::shared_ptr<Identity> id,
+              std::shared_ptr<Certificate> cert)
+{
+  auto keyBuf = cert->getPublicKey();
+  auto keyName = cert->getKeyName();
+  auto key = id->getDefaultKey();
+  keychain->setDefaultCertificate(key, Certificate(*cert));
+}
+
+} // namespace impl
 } // namespace bootstrap
 } // namespace nacapp

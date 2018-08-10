@@ -1,6 +1,7 @@
 #include <ndn-cxx/lp/nack.hpp>
 #include <ndn-cxx/util/dummy-client-face.hpp>
 #include <ndn-cxx/util/io.hpp>
+#include <ndn-cxx/util/string-helper.hpp>
 
 
 #include "../../shared/test/catch.hpp"
@@ -13,7 +14,9 @@ namespace test {
 using ndn::security::v2::KeyChain;
 using ndn::util::DummyClientFace;
 
-const ndn::SimplePublicKeyParams<ndn::RsaKeyParamsInfo> RSA_KEY_PARAMS;
+
+const std::uint32_t KEY_SIZE = 1024;
+const ndn::RsaKeyParams RSA_KEY_PARAMS(KEY_SIZE, ndn::KeyIdType::SHA256);
 
 class NodeImplTestFixture
 {
@@ -67,9 +70,12 @@ TEST_CASE("NodeImple::route")
     client->expressInterest(interest,
                             [&](const Interest& i, const Data& d) {
                               LOG(INFO) << "on data";
-                              auto buffer = d.getContent().getBuffer();
-                              REQUIRE(buffer->size() == 1);
-                              REQUIRE(*buffer->get() == 1);
+                              auto block = d.getContent();
+                              LOG(INFO)
+                                << "data: " << ndn::toHex(block.value(), block.value_size(), true);
+                              REQUIRE(block.value_size() == 1);
+                              const std::uint32_t val = *(block.value());
+                              REQUIRE(val == 1);
                             },
                             [&](const Interest& i, const ndn::lp::Nack& n) {
                               LOG(ERROR) << "Unexpected NACK: " << n.getReason();

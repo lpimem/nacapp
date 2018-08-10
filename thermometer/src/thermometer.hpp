@@ -2,6 +2,7 @@
 #define THERMOMETER_HPP
 
 #include "common.hpp"
+#include "../../rpi/src/temp.hpp"
 
 namespace nacapp {
 namespace thermometer {
@@ -70,6 +71,7 @@ private:
   unique_ptr<Node> m_node;
   shared_ptr<Producer> m_producer;
   map<Name, shared_ptr<Data>> m_ckeys;
+  smarthome::Temp m_sensor;
   // Producer m_producer
 }; // class Thermometer
 } // namespace thermometer

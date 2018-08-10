@@ -15,7 +15,7 @@ def build(bld):
       source=bld.path.ant_glob(['src/**/*.cc', 
                                 'src/**/*.cpp',
                                 ]),
-      use = "BOOST NDN_CXX nacapp-share",
+      use = "BOOST NDN_CXX CRYPTOPP nacapp-share",
       includes = ["nacapp-share", "src"],
       export_includes='src'
     )
@@ -24,4 +24,6 @@ def build(bld):
 
 
 def configure(ctx):
+  ctx.check_cxx(lib = 'cryptopp', use = 'CRYPTOPP')
+
   pass

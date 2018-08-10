@@ -86,6 +86,12 @@ NodeImpl::setPrefix(Name prefix)
 }
 
 void
+NodeImpl::setTrustAnchor(Certificate& ta)
+{
+  m_ndn_validator.loadAnchor("", Certificate(ta));
+}
+
+void
 NodeImpl::onRegisterPrefixFailed(const Name& prefix, const std::string& reason)
 {
   LOG(ERROR) << "cannot register prefix[" << prefix.toUri() << "]: " << reason;
@@ -204,7 +210,6 @@ sendNack(shared_ptr<Face> face, const Interest& interest)
   ndn::lp::Nack nack(interest);
   face->put(nack);
 }
-
 
 void
 NodeImpl::sendData(const Name& path,
