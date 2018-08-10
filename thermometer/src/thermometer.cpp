@@ -188,9 +188,7 @@ Thermometer::registerPrefixes()
 int
 Thermometer::readTemp()
 {
-  // Fake data for demo.
-  // TODO: read from raspberry pi
-  return 76;
+  return m_sensor.getTemp();
 }
 
 shared_ptr<Data>

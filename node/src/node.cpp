@@ -37,7 +37,8 @@ Node::route(string path, InterestHandler handler)
 void
 Node::setTrustAnchor(Certificate&& c)
 {
-  impl.setTrustAnchor(c);
+  Certificate cert = c;
+  impl.setTrustAnchor(cert);
 }
 
 void
