@@ -8,3 +8,4 @@ manager-db
 
 .waf-tools/*.pyc
 .waf-2*
+.waf3-2.*

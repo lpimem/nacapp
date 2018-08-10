@@ -57,7 +57,7 @@ TEST_CASE("Verify Hash - Match")
   const std::string content = "/local-home/bootstrap/owner/Make1-Model2-Version345/1923856";
   const std::string expect = "c4231e0ae5717a7e8cad7837a78e7f5884b4e0553315f6c6dcad667011e586db";
 
-  REQUIRE(verifyHash(content, devicePinText, expect));
+  REQUIRE(impl::verifyHash(content, devicePinText, expect));
 }
 
 } // namespace bootstrap
