@@ -7,5 +7,6 @@ manager-db
 *.db
 
 .waf-tools/*.pyc
+.waf-tools/__pycache__/*.pyc
 .waf-2*
 .waf3-2.*
