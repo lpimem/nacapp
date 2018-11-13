@@ -124,9 +124,11 @@ constructBootstrapName(const Name& wellknown,
 {
   Name interestName(wellknown);
   interestName.append("owner");
+  interestName.append("cert");
   interestName.append(deviceId);
   interestName.append(randomNo);
-  auto hash = sign_hmac(fromString(sharedSecret), fromString(interestName.toUri()));
+  std::string input = deviceId + "|" + randomNo;
+  auto hash = sign_hmac(fromString(sharedSecret), fromString(input));
   std::string hex = ndn::toHex(*hash);
   interestName.append(hex);
   return interestName;
